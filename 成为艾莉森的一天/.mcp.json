@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "MagicAIGodot": {
+      "command": "d:/AIGameBuild/godot.windows.editor.x86_64.exe",
+      "args": [
+        "--editor",
+        "--headless",
+        "--no-header",
+        "--quiet",
+        "--path",
+        "d:/AIGameBuild/成为艾莉森的一天",
+        "--",
+        "--mcp-stdio"
+      ]
+    }
+  }
+}

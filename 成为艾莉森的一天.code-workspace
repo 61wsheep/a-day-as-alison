@@ -1,0 +1,17 @@
+{
+    "folders": [
+        {
+            "name": "成为艾莉森的一天",
+            "path": "成为艾莉森的一天"
+        },
+        {
+            "name": "AIGameBuild (根目录)",
+            "path": "."
+        }
+    ],
+    "settings": {
+        "magicaiHub.enginePaths": {
+            "成为艾莉森的一天": "d:\\AIGameBuild\\godot.windows.editor.x86_64.exe"
+        }
+    }
+}

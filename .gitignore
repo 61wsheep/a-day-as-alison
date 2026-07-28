@@ -1,0 +1,8 @@
+# Godot 编辑器可执行文件（非源码，~160MB）
+godot.windows.editor.x86_64.exe
+
+# 二进制 Word 文档（.md 版本为文本源）
+《成为艾莉森的一天》游戏策划案.doc
+
+# macOS system files
+.DS_Store
