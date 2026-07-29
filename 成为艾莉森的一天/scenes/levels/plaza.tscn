@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://vjqs1fgh4dl0"]
+
+[ext_resource type="Shape2D" uid="uid://dot5264qcutpf" path="res://resources/world_boundary.tres" id="1_uxmis"]
+
+[node name="Plaza" type="Node2D" unique_id=399787836]
+
+[node name="Background" type="Sprite2D" parent="." unique_id=1814574575]
+centered = false
+
+[node name="GroundBounds" type="StaticBody2D" parent="." unique_id=2009329749]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GroundBounds" unique_id=1464946687]
+shape = ExtResource("1_uxmis")
+
+[node name="PlayerSpawn" type="Marker2D" parent="." unique_id=1067747]
+position = Vector2(200, 400)
+
+[node name="NPCSpawn" type="Marker2D" parent="." unique_id=1837091633]
+position = Vector2(800, 380)
+
+[node name="PlayerInstance" type="Node2D" parent="." unique_id=1710437178]

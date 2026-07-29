@@ -6,3 +6,6 @@ godot.windows.editor.x86_64.exe
 
 # macOS system files
 .DS_Store
+
+# 角色行走图源文件（已导入到项目 assets/sprites/）
+/行走图/

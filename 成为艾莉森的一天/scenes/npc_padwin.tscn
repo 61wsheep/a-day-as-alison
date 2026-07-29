@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://dkg68xdhp5h2b"]
+
+[node name="Padwin" type="CharacterBody2D" unique_id=875644259]
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=2002980590]
+scale = Vector2(4, 4)
+
+[node name="Collision" type="CollisionShape2D" parent="." unique_id=1046317024]
+
+[node name="InteractZone" type="Area2D" parent="." unique_id=996440865]
+
+[node name="ZoneShape" type="CollisionShape2D" parent="InteractZone" unique_id=1104897335]
