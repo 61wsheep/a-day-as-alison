@@ -6,3 +6,6 @@ godot.windows.editor.x86_64.exe
 
 # macOS system files
 .DS_Store
+
+# 在 docs/design 分支上忽略 Godot 项目目录
+成为艾莉森的一天/

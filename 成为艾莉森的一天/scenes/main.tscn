@@ -1,7 +1,0 @@
-[gd_scene format=3 uid="uid://dswq222l67yja"]
-
-[node name="Main" type="Node2D" unique_id=138390969]
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1310338502]
-position = Vector2(576, 324)
-anchor_mode = 0

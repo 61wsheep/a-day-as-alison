@@ -1,9 +1,0 @@
-# Godot 4+ specific ignores
-.godot/
-/android/
-
-# macOS system files
-.DS_Store
-
-# Bundled Godot docs (239MB, re-downloadable via skill setup)
-.codebuddy/skills/godot-docs-search/references/
