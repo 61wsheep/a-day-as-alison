@@ -5,8 +5,8 @@
             "path": "成为艾莉森的一天"
         },
         {
-            "name": "AIGameBuild (根目录)",
-            "path": "."
+            "name": "设计文档",
+            "path": "../AIGameBuild-DesignDocs"
         }
     ],
     "settings": {
