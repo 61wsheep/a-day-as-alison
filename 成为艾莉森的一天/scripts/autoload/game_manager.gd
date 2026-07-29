@@ -1,7 +1,7 @@
 extends Node
 
-## ���������������������
-## ���������������������������������
+## 全局游戏管理器
+## 管理跨循环保留的数据。
 
 var gold: int = 100
 var endings_unlocked: Array[String] = []

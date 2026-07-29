@@ -1,7 +1,7 @@
 extends CharacterBody2D
 class_name NPCBase
 
-## NPC ������ ��� ���������������������������������������������������������������
+## NPC 基类 — 提供对话触发、交互区域检测、对话数据管理。
 
 signal interaction_available(npc_id: String)
 
@@ -14,7 +14,7 @@ var _current_line: int = 0
 
 
 func _ready() -> void:
-	# ������ InteractZone ��� body ������������
+	# 连接 InteractZone 的 body 进出信号
 	var zone = $InteractZone
 	if zone:
 		zone.body_entered.connect(_on_body_entered)
