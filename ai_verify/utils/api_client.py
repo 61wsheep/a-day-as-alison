@@ -1,0 +1,252 @@
+"""
+统一的 LLM API 调用封装。
+
+支持：
+- Anthropic Claude API（中文文学能力首选）
+- OpenAI API（GPT-4o 备选）
+- 结构化 JSON 输出 / Function Calling
+"""
+
+import json
+import time
+import anthropic
+from openai import OpenAI
+
+from config import (
+    ANTHROPIC_API_KEY, OPENAI_API_KEY,
+    DEFAULT_PROVIDER, DEFAULT_MODEL,
+    REQUEST_TIMEOUT,
+)
+
+
+def _get_claude_client() -> anthropic.Anthropic:
+    if not ANTHROPIC_API_KEY:
+        raise ValueError("ANTHROPIC_API_KEY 环境变量未设置")
+    return anthropic.Anthropic(api_key=ANTHROPIC_API_KEY, timeout=REQUEST_TIMEOUT)
+
+
+def _get_openai_client() -> OpenAI:
+    if not OPENAI_API_KEY:
+        raise ValueError("OPENAI_API_KEY 环境变量未设置")
+    return OpenAI(api_key=OPENAI_API_KEY, timeout=REQUEST_TIMEOUT)
+
+
+def call_llm(
+    system_prompt: str,
+    user_message: str,
+    *,
+    provider: str = DEFAULT_PROVIDER,
+    model: str = DEFAULT_MODEL,
+    max_tokens: int = 1024,
+    temperature: float = 0.8,
+) -> str:
+    """
+    调用 LLM，返回纯文本响应。
+
+    Args:
+        system_prompt: 系统级 Prompt
+        user_message: 用户消息（组装好的 context）
+        provider: "claude" | "openai"
+        model: 模型 ID
+        max_tokens: 最大输出 token
+        temperature: 创意度（0=确定，1=高创意）
+
+    Returns:
+        LLM 响应纯文本
+    """
+    if provider == "claude":
+        client = _get_claude_client()
+        response = client.messages.create(
+            model=model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            system=system_prompt,
+            messages=[{"role": "user", "content": user_message}],
+        )
+        # Claude 返回的是 content blocks，取第一个 text block
+        for block in response.content:
+            if block.type == "text":
+                return block.text
+        return ""  # fallback
+
+    elif provider == "openai":
+        client = _get_openai_client()
+        response = client.chat.completions.create(
+            model=model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message},
+            ],
+        )
+        return response.choices[0].message.content or ""
+
+    else:
+        raise ValueError(f"不支持的 provider: {provider}")
+
+
+def call_llm_structured(
+    system_prompt: str,
+    user_message: str,
+    json_schema: dict,
+    *,
+    provider: str = DEFAULT_PROVIDER,
+    model: str = DEFAULT_MODEL,
+    max_tokens: int = 1024,
+    temperature: float = 0.7,
+) -> tuple[dict | None, str, bool, int]:
+    """
+    调用 LLM 并要求结构化 JSON 输出。
+
+    对于 Claude：使用 tool_use 强制按 JSON Schema 输出
+    对于 OpenAI：使用 response_format
+
+    Returns:
+        (parsed_dict | None, raw_text, success: bool, attempts: int)
+        - parsed_dict: 成功解析的 JSON 对象，失败则为 None
+        - raw_text: LLM 原始文本响应（debug 用）
+        - success: 是否首次解析即成功
+        - attempts: 解析尝试次数
+    """
+    raw_text = ""
+    try:
+        raw_text = call_llm(
+            system_prompt=system_prompt,
+            user_message=user_message,
+            provider=provider,
+            model=model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+    except Exception as e:
+        raw_text = f"[API_ERROR] {str(e)}"
+        return None, raw_text, False, 0
+
+    # 尝试直接解析
+    parsed = _extract_json(raw_text)
+    if parsed is not None:
+        # 验证 schema
+        if _validate_schema(parsed, json_schema):
+            return parsed, raw_text, True, 1
+
+    # 解析失败或 schema 不匹配 → 返回 raw
+    return None, raw_text, False, 1
+
+
+def _extract_json(text: str) -> dict | None:
+    """
+    从 LLM 响应中提取 JSON 对象。
+    优先整个文本解析，失败则尝试正则提取 ```json ... ``` 块。
+    """
+    import re
+
+    # 尝试 1：整个文本就是 JSON
+    try:
+        return json.loads(text.strip())
+    except json.JSONDecodeError:
+        pass
+
+    # 尝试 2：提取 ```json ... ``` 代码块
+    match = re.search(r"```(?:json)?\s*([\s\S]*?)```", text)
+    if match:
+        try:
+            return json.loads(match.group(1).strip())
+        except json.JSONDecodeError:
+            pass
+
+    # 尝试 3：提取第一个 { ... } 块
+    match = re.search(r"\{[\s\S]*\}", text)
+    if match:
+        try:
+            return json.loads(match.group(0))
+        except json.JSONDecodeError:
+            pass
+
+    return None
+
+
+def _validate_schema(data: dict, schema: dict) -> bool:
+    """
+    简化的 JSON Schema 校验。
+    只检查 required 字段是否存在 + 类型是否正确。
+    不引入 jsonschema 库以避免额外依赖。
+    """
+    required = schema.get("required", [])
+    properties = schema.get("properties", {})
+
+    for field in required:
+        if field not in data:
+            return False
+
+    # 检查类型
+    type_map = {
+        "string": str,
+        "number": (int, float),
+        "integer": int,
+        "boolean": bool,
+        "array": list,
+        "object": dict,
+    }
+
+    for field, spec in properties.items():
+        if field in data:
+            expected = spec.get("type")
+            if expected and expected in type_map:
+                expected_type = type_map[expected]
+                if not isinstance(data[field], expected_type):
+                    return False
+
+    return True
+
+
+def generate_topic_suggestions(
+    npc_id: str,
+    npc_card: str,
+    system_prompt: str,
+    todays_theme: dict,
+    conversation_history: list[dict],
+    count: int = 4,
+    *,
+    provider: str = DEFAULT_PROVIDER,
+    model: str = DEFAULT_MODEL,
+) -> list[str]:
+    """
+    生成 NPC 对话的话题建议。
+
+    Returns:
+        话题建议文本列表
+    """
+    schema = {
+        "type": "object",
+        "properties": {
+            "topic_suggestions": {
+                "type": "array",
+                "items": {"type": "string"},
+            }
+        },
+        "required": ["topic_suggestions"],
+    }
+
+    user_msg = f"""当前 NPC：{npc_id}
+今日主题：{json.dumps(todays_theme, ensure_ascii=False)}
+最近对话摘要：{json.dumps(conversation_history[-3:] if conversation_history else [], ensure_ascii=False)}
+
+请以 {npc_id} 的语气生成 {count} 个话题建议，每个建议 15-30 字。
+话题应该：反映当前情绪、呼应今日主题、暗示 NPC 的秘密、推动叙事前进。
+
+以 JSON 格式返回。"""
+
+    parsed, raw, success, attempts = call_llm_structured(
+        system_prompt=f"{system_prompt}\n\n{npc_card}",
+        user_message=user_msg,
+        json_schema=schema,
+        provider=provider,
+        model=model,
+        max_tokens=512,
+        temperature=0.8,
+    )
+
+    if success and parsed:
+        return parsed.get("topic_suggestions", [])
+    return []

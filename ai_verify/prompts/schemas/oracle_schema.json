@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "card_name": {
+      "type": "string",
+      "description": "抽到的牌名，含正逆位，如 '倒吊人 (正位)'"
+    },
+    "prophecy": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 3,
+      "maxItems": 5,
+      "description": "3-5 句预言诗。每句 15-40 字。必须是诗，不是任务日志。"
+    },
+    "theme_keywords": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 3,
+      "maxItems": 8,
+      "description": "今日天命主题关键词"
+    },
+    "tone": {
+      "type": "string",
+      "enum": ["bright", "contemplative", "melancholic", "ominous", "hopeful", "enigmatic"],
+      "description": "预言的情感基调"
+    },
+    "suggested_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "time": {"type": "string", "enum": ["morning", "afternoon", "evening", "night"]},
+          "area": {"type": "string"},
+          "seed": {"type": "string", "description": "事件种子描述，模糊的意象"}
+        }
+      },
+      "maxItems": 4
+    }
+  },
+  "required": ["card_name", "prophecy", "theme_keywords", "tone"]
+}

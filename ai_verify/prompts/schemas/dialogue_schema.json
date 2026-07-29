@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "npc_id": {
+      "type": "string",
+      "description": "当前 NPC 标识"
+    },
+    "response_text": {
+      "type": "string",
+      "description": "NPC 的完整回复文本。20-200 字。必须是 NPC 自己的话——不是天的旁白。"
+    },
+    "emotional_shift": {
+      "type": "integer",
+      "minimum": -15,
+      "maximum": 15,
+      "description": "本轮对话对 NPC 好感度的微调。正值=好感上升，负值=下降"
+    },
+    "internal_note": {
+      "type": "string",
+      "description": "内部标记（玩家看不到）：NPC 此刻的真实想法或记忆更新"
+    },
+    "memory_update": {
+      "type": "string",
+      "description": "本轮对话后应存入 NPC 记忆的关键摘要（1-2 句）"
+    },
+    "hints_to_other_npcs": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "暗示了其他 NPC 可能知道的信息（玩家可据此去找其他 NPC 验证）",
+      "maxItems": 3
+    },
+    "should_end_conversation": {
+      "type": "boolean",
+      "description": "NPC 是否在本轮自然结束对话（觉得聊够了）",
+      "default": false
+    }
+  },
+  "required": ["response_text", "emotional_shift", "memory_update"]
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "day": 2,
+    "prophecy_text": [
+      "你将看到颠倒的真相",
+      "一个旧承诺将在今日被打破",
+      "树上的影子数到三就会消失"
+    ],
+    "events": [
+      {"time": "morning", "area": "plaza", "event": "玩家在广场与 Soraya 交谈。Soraya 说了一句奇怪的话：'这棵树昨天不在这个位置。'"},
+      {"time": "afternoon", "area": "treehouse", "event": "玩家找到 Padwin。Padwin 分享了一个研究发现：森林里的某些树似乎在循环中会移动。玩家注意到 Padwin 说话时一直不敢看玩家的眼睛。"},
+      {"time": "evening", "area": "forest_edge", "event": "玩家独自在森林边缘探索，发现一只倒挂在树枝上的死乌鸦。天快黑了。"},
+      {"time": "night", "area": "tower", "event": "玩家来到石巢塔楼。塔楼的门开着一条缝，里面有微弱的光。玩家没有进去。"}
+    ],
+    "player_choices": ["信任 Padwin 的研究", "没有追问 Soraya 树木的事", "在塔楼门口犹豫后离去"],
+    "npc_changes": {"padwin": "+8 (好感度)", "soraya": "+2 (好感度)"}
+  },
+  {
+    "day": 5,
+    "prophecy_text": [
+      "水面下的东西今天会浮上来",
+      "当心那个不敢看你的眼睛的人",
+      "第三个问题不要问出口"
+    ],
+    "events": [
+      {"time": "morning", "area": "plaza", "event": "广场集市上，玩家无意中听到 Cactus Bishop 对 Soraya 低声说：'他/她问得太多了。'"},
+      {"time": "afternoon", "area": "treehouse", "event": "Padwin 给玩家看了他的笔记本——但有一页被撕掉了。玩家注意到撕掉那页的日期正是循环开始的那一天。"},
+      {"time": "evening", "area": "lake_shore", "event": "玩家独自去树湖边。水面平静，但岸边有一串新鲜的脚印——赤脚的，新的，方向指向水的方向。"},
+      {"time": "night", "area": "tower", "event": "在塔楼外遇到 Cactus Bishop。主教说：'你要找的答案不在这座塔里。'然后沉默地离开了。"}
+    ],
+    "player_choices": ["追问 Padwin 撕掉的那页", "没有当面拆穿主教与 Soraya 的对话", "在树湖边跟着脚印走了一小段后放弃"],
+    "npc_changes": {"padwin": "-5 (好感度，被追问得太紧)", "cactus_bishop": "+10 (好感度，玩家没有拆穿他)"}
+  },
+  {
+    "day": 9,
+    "prophecy_text": [
+      "帷幕今天会掀开一角",
+      "但不是你掀的",
+      "今天的日落比昨天早了三分钟"
+    ],
+    "events": [
+      {"time": "morning", "area": "treehouse", "event": "Padwin 主动来找玩家。他看起来没睡好。他说：'我做了一个梦——不，不是梦。我看到了第 0 天。'"},
+      {"time": "afternoon", "area": "forest", "event": "Soraya 在森林中哭泣。被玩家撞见后迅速擦掉眼泪，说'没什么'。但离开前她回头看了玩家一眼——那一眼不像怀疑，像求助。"},
+      {"time": "evening", "area": "plaza", "event": "广场上没有人。明明应该是集市最热闹的时刻。一片寂静。"},
+      {"time": "night", "area": "tower", "event": "石巢塔楼的门完全敞开了。里面传来钟声——但塔楼里没有钟。玩家走了进去，楼梯尽头什么都没有。但下来的时候，台阶比上去的时候多了一级。"}
+    ],
+    "player_choices": ["对 Padwin 说'我相信你'", "没有追问 Soraya 为什么哭", "在广场的寂静中坐了一会儿", "数了塔楼的台阶"],
+    "npc_changes": {"padwin": "+15 (好感度，信任的确认)", "soraya": "+12 (好感度，无声的理解)"}
+  }
+]

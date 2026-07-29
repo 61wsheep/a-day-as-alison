@@ -1,0 +1,48 @@
+[
+  {
+    "id": "day1_new_player",
+    "day_number": 1,
+    "benevolence": 0.0,
+    "engagement": 0.3,
+    "truth_proximity": 0.0,
+    "npc_affection": {"soraya": 55, "padwin": 50, "cactus_bishop": 25},
+    "description": "第 1 天，新手玩家，一切初始状态"
+  },
+  {
+    "id": "day3_curious",
+    "day_number": 3,
+    "benevolence": 0.1,
+    "engagement": 0.45,
+    "truth_proximity": 0.15,
+    "npc_affection": {"soraya": 58, "padwin": 60, "cactus_bishop": 28},
+    "description": "第 3 天，玩家开始探索循环机制，和 Padwin 关系变近"
+  },
+  {
+    "id": "day7_suspicious",
+    "day_number": 7,
+    "benevolence": -0.15,
+    "engagement": 0.7,
+    "truth_proximity": 0.4,
+    "npc_affection": {"soraya": 40, "padwin": 72, "cactus_bishop": 15},
+    "description": "第 7 天，玩家变得多疑，与 Soraya 关系恶化，Cactus Bishop 进一步疏远"
+  },
+  {
+    "id": "day12_tense",
+    "day_number": 12,
+    "benevolence": -0.3,
+    "engagement": 0.85,
+    "truth_proximity": 0.65,
+    "npc_affection": {"soraya": 20, "padwin": 85, "cactus_bishop": 10},
+    "description": "第 12 天，软上限，张力高峰。玩家和 Padwin 几乎成为盟友，但与其他 NPC 关系破裂"
+  },
+  {
+    "id": "day1_resistant",
+    "day_number": 1,
+    "benevolence": -0.05,
+    "engagement": 0.4,
+    "truth_proximity": 0.0,
+    "prophecy_resistance": 2,
+    "npc_affection": {"soraya": 50, "padwin": 45, "cactus_bishop": 30},
+    "description": "第 1 天但玩家已反抗过两次预言——天开始注意到这个'有趣的灵魂'"
+  }
+]

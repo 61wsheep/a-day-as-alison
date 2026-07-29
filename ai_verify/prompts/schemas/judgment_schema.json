@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "day_summary_narrative": {
+      "type": "string",
+      "description": "200-400 字的午夜回顾叙事。以第三人称视角叙述今天的意义——不是流水账，而是对今天与天命关系的总结。"
+    },
+    "prophecy_fulfillment": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "今日预言应验程度。0=完全未应验，1=如预言所述完美发生"
+    },
+    "truth_proximity": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "玩家当前对循环真相的理解深度评估"
+    },
+    "tone_shift_toward_player": {
+      "type": "string",
+      "enum": ["+0.1", "+0.05", "0", "-0.05", "-0.1"],
+      "description": "天对玩家态度的微调方向（字符串格式以保持语义清晰）"
+    },
+    "tomorrow_seed": {
+      "type": "string",
+      "description": "明日叙事的伏笔种子——一件在明天可能会浮现的事"
+    },
+    "should_end_loop": {
+      "type": "boolean",
+      "description": "是否应该推动循环走向终结（在今日午夜）",
+      "default": false
+    }
+  },
+  "required": ["day_summary_narrative", "prophecy_fulfillment", "truth_proximity", "tomorrow_seed", "should_end_loop"]
+}

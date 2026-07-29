@@ -1,0 +1,5 @@
+# AI 验证工具 .gitignore
+results/*/
+__pycache__/
+*.pyc
+.env
