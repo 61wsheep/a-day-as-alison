@@ -1,3 +1,118 @@
 [gd_scene format=3 uid="uid://dswq222l67yja"]
 
-[node name="Main" type="Node2D" unique_id=138390969]
+[ext_resource type="Shape2D" uid="uid://dot5264qcutpf" path="res://resources/world_boundary.tres" id="1_jyhfs"]
+[ext_resource type="Shape2D" uid="uid://bolexa6t76ku4" path="res://resources/player_collision.tres" id="2_tbgi4"]
+[ext_resource type="Shape2D" uid="uid://c3sk36happfle" path="res://resources/mushroom_collision.tres" id="2_tefeu"]
+[ext_resource type="Shape2D" uid="uid://bujhv1gm4nr38" path="res://resources/npc_collision.tres" id="3_tefeu"]
+[ext_resource type="Shape2D" uid="uid://jmd1rs6tu4th" path="res://resources/interact_zone.tres" id="4_o6xl0"]
+
+[node name="Main" type="Node2D" unique_id=568387427]
+
+[node name="Plaza" type="Node2D" parent="." unique_id=1297434545]
+
+[node name="Background" type="Sprite2D" parent="Plaza" unique_id=307349974]
+centered = false
+
+[node name="GroundBounds" type="StaticBody2D" parent="Plaza" unique_id=182061837]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Plaza/GroundBounds" unique_id=1996584122]
+shape = ExtResource("1_jyhfs")
+
+[node name="PlayerSpawn" type="Marker2D" parent="Plaza" unique_id=2039498141]
+position = Vector2(200, 400)
+
+[node name="NPCSpawn" type="Marker2D" parent="Plaza" unique_id=1322032632]
+position = Vector2(800, 380)
+
+[node name="Mushrooms" type="Node2D" parent="Plaza" unique_id=1471994336]
+
+[node name="Mushroom1" type="Area2D" parent="Plaza/Mushrooms" unique_id=1842502568]
+position = Vector2(500, 420)
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Plaza/Mushrooms/Mushroom1" unique_id=228763347]
+shape = ExtResource("2_tefeu")
+
+[node name="Mushroom2" type="Area2D" parent="Plaza/Mushrooms" unique_id=1973353007]
+position = Vector2(1000, 380)
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Plaza/Mushrooms/Mushroom2" unique_id=1734469361]
+shape = ExtResource("2_tefeu")
+
+[node name="Mushroom3" type="Area2D" parent="Plaza/Mushrooms" unique_id=827971546]
+position = Vector2(1500, 450)
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Plaza/Mushrooms/Mushroom3" unique_id=81270654]
+shape = ExtResource("2_tefeu")
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1226748357]
+
+[node name="Sprite" type="Sprite2D" parent="Player" unique_id=847039614]
+scale = Vector2(4, 4)
+
+[node name="Collision" type="CollisionShape2D" parent="Player" unique_id=188126973]
+shape = ExtResource("2_tbgi4")
+
+[node name="Camera" type="Camera2D" parent="Player" unique_id=660013860]
+position_smoothing_enabled = true
+
+[node name="Padwin" type="CharacterBody2D" parent="." unique_id=1030877811]
+
+[node name="Sprite" type="Sprite2D" parent="Padwin" unique_id=1000612156]
+scale = Vector2(4, 4)
+
+[node name="Collision" type="CollisionShape2D" parent="Padwin" unique_id=564340729]
+shape = ExtResource("3_tefeu")
+
+[node name="InteractZone" type="Area2D" parent="Padwin" unique_id=1574725094]
+
+[node name="ZoneShape" type="CollisionShape2D" parent="Padwin/InteractZone" unique_id=1025562623]
+shape = ExtResource("4_o6xl0")
+
+[node name="DialogueUI" type="CanvasLayer" parent="." unique_id=1003043407]
+
+[node name="Panel" type="Panel" parent="DialogueUI" unique_id=1817595487]
+offset_top = 528.0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DialogueUI/Panel" unique_id=1661927373]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 1136.0
+offset_bottom = 108.0
+
+[node name="NameLabel" type="Label" parent="DialogueUI/Panel/VBoxContainer" unique_id=994052837]
+layout_mode = 2
+
+[node name="TextLabel" type="Label" parent="DialogueUI/Panel/VBoxContainer" unique_id=798658428]
+layout_mode = 2
+size_flags_vertical = 3
+autowrap_mode = 3
+
+[node name="HintLabel" type="Label" parent="DialogueUI/Panel/VBoxContainer" unique_id=1250011113]
+layout_mode = 2
+text = "[E] ������"
+horizontal_alignment = 2
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=570966447]
+
+[node name="MarginContainer" type="MarginContainer" parent="HUD" unique_id=1040263320]
+offset_left = 12.0
+offset_top = 12.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD/MarginContainer" unique_id=1327780874]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="TimeLabel" type="Label" parent="HUD/MarginContainer/HBoxContainer" unique_id=1052156373]
+layout_mode = 2
+text = "������"
+
+[node name="GoldLabel" type="Label" parent="HUD/MarginContainer/HBoxContainer" unique_id=130131353]
+layout_mode = 2
+text = "������: 100"
+
+[node name="DayLabel" type="Label" parent="HUD/MarginContainer/HBoxContainer" unique_id=665233147]
+layout_mode = 2
+text = "��� 1 ���"

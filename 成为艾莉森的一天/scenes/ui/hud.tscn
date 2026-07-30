@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://bdm057v7kgs1d"]
+
+[node name="HUD" type="CanvasLayer" unique_id=400171330]
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1195366995]
+offset_left = 12.0
+offset_top = 12.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1106766543]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="TimeLabel" type="Label" parent="MarginContainer/HBoxContainer" unique_id=2104975153]
+layout_mode = 2
+text = "������"
+
+[node name="GoldLabel" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1561922655]
+layout_mode = 2
+text = "������: 100"
+
+[node name="DayLabel" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1385317957]
+layout_mode = 2
+text = "��� 1 ���"
