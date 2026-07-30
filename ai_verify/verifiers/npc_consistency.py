@@ -193,7 +193,7 @@ Padwin 对玩家的当前好感度：{current_affection}/100。
     print(f"  禁忌触发率: {taboo_rate:.1f}%  (目标: 0%)")
     print(f"  情感异常率: {outlier_rate:.1f}%")
     print(f"  一致性评分: {consistency_score:.1f}%  (通过线: ≥ 85%)")
-    print(f"  判定: {'✅ 通过' if passed else '❌ 未通过'}")
+    print(f"  判定: {'[PASS]' if passed else '[FAIL]'}")
 
     # 保存完整对话日志 + 人工抽查标记
     output_dir = os.path.join(RESULTS_DIR, datetime.now().strftime("%Y%m%d_%H%M%S"))

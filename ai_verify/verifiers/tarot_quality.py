@@ -165,7 +165,7 @@ def run_v3(provider: str = DEFAULT_PROVIDER, model: str = DEFAULT_MODEL) -> dict
 
     print(f"\n  ── V3 自动指标 ──")
     print(f"  总调用: {total_calls} | JSON 成功率: {json_success_rate:.1f}%")
-    print(f"  ⚠️  V3 的核心评判标准是人工评分，自动指标为辅助参考")
+    print(f"  [NOTE] V3 的核心评判标准是人工评分，自动指标为辅助参考")
     print(f"  人工评分文件: {review_path}")
     print(f"  请独立评分后汇总平均分。通过标准: 平均分 > 3.0/5")
 

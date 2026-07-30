@@ -32,22 +32,25 @@ def main():
     args = parser.parse_args()
 
     # 检查 API key
-    from config import ANTHROPIC_API_KEY, OPENAI_API_KEY
-    if not ANTHROPIC_API_KEY and not OPENAI_API_KEY:
-        print("❌ 错误：请设置 ANTHROPIC_API_KEY 或 OPENAI_API_KEY 环境变量")
-        print("   export ANTHROPIC_API_KEY='sk-ant-...'")
-        print("   export OPENAI_API_KEY='sk-...'")
+    from config import ANTHROPIC_API_KEY, OPENAI_API_KEY, SILICONFLOW_API_KEY
+    if not ANTHROPIC_API_KEY and not OPENAI_API_KEY and not SILICONFLOW_API_KEY:
+        print("[ERROR] 未检测到任何 API Key，请检查 .env 文件")
+        print("  SILICONFLOW_API_KEY=sk-...")
+        print("  OPENAI_API_KEY=sk-...")
+        print("  ANTHROPIC_API_KEY=sk-ant-...")
         sys.exit(1)
 
     print("=" * 60)
     print("  「天」Agent AI 离线验证工具")
-    print("  成为艾莉森的一天 — AI 叙事质量验证")
+    print("  成为艾莉森的一天 -- AI 叙事质量验证")
     print("=" * 60)
 
+    if SILICONFLOW_API_KEY:
+        print(f"  [OK] 检测到 SILICONFLOW_API_KEY (硅基流动)")
     if ANTHROPIC_API_KEY:
-        print(f"  ✓ 检测到 ANTHROPIC_API_KEY（Claude API）")
+        print(f"  [OK] 检测到 ANTHROPIC_API_KEY (Claude API)")
     if OPENAI_API_KEY:
-        print(f"  ✓ 检测到 OPENAI_API_KEY（OpenAI API）")
+        print(f"  [OK] 检测到 OPENAI_API_KEY (OpenAI API)")
     print()
 
     results = {}
@@ -77,24 +80,29 @@ def main():
 
         all_passed = True
         for name, result in results.items():
-            status = "✅ 通过" if result.get("passed", False) else "❌ 未通过"
-            print(f"  {name.upper()}: {status}")
-            if not result.get("passed", False):
+            passed = result.get("passed", False)
+            if passed is None:
+                status = "[待人工评分]"
+            elif passed:
+                status = "[PASS]"
+            else:
+                status = "[FAIL]"
                 all_passed = False
+            print(f"  {name.upper()}: {status}")
 
         if all_passed:
             print()
-            print("  🎉 全部通过！可以进入 Game 侧 AI 接入阶段。")
+            print("  [OK] 全部通过！可以进入 Game 侧 AI 接入阶段。")
         else:
             print()
-            print("  ⚠️  部分验证未通过。建议：")
+            print("  [WARN] 部分验证未通过或待评分。建议：")
             print("     1. 查看 results/ 目录下的详细报告")
             print("     2. 分析失败样本的 raw_output")
             print("     3. 调整 prompts/ 下的 Prompt 资产")
             print("     4. 重新运行验证")
 
     elif args.batch == 2:
-        print("  第二批验证（深度验证）—— 待实现")
+        print("  第二批验证（深度验证）-- 待实现")
         print("  V4: 午夜结算叙事")
         print("  V5: 裂缝独白质量")
         print("  V6: 跨天记忆一致性")

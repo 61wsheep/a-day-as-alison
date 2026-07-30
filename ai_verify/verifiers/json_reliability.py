@@ -176,7 +176,7 @@ def run_v1(provider: str = DEFAULT_PROVIDER, model: str = DEFAULT_MODEL) -> dict
 
     print(f"\n  ── V1 总体结果 ──")
     print(f"  总调用: {total_calls} | 总成功: {total_success} | 总成功率: {overall_rate:.1f}%")
-    print(f"  通过标准: ≥ 95% | 判定: {'✅ 通过' if passed else '❌ 未通过'}")
+    print(f"  通过标准: >= 95% | 判定: {'[PASS]' if passed else '[FAIL]'}")
 
     # 保存报告
     output_dir = os.path.join(RESULTS_DIR, datetime.now().strftime("%Y%m%d_%H%M%S"))

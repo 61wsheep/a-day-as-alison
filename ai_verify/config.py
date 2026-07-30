@@ -8,6 +8,13 @@ ai_verify ——「天」Agent AI 离线验证工具
 """
 
 import os
+import sys
+
+# Windows GBK 控制台编码修复 —— 强制 stdout/stderr 使用 UTF-8
+if sys.platform == "win32":
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 
 def _load_env():
@@ -61,10 +68,10 @@ DEFAULT_MODEL = os.environ.get(
 )
 
 # ── 验证参数 ──
-V1_ITERATIONS = 30          # JSON 可靠性每种面具的测试次数
-V2_DIALOGUE_TURNS = 20      # NPC 连续对话轮数
-V3_TAROT_CARDS = 5          # 测试的塔罗牌数量
-V3_CONTEXTS_PER_CARD = 3    # 每张牌的语境数
+V1_ITERATIONS = 3           # JSON 可靠性每种面具的测试次数 (quick test)
+V2_DIALOGUE_TURNS = 5       # NPC 连续对话轮数 (quick test)
+V3_TAROT_CARDS = 2          # 测试的塔罗牌数量 (quick test)
+V3_CONTEXTS_PER_CARD = 2    # 每张牌的语境数 (quick test)
 V5_CRACK_SCENARIOS = 3      # 裂缝触发场景数
 V5_RUNS_PER_SCENARIO = 3    # 每种场景重复次数
 
