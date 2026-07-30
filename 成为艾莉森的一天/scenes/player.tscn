@@ -1,11 +1,13 @@
 [gd_scene format=3 uid="uid://cn2d7ukn283u5"]
 
-[node name="Player" type="CharacterBody2D" unique_id=1773355530]
+[ext_resource type="Shape2D" uid="uid://bolexa6t76ku4" path="res://resources/player_collision.tres" id="col_shape"]
 
+[node name="Player" type="CharacterBody2D" unique_id=1773355530]
 [node name="Sprite" type="Sprite2D" parent="." unique_id=1241044076]
 scale = Vector2(4, 4)
 
 [node name="Collision" type="CollisionShape2D" parent="." unique_id=2019897450]
+shape = ExtResource("col_shape")
 
 [node name="Camera" type="Camera2D" parent="." unique_id=684957449]
 position_smoothing_enabled = true

@@ -13,8 +13,10 @@
 [ext_resource type="Script" uid="uid://bfkr5bwcqfs4q" path="res://scripts/npc/padwin.gd" id="7_choun"]
 [ext_resource type="Script" uid="uid://cty0kby1vtln0" path="res://scripts/ui/dialogue_ui.gd" id="11_ya4ey"]
 [ext_resource type="Script" uid="uid://d3rfgnt7gmlhx" path="res://scripts/ui/hud.gd" id="12_eb6dy"]
+[ext_resource type="Script" uid="uid://bjocfry6uvigw" path="res://scripts/game.gd" id="13_game"]
 
 [node name="Main" type="Node2D" unique_id=568387427]
+script = ExtResource("13_game")
 
 [node name="Plaza" type="Node2D" parent="." unique_id=1297434545]
 
@@ -110,6 +112,7 @@ layout_mode = 2
 
 [node name="TextLabel" type="Label" parent="DialogueUI/Panel/VBoxContainer" unique_id=798658428]
 layout_mode = 2
+custom_minimum_size = Vector2(1, 1)
 size_flags_vertical = 3
 autowrap_mode = 3
 

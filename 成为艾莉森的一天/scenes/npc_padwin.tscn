@@ -1,12 +1,17 @@
 [gd_scene format=3 uid="uid://dkg68xdhp5h2b"]
 
+[ext_resource type="Shape2D" uid="uid://bujhv1gm4nr38" path="res://resources/npc_collision.tres" id="npc_shape"]
+[ext_resource type="Shape2D" uid="uid://jmd1rs6tu4th" path="res://resources/interact_zone.tres" id="zone_shape"]
+
 [node name="Padwin" type="CharacterBody2D" unique_id=875644259]
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=2002980590]
 scale = Vector2(4, 4)
 
 [node name="Collision" type="CollisionShape2D" parent="." unique_id=1046317024]
+shape = ExtResource("npc_shape")
 
 [node name="InteractZone" type="Area2D" parent="." unique_id=996440865]
 
 [node name="ZoneShape" type="CollisionShape2D" parent="InteractZone" unique_id=1104897335]
+shape = ExtResource("zone_shape")
