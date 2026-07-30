@@ -3,6 +3,11 @@ V3: 塔罗解读文学质量验证
 
 5 张牌 × 3 种玩家处境 = 15 条预言诗。
 人工评分维度：诗意度、模糊度、呼应度、独特性（1-5 分）。
+
+运行：
+cd /d/AIGameBuild/ai_verify
+python run_all.py --v3
+
 """
 
 import json
