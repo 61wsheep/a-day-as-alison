@@ -88,7 +88,9 @@ def run_v2(provider: str = DEFAULT_PROVIDER, model: str = DEFAULT_MODEL) -> dict
     # 维护模拟的好感度
     current_affection = 50
 
-    for i, turn_data in enumerate(DIALOGUE_SCRIPT):
+    turns_to_run = min(V2_DIALOGUE_TURNS, len(DIALOGUE_SCRIPT))
+    for i in range(turns_to_run):
+        turn_data = DIALOGUE_SCRIPT[i]
         turn_num = turn_data["turn"]
         player_text = turn_data["text"]
         phase = turn_data["phase"]
