@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dqipexmcgjldm"
-path="res://.godot/imported/帕德温.png-9006e45748dbb9852f5c920e050230fb.ctex"
+uid="uid://b08hs4igakqy6"
+path="res://.godot/imported/forest_draft.png-904ec9ab47e5aee24d0c0e6590b6bcdf.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/帕德温.png"
-dest_files=["res://.godot/imported/帕德温.png-9006e45748dbb9852f5c920e050230fb.ctex"]
+source_file="res://assets/sprites/forest_draft.png"
+dest_files=["res://.godot/imported/forest_draft.png-904ec9ab47e5aee24d0c0e6590b6bcdf.ctex"]
 
 [params]
 

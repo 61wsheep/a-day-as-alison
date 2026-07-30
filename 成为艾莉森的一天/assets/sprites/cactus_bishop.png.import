@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://djv3hdc5eamnl"
-path="res://.godot/imported/森林草稿.png-9290f3d7ff7e565045128daa6c646ca7.ctex"
+uid="uid://xmfykiyt3dg6"
+path="res://.godot/imported/cactus_bishop.png-6be436eced4fc637d2094da7ae5a637f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/森林草稿.png"
-dest_files=["res://.godot/imported/森林草稿.png-9290f3d7ff7e565045128daa6c646ca7.ctex"]
+source_file="res://assets/sprites/cactus_bishop.png"
+dest_files=["res://.godot/imported/cactus_bishop.png-6be436eced4fc637d2094da7ae5a637f.ctex"]
 
 [params]
 

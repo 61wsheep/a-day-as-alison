@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cx7i0fx3msqcw"
-path="res://.godot/imported/索拉雅.png-06ff19c725408a212ab7756d72465091.ctex"
+uid="uid://b0l85ba1pcv2g"
+path="res://.godot/imported/padwin.png-b972683b0c2d7f47e1fbca1ed6fe01a2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/索拉雅.png"
-dest_files=["res://.godot/imported/索拉雅.png-06ff19c725408a212ab7756d72465091.ctex"]
+source_file="res://assets/sprites/padwin.png"
+dest_files=["res://.godot/imported/padwin.png-b972683b0c2d7f47e1fbca1ed6fe01a2.ctex"]
 
 [params]
 

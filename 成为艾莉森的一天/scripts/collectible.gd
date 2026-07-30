@@ -11,6 +11,17 @@ class_name Collectible
 func _ready() -> void:
 	add_to_group("collectible")
 	body_entered.connect(_on_body_entered)
+	# 自动生成占位可视化: 红色小方块
+	if not has_node("Icon") or $Icon is not Sprite2D:
+		return
+	var icon: Sprite2D = $Icon
+	if icon.texture == null:
+		var rect = ColorRect.new()
+		rect.color = Color(0.75, 0.15, 0.15, 1.0)
+		rect.size = Vector2(16, 16)
+		rect.position = Vector2(-8, -8)
+		add_child(rect)
+		rect.owner = self
 
 
 func _on_body_entered(body: Node2D) -> void:
@@ -19,4 +30,4 @@ func _on_body_entered(body: Node2D) -> void:
 		gm.add_gold(gold_value)
 		hide()
 		# 禁用碰撞，防止重复拾取
-		monitoring = false
+		set_deferred("monitoring", false)

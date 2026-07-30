@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bxia3k8ajr0hb"
-path="res://.godot/imported/艾莉森.png-31310864842815cbe1dfcfac5c9e3db0.ctex"
+uid="uid://bcrognywdr6ip"
+path="res://.godot/imported/alison.png-96e88e6ced547f2cccf2c820788748cc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/艾莉森.png"
-dest_files=["res://.godot/imported/艾莉森.png-31310864842815cbe1dfcfac5c9e3db0.ctex"]
+source_file="res://assets/sprites/alison.png"
+dest_files=["res://.godot/imported/alison.png-96e88e6ced547f2cccf2c820788748cc.ctex"]
 
 [params]
 

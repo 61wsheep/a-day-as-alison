@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://crabeag8p5gcb"
-path="res://.godot/imported/卡克特斯主教.png-1329adc10d601d39b7fc70d98472c06e.ctex"
+uid="uid://bhbski7og7m7i"
+path="res://.godot/imported/soraya.png-f632ad8f7df7c03a04aaa44a0c3cf216.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/卡克特斯主教.png"
-dest_files=["res://.godot/imported/卡克特斯主教.png-1329adc10d601d39b7fc70d98472c06e.ctex"]
+source_file="res://assets/sprites/soraya.png"
+dest_files=["res://.godot/imported/soraya.png-f632ad8f7df7c03a04aaa44a0c3cf216.ctex"]
 
 [params]
 

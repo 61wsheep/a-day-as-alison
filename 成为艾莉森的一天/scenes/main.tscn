@@ -1,16 +1,25 @@
 [gd_scene format=3 uid="uid://dswq222l67yja"]
 
 [ext_resource type="Shape2D" uid="uid://dot5264qcutpf" path="res://resources/world_boundary.tres" id="1_jyhfs"]
+[ext_resource type="Texture2D" uid="uid://b08hs4igakqy6" path="res://assets/sprites/forest_draft.png" id="1_tipki"]
 [ext_resource type="Shape2D" uid="uid://bolexa6t76ku4" path="res://resources/player_collision.tres" id="2_tbgi4"]
 [ext_resource type="Shape2D" uid="uid://c3sk36happfle" path="res://resources/mushroom_collision.tres" id="2_tefeu"]
+[ext_resource type="Texture2D" uid="uid://bcrognywdr6ip" path="res://assets/sprites/alison.png" id="3_o6xl0"]
 [ext_resource type="Shape2D" uid="uid://bujhv1gm4nr38" path="res://resources/npc_collision.tres" id="3_tefeu"]
+[ext_resource type="Script" uid="uid://b07le8jfojm0" path="res://scripts/collectible.gd" id="3_trceg"]
+[ext_resource type="Script" uid="uid://bnf8vnhao4emb" path="res://scripts/player/player_controller.gd" id="4_85g3d"]
 [ext_resource type="Shape2D" uid="uid://jmd1rs6tu4th" path="res://resources/interact_zone.tres" id="4_o6xl0"]
+[ext_resource type="Texture2D" uid="uid://b0l85ba1pcv2g" path="res://assets/sprites/padwin.png" id="5_o6xl0"]
+[ext_resource type="Script" uid="uid://bfkr5bwcqfs4q" path="res://scripts/npc/padwin.gd" id="7_choun"]
+[ext_resource type="Script" uid="uid://cty0kby1vtln0" path="res://scripts/ui/dialogue_ui.gd" id="11_ya4ey"]
+[ext_resource type="Script" uid="uid://d3rfgnt7gmlhx" path="res://scripts/ui/hud.gd" id="12_eb6dy"]
 
 [node name="Main" type="Node2D" unique_id=568387427]
 
 [node name="Plaza" type="Node2D" parent="." unique_id=1297434545]
 
 [node name="Background" type="Sprite2D" parent="Plaza" unique_id=307349974]
+texture = ExtResource("1_tipki")
 centered = false
 
 [node name="GroundBounds" type="StaticBody2D" parent="Plaza" unique_id=182061837]
@@ -28,26 +37,37 @@ position = Vector2(800, 380)
 
 [node name="Mushroom1" type="Area2D" parent="Plaza/Mushrooms" unique_id=1842502568]
 position = Vector2(500, 420)
+script = ExtResource("3_trceg")
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Plaza/Mushrooms/Mushroom1" unique_id=228763347]
 shape = ExtResource("2_tefeu")
 
+[node name="Icon" type="Sprite2D" parent="Plaza/Mushrooms/Mushroom1" unique_id=2024702173]
+
 [node name="Mushroom2" type="Area2D" parent="Plaza/Mushrooms" unique_id=1973353007]
 position = Vector2(1000, 380)
+script = ExtResource("3_trceg")
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Plaza/Mushrooms/Mushroom2" unique_id=1734469361]
 shape = ExtResource("2_tefeu")
 
+[node name="Icon" type="Sprite2D" parent="Plaza/Mushrooms/Mushroom2" unique_id=301928992]
+
 [node name="Mushroom3" type="Area2D" parent="Plaza/Mushrooms" unique_id=827971546]
 position = Vector2(1500, 450)
+script = ExtResource("3_trceg")
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Plaza/Mushrooms/Mushroom3" unique_id=81270654]
 shape = ExtResource("2_tefeu")
 
+[node name="Icon" type="Sprite2D" parent="Plaza/Mushrooms/Mushroom3" unique_id=125857141]
+
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1226748357]
+script = ExtResource("4_85g3d")
 
 [node name="Sprite" type="Sprite2D" parent="Player" unique_id=847039614]
 scale = Vector2(4, 4)
+texture = ExtResource("3_o6xl0")
 
 [node name="Collision" type="CollisionShape2D" parent="Player" unique_id=188126973]
 shape = ExtResource("2_tbgi4")
@@ -56,9 +76,11 @@ shape = ExtResource("2_tbgi4")
 position_smoothing_enabled = true
 
 [node name="Padwin" type="CharacterBody2D" parent="." unique_id=1030877811]
+script = ExtResource("7_choun")
 
 [node name="Sprite" type="Sprite2D" parent="Padwin" unique_id=1000612156]
 scale = Vector2(4, 4)
+texture = ExtResource("5_o6xl0")
 
 [node name="Collision" type="CollisionShape2D" parent="Padwin" unique_id=564340729]
 shape = ExtResource("3_tefeu")
@@ -69,6 +91,7 @@ shape = ExtResource("3_tefeu")
 shape = ExtResource("4_o6xl0")
 
 [node name="DialogueUI" type="CanvasLayer" parent="." unique_id=1003043407]
+script = ExtResource("11_ya4ey")
 
 [node name="Panel" type="Panel" parent="DialogueUI" unique_id=1817595487]
 offset_top = 528.0
@@ -92,10 +115,11 @@ autowrap_mode = 3
 
 [node name="HintLabel" type="Label" parent="DialogueUI/Panel/VBoxContainer" unique_id=1250011113]
 layout_mode = 2
-text = "[E] ������"
+text = "[E] Continue"
 horizontal_alignment = 2
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=570966447]
+script = ExtResource("12_eb6dy")
 
 [node name="MarginContainer" type="MarginContainer" parent="HUD" unique_id=1040263320]
 offset_left = 12.0
@@ -107,12 +131,12 @@ theme_override_constants/separation = 24
 
 [node name="TimeLabel" type="Label" parent="HUD/MarginContainer/HBoxContainer" unique_id=1052156373]
 layout_mode = 2
-text = "������"
+text = "Morning"
 
 [node name="GoldLabel" type="Label" parent="HUD/MarginContainer/HBoxContainer" unique_id=130131353]
 layout_mode = 2
-text = "������: 100"
+text = "Gold: 100"
 
 [node name="DayLabel" type="Label" parent="HUD/MarginContainer/HBoxContainer" unique_id=665233147]
 layout_mode = 2
-text = "��� 1 ���"
+text = "Day 1"
