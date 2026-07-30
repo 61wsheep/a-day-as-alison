@@ -2,33 +2,97 @@
 统一的 LLM API 调用封装。
 
 支持：
-- Anthropic Claude API（中文文学能力首选）
-- OpenAI API（GPT-4o 备选）
-- 结构化 JSON 输出 / Function Calling
+- Anthropic Claude API
+- OpenAI API (GPT-4o)
+- 硅基流动 (SiliconFlow) —— OpenAI 兼容，DeepSeek-V3 / Qwen 等
+- 结构化 JSON 输出
 """
 
 import json
 import time
-import anthropic
 from openai import OpenAI
+
+# anthropic SDK 为可选依赖——仅在使用 Claude provider 时需要
+try:
+    import anthropic
+    HAS_ANTHROPIC = True
+except ImportError:
+    HAS_ANTHROPIC = False
 
 from config import (
     ANTHROPIC_API_KEY, OPENAI_API_KEY,
+    SILICONFLOW_API_KEY, SILICONFLOW_BASE_URL,
     DEFAULT_PROVIDER, DEFAULT_MODEL,
     REQUEST_TIMEOUT,
 )
 
 
-def _get_claude_client() -> anthropic.Anthropic:
+def _get_client(provider: str) -> OpenAI | None:
+    """
+    获取 LLM 客户端。
+    SiliconFlow 走 OpenAI 兼容协议，仅 base_url 不同。
+    Claude 走独立路径（需要 anthropic SDK）。
+    返回 None 表示走 Claude 独立路径。
+    """
+    if provider == "claude":
+        return None  # 走独立路径
+
+    if provider == "siliconflow":
+        if not SILICONFLOW_API_KEY:
+            raise ValueError("SILICONFLOW_API_KEY 未设置（检查 .env 文件）")
+        return OpenAI(
+            api_key=SILICONFLOW_API_KEY,
+            base_url=SILICONFLOW_BASE_URL,
+            timeout=REQUEST_TIMEOUT,
+        )
+
+    if provider == "openai":
+        if not OPENAI_API_KEY:
+            raise ValueError("OPENAI_API_KEY 未设置")
+        return OpenAI(
+            api_key=OPENAI_API_KEY,
+            timeout=REQUEST_TIMEOUT,
+        )
+
+    raise ValueError(f"不支持的 provider: {provider}")
+
+
+def _call_claude(system_prompt: str, user_message: str, model: str, max_tokens: int, temperature: float) -> str:
+    """Claude API 调用（需要 anthropic SDK）"""
+    if not HAS_ANTHROPIC:
+        raise RuntimeError("使用 Claude provider 需要安装 anthropic SDK: pip install anthropic")
     if not ANTHROPIC_API_KEY:
         raise ValueError("ANTHROPIC_API_KEY 环境变量未设置")
-    return anthropic.Anthropic(api_key=ANTHROPIC_API_KEY, timeout=REQUEST_TIMEOUT)
+    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY, timeout=REQUEST_TIMEOUT)
+    response = client.messages.create(
+        model=model,
+        max_tokens=max_tokens,
+        temperature=temperature,
+        system=system_prompt,
+        messages=[{"role": "user", "content": user_message}],
+    )
+    for block in response.content:
+        if block.type == "text":
+            return block.text
+    return ""
 
 
-def _get_openai_client() -> OpenAI:
-    if not OPENAI_API_KEY:
-        raise ValueError("OPENAI_API_KEY 环境变量未设置")
-    return OpenAI(api_key=OPENAI_API_KEY, timeout=REQUEST_TIMEOUT)
+def _call_openai_compatible(
+    provider: str, system_prompt: str, user_message: str,
+    model: str, max_tokens: int, temperature: float,
+) -> str:
+    """OpenAI 兼容 API 调用（含 SiliconFlow）"""
+    client = _get_client(provider)
+    response = client.chat.completions.create(
+        model=model,
+        max_tokens=max_tokens,
+        temperature=temperature,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message},
+        ],
+    )
+    return response.choices[0].message.content or ""
 
 
 def call_llm(
@@ -46,7 +110,7 @@ def call_llm(
     Args:
         system_prompt: 系统级 Prompt
         user_message: 用户消息（组装好的 context）
-        provider: "claude" | "openai"
+        provider: "claude" | "openai" | "siliconflow"
         model: 模型 ID
         max_tokens: 最大输出 token
         temperature: 创意度（0=确定，1=高创意）
@@ -55,35 +119,10 @@ def call_llm(
         LLM 响应纯文本
     """
     if provider == "claude":
-        client = _get_claude_client()
-        response = client.messages.create(
-            model=model,
-            max_tokens=max_tokens,
-            temperature=temperature,
-            system=system_prompt,
-            messages=[{"role": "user", "content": user_message}],
-        )
-        # Claude 返回的是 content blocks，取第一个 text block
-        for block in response.content:
-            if block.type == "text":
-                return block.text
-        return ""  # fallback
-
-    elif provider == "openai":
-        client = _get_openai_client()
-        response = client.chat.completions.create(
-            model=model,
-            max_tokens=max_tokens,
-            temperature=temperature,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message},
-            ],
-        )
-        return response.choices[0].message.content or ""
-
+        return _call_claude(system_prompt, user_message, model, max_tokens, temperature)
     else:
-        raise ValueError(f"不支持的 provider: {provider}")
+        # openai / siliconflow 都走 OpenAI 兼容协议
+        return _call_openai_compatible(provider, system_prompt, user_message, model, max_tokens, temperature)
 
 
 def call_llm_structured(
@@ -100,7 +139,7 @@ def call_llm_structured(
     调用 LLM 并要求结构化 JSON 输出。
 
     对于 Claude：使用 tool_use 强制按 JSON Schema 输出
-    对于 OpenAI：使用 response_format
+    对于 OpenAI/SiliconFlow：在 user_message 末尾追加 JSON 格式要求
 
     Returns:
         (parsed_dict | None, raw_text, success: bool, attempts: int)
@@ -109,6 +148,15 @@ def call_llm_structured(
         - success: 是否首次解析即成功
         - attempts: 解析尝试次数
     """
+    # 对于非 Claude 模型，在 user message 中追加 JSON 格式指令
+    if provider != "claude":
+        schema_str = json.dumps(json_schema, ensure_ascii=False, indent=2)
+        user_message += (
+            f"\n\n【重要：你必须严格按照以下 JSON Schema 返回合法 JSON，不要输出任何 JSON 之外的文字】\n"
+            f"```json\n{schema_str}\n```\n"
+            f"请直接返回 JSON，不要用 markdown 代码块包裹，不要加任何解释。"
+        )
+
     raw_text = ""
     try:
         raw_text = call_llm(
@@ -126,7 +174,6 @@ def call_llm_structured(
     # 尝试直接解析
     parsed = _extract_json(raw_text)
     if parsed is not None:
-        # 验证 schema
         if _validate_schema(parsed, json_schema):
             return parsed, raw_text, True, 1
 
@@ -179,7 +226,6 @@ def _validate_schema(data: dict, schema: dict) -> bool:
         if field not in data:
             return False
 
-    # 检查类型
     type_map = {
         "string": str,
         "number": (int, float),

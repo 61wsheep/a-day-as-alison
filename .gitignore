@@ -7,5 +7,9 @@ godot.windows.editor.x86_64.exe
 # macOS system files
 .DS_Store
 
+# 环境变量（含 API Key，绝对不能提交）
+.env
+.env.local
+
 # 角色行走图源文件（已导入到项目 assets/sprites/）
 /行走图/
