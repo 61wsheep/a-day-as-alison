@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://b0l85ba1pcv2g" path="res://assets/tilesets/padwin_tileset.png" id="3_rekb7"]
 [ext_resource type="Shape2D" path="res://resources/npc_collision.tres" id="npc_shape"]
 [ext_resource type="Shape2D" path="res://resources/interact_zone.tres" id="zone_shape"]
+[ext_resource type="Script" uid="uid://bfkr5bwcqfs4q" path="res://scripts/npc/padwin.gd" id="padwin_script"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uqdom"]
 atlas = ExtResource("3_rekb7")
@@ -124,6 +125,7 @@ animations = [{
 }]
 
 [node name="Padwin" type="CharacterBody2D" unique_id=875644259]
+script = ExtResource("padwin_script")
 
 [node name="Collision" type="CollisionShape2D" parent="." unique_id=1046317024]
 shape = ExtResource("npc_shape")

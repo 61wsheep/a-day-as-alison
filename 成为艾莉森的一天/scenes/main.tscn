@@ -72,16 +72,18 @@ position = Vector2(133, 308)
 script = ExtResource("11_ya4ey")
 
 [node name="Panel" type="Panel" parent="DialogueUI" unique_id=1817595487]
-offset_top = 528.0
-offset_right = 1152.0
-offset_bottom = 648.0
+anchors_preset = 12
+offset_top = -120.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="DialogueUI/Panel" unique_id=1661927373]
-layout_mode = 0
+anchors_preset = 15
 offset_left = 16.0
-offset_top = 12.0
-offset_right = 1136.0
-offset_bottom = 108.0
+offset_top = 8.0
+offset_right = -16.0
+offset_bottom = -8.0
 
 [node name="NameLabel" type="Label" parent="DialogueUI/Panel/VBoxContainer" unique_id=994052837]
 layout_mode = 2
