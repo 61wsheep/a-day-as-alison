@@ -65,6 +65,7 @@ func _on_dialogue_ended(_npc_id: String) -> void:
 
 
 func _on_choices_show(_npc_id: String, _npc_name: String, pre_written: String) -> void:
+	panel.hide()
 	choice_pre_btn.text = pre_written if pre_written != "" else "..."
 	choice_free_input.text = ""
 	choice_panel.show()

@@ -4,12 +4,16 @@ extends CharacterBody2D
 
 @export var speed: float = 200.0
 
+var _movement_locked: bool = false
+
 @onready var _anim: AnimatedSprite2D = $AnimatedSprite2D
 @onready var _camera: Camera2D = $Camera
 
 
 func _ready() -> void:
 	add_to_group("player")
+	get_node("/root/EventBus").dialogue_started.connect(func(_a,_b,_c): _movement_locked = true)
+	get_node("/root/EventBus").dialogue_ended.connect(func(_a): _movement_locked = false)
 
 
 func setup_camera_limits(world_rect: Rect2) -> void:
@@ -20,6 +24,12 @@ func setup_camera_limits(world_rect: Rect2) -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	if _movement_locked:
+		velocity = Vector2.ZERO
+		_anim.stop()
+		_anim.frame = 0
+		return
+
 	var direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	velocity = direction * speed
 

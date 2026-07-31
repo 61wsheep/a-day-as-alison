@@ -27,6 +27,10 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	# Esc 随时退出对话（仅在对话激活时）
+	if _dialogue_active and event.is_action_pressed("ui_cancel"):
+		_end_dialogue()
+		return
 	if not _player_in_range:
 		return
 	if event.is_action_pressed("ui_accept"):
