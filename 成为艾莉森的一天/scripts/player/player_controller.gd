@@ -22,7 +22,9 @@ func _physics_process(_delta: float) -> void:
 		else:
 			_play_anim("walk_down" if direction.y > 0 else "walk_up")
 	else:
+		# 无输入 → 停止动画，停在当前方向第一帧
 		_anim.stop()
+		_anim.frame = 0
 
 	move_and_slide()
 

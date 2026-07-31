@@ -1,26 +1,24 @@
 [gd_scene format=3 uid="uid://dswq222l67yja"]
 
-[ext_resource type="Shape2D" path="res://resources/world_boundary.tres" id="1_jyhfs"]
+[ext_resource type="Shape2D" uid="uid://e0nbm43npsht" path="res://resources/world_boundary.tres" id="1_jyhfs"]
 [ext_resource type="Texture2D" uid="uid://b08hs4igakqy6" path="res://assets/sprites/forest_draft.png" id="1_tipki"]
-[ext_resource type="Shape2D" path="res://resources/player_collision.tres" id="2_tbgi4"]
 [ext_resource type="Shape2D" uid="uid://c3sk36happfle" path="res://resources/mushroom_collision.tres" id="2_tefeu"]
-[ext_resource type="Shape2D" path="res://resources/npc_collision.tres" id="3_tefeu"]
 [ext_resource type="Script" uid="uid://b07le8jfojm0" path="res://scripts/collectible.gd" id="3_trceg"]
-[ext_resource type="Script" uid="uid://bnf8vnhao4emb" path="res://scripts/player/player_controller.gd" id="4_85g3d"]
-[ext_resource type="Shape2D" path="res://resources/interact_zone.tres" id="4_o6xl0"]
 [ext_resource type="PackedScene" uid="uid://cn2d7ukn283u5" path="res://scenes/player.tscn" id="5_player_scene"]
 [ext_resource type="PackedScene" uid="uid://dkg68xdhp5h2b" path="res://scenes/npc_padwin.tscn" id="6_padwin_scene"]
-[ext_resource type="Script" uid="uid://bfkr5bwcqfs4q" path="res://scripts/npc/padwin.gd" id="7_choun"]
 [ext_resource type="Script" path="res://scripts/ui/dialogue_ui.gd" id="11_ya4ey"]
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="12_eb6dy"]
-[ext_resource type="Script" path="res://scripts/game.gd" id="13_game"]
+[ext_resource type="Script" uid="uid://bjocfry6uvigw" path="res://scripts/game.gd" id="13_game"]
 
 [node name="Main" type="Node2D" unique_id=568387427]
+position = Vector2(4, -1)
 script = ExtResource("13_game")
 
 [node name="Plaza" type="Node2D" parent="." unique_id=1297434545]
 
 [node name="Background" type="Sprite2D" parent="Plaza" unique_id=307349974]
+position = Vector2(-3, -36.000004)
+scale = Vector2(2.8039215, 2.3685899)
 texture = ExtResource("1_tipki")
 centered = false
 
@@ -56,7 +54,7 @@ shape = ExtResource("2_tefeu")
 [node name="Icon" type="Sprite2D" parent="Plaza/Mushrooms/Mushroom2" unique_id=301928992]
 
 [node name="Mushroom3" type="Area2D" parent="Plaza/Mushrooms" unique_id=827971546]
-position = Vector2(1500, 450)
+position = Vector2(891, 484)
 script = ExtResource("3_trceg")
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Plaza/Mushrooms/Mushroom3" unique_id=81270654]
@@ -64,9 +62,11 @@ shape = ExtResource("2_tefeu")
 
 [node name="Icon" type="Sprite2D" parent="Plaza/Mushrooms/Mushroom3" unique_id=125857141]
 
-[node name="Player" parent="." instance=ExtResource("5_player_scene")]
+[node name="Player" parent="." unique_id=935524571 instance=ExtResource("5_player_scene")]
+position = Vector2(574, 355)
 
-[node name="Padwin" parent="." instance=ExtResource("6_padwin_scene")]
+[node name="Padwin" parent="." unique_id=890565961 instance=ExtResource("6_padwin_scene")]
+position = Vector2(133, 308)
 
 [node name="DialogueUI" type="CanvasLayer" parent="." unique_id=1003043407]
 script = ExtResource("11_ya4ey")
@@ -101,8 +101,10 @@ horizontal_alignment = 2
 script = ExtResource("12_eb6dy")
 
 [node name="MarginContainer" type="MarginContainer" parent="HUD" unique_id=1040263320]
-offset_left = 12.0
-offset_top = 12.0
+offset_left = 16.0
+offset_top = 11.0
+offset_right = 245.0
+offset_bottom = 34.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HUD/MarginContainer" unique_id=1327780874]
 layout_mode = 2
