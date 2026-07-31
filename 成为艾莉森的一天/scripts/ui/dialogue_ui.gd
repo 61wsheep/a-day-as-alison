@@ -73,8 +73,8 @@ func _on_choices_show(_npc_id: String, _npc_name: String, pre_written: String) -
 	choice_free_input.text = ""
 	choice_panel.show()
 	hint_label.text = ""
-	# 自动聚焦输入框，键盘事件优先输入文字而非触发游戏动作
-	choice_free_input.grab_focus()
+	# 延迟聚焦：当前 E 键先处理完，下一帧才接管键盘
+	choice_free_input.call_deferred("grab_focus")
 
 
 func _on_pre_written() -> void:
