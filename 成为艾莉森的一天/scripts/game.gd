@@ -5,7 +5,7 @@ extends Node2D
 ## 负责：初始化所有子场景、时间推进触发、午夜循环
 
 @onready var player: CharacterBody2D = $Player
-@onready var padwin: NPCBase = $Padwin
+@onready var padwin: CharacterBody2D = $Padwin
 
 
 func _ready() -> void:
