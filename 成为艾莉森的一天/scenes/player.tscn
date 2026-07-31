@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://bcrognywdr6ip" path="res://assets/tilesets/alison_tileset.png" id="2_g2els"]
 [ext_resource type="Shape2D" uid="uid://e8vmfv03g8ga" path="res://resources/player_collision.tres" id="col_shape"]
+[ext_resource type="Script" uid="uid://bnf8vnhao4emb" path="res://scripts/player/player_controller.gd" id="pc_script"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qhqgy"]
 atlas = ExtResource("2_g2els")
@@ -123,6 +124,7 @@ animations = [{
 }]
 
 [node name="Player" type="CharacterBody2D" unique_id=1773355530]
+script = ExtResource("pc_script")
 
 [node name="Collision" type="CollisionShape2D" parent="." unique_id=2019897450]
 position = Vector2(-0.5, 0.5)
