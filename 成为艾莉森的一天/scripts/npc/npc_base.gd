@@ -3,7 +3,7 @@ class_name NPCBase
 
 ## NPC 基类 — 提供对话触发、交互区域检测、对话数据管理。
 ##
-## 通过 EventBus 信号驱动对话 UI，不再使用 print。
+## 通过 EventBus 信号驱动对话 UI 和交互提示。
 
 signal interaction_available(npc_id: String)
 
@@ -37,11 +37,13 @@ func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
 		_player_in_range = true
 		interaction_available.emit(npc_id)
+		get_node("/root/EventBus").interaction_hint_show.emit()
 
 
 func _on_body_exited(body: Node2D) -> void:
 	if body.is_in_group("player"):
 		_player_in_range = false
+		get_node("/root/EventBus").interaction_hint_hide.emit()
 		if _dialogue_active:
 			_end_dialogue()
 
@@ -51,6 +53,7 @@ func _start_dialogue() -> void:
 		return
 	_dialogue_active = true
 	_current_line = 0
+	get_node("/root/EventBus").interaction_hint_hide.emit()
 	get_node("/root/EventBus").dialogue_started.emit(npc_id, npc_name, dialogue_lines[0])
 
 

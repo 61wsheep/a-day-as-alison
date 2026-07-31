@@ -1,9 +1,11 @@
 [gd_scene format=3 uid="uid://dkg68xdhp5h2b"]
 
 [ext_resource type="Texture2D" uid="uid://b0l85ba1pcv2g" path="res://assets/tilesets/padwin_tileset.png" id="3_rekb7"]
-[ext_resource type="Shape2D" path="res://resources/npc_collision.tres" id="npc_shape"]
-[ext_resource type="Shape2D" path="res://resources/interact_zone.tres" id="zone_shape"]
 [ext_resource type="Script" uid="uid://bfkr5bwcqfs4q" path="res://scripts/npc/padwin.gd" id="padwin_script"]
+[ext_resource type="Shape2D" path="res://resources/interact_zone.tres" id="zone_shape"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rekb7"]
+radius = 33.955853
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uqdom"]
 atlas = ExtResource("3_rekb7")
@@ -128,7 +130,7 @@ animations = [{
 script = ExtResource("padwin_script")
 
 [node name="Collision" type="CollisionShape2D" parent="." unique_id=1046317024]
-shape = ExtResource("npc_shape")
+shape = SubResource("CircleShape2D_rekb7")
 
 [node name="InteractZone" type="Area2D" parent="." unique_id=996440865]
 

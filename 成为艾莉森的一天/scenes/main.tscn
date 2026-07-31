@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://dswq222l67yja"]
 
-[ext_resource type="Shape2D" uid="uid://e0nbm43npsht" path="res://resources/world_boundary.tres" id="1_jyhfs"]
 [ext_resource type="Texture2D" uid="uid://b08hs4igakqy6" path="res://assets/sprites/forest_draft.png" id="1_tipki"]
 [ext_resource type="Shape2D" uid="uid://c3sk36happfle" path="res://resources/mushroom_collision.tres" id="2_tefeu"]
 [ext_resource type="Script" uid="uid://b07le8jfojm0" path="res://scripts/collectible.gd" id="3_trceg"]
@@ -23,9 +22,6 @@ texture = ExtResource("1_tipki")
 centered = false
 
 [node name="GroundBounds" type="StaticBody2D" parent="Plaza" unique_id=182061837]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Plaza/GroundBounds" unique_id=1996584122]
-shape = ExtResource("1_jyhfs")
 
 [node name="PlayerSpawn" type="Marker2D" parent="Plaza" unique_id=2039498141]
 position = Vector2(200, 400)
@@ -73,7 +69,10 @@ script = ExtResource("11_ya4ey")
 
 [node name="Panel" type="Panel" parent="DialogueUI" unique_id=1817595487]
 self_modulator = Color(0, 0, 0, 0.75)
-anchors_preset = 12
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = 0.0
 offset_top = -120.0
 offset_right = 0.0
@@ -82,7 +81,10 @@ grow_horizontal = 2
 grow_vertical = 0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="DialogueUI/Panel" unique_id=1661927373]
-layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = 16.0
 offset_top = 8.0
 offset_right = -16.0
@@ -101,6 +103,30 @@ autowrap_mode = 3
 layout_mode = 2
 text = "[E] Continue"
 horizontal_alignment = 2
+
+[node name="InteractHint" type="Panel" parent="DialogueUI" unique_id=999000001]
+self_modulator = Color(0, 0, 0, 0.6)
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -44.0
+offset_right = -16.0
+offset_bottom = -16.0
+
+[node name="HintText" type="Label" parent="DialogueUI/InteractHint" unique_id=999000002]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 4.0
+offset_right = -12.0
+offset_bottom = -4.0
+text = "[E] 对话"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=570966447]
 script = ExtResource("12_eb6dy")

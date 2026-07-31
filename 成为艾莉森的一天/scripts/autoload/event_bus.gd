@@ -11,6 +11,8 @@ signal day_started(day_number: int)
 signal gold_changed(new_amount: int)
 
 # -- 对话相关 --
+signal interaction_hint_show()
+signal interaction_hint_hide()
 signal dialogue_started(npc_id: String, npc_name: String, text: String)
 signal dialogue_advanced(npc_id: String, text: String)
 signal dialogue_ended(npc_id: String)

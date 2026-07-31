@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-## HUD — 显示当前时段、金币数、天数。
+## HUD — 显示时段、金币、天数 + 时间推进提示
 ##
 ## 监听 EventBus 信号自动刷新。
 
@@ -19,34 +19,31 @@ func _ready() -> void:
 func _refresh() -> void:
 	var gm = get_node("/root/GameManager")
 	time_label.text = _time_display_name(gm.current_time)
-	gold_label.text = "金币: %d" % gm.gold
-	day_label.text = "第 %d 天" % gm.current_day
+	gold_label.text = "Gold: %d" % gm.gold
+	day_label.text = "Day %d" % gm.current_day
 
 
 func _on_time_changed(time_id: String) -> void:
 	time_label.text = _time_display_name(time_id)
-	# 简单的颜色变化：夜晚/午夜用暗色调
-	match time_id:
-		"night", "midnight":
-			time_label.add_theme_color_override("font_color", Color(0.4, 0.4, 0.6))
-		_:
-			time_label.add_theme_color_override("font_color", Color(1, 0.9, 0.6))
+	# 非午夜时段显示 T 键提示
+	if time_id != "midnight":
+		time_label.text += "  [T]"
 
 
 func _on_gold_changed(amount: int) -> void:
-	gold_label.text = "金币: %d" % amount
+	gold_label.text = "Gold: %d" % amount
 
 
 func _on_day_started(day: int) -> void:
-	day_label.text = "第 %d 天" % day
+	day_label.text = "Day %d" % day
 	_refresh()
 
 
 func _time_display_name(time_id: String) -> String:
 	match time_id:
-		"morning":   return "清晨"
-		"afternoon": return "上午"
-		"evening":   return "傍晚"
-		"night":     return "夜晚"
-		"midnight":  return "午夜"
+		"morning":   return "Morning"
+		"afternoon": return "Afternoon"
+		"evening":   return "Evening"
+		"night":     return "Night"
+		"midnight":  return "Midnight"
 		_:           return time_id
