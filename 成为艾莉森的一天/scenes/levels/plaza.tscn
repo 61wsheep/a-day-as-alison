@@ -1,16 +1,36 @@
-[gd_scene format=3 uid="uid://vjqs1fgh4dl0"]
+[gd_scene format=3 uid="uid://dls1mld5q46th"]
 
-[ext_resource type="Shape2D" uid="uid://dot5264qcutpf" path="res://resources/world_boundary.tres" id="1_uxmis"]
+[ext_resource type="Texture2D" uid="uid://b08hs4igakqy6" path="res://assets/sprites/forest_draft.png" id="1_nfcv3"]
+[ext_resource type="Shape2D" path="res://resources/world_boundary.tres" id="1_uxmis"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nfcv3"]
+size = Vector2(16, 397)
 
 [node name="Plaza" type="Node2D" unique_id=399787836]
+metadata/_edit_horizontal_guides_ = [-157.0]
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1814574575]
+position = Vector2(-203, -156)
+texture = ExtResource("1_nfcv3")
 centered = false
 
 [node name="GroundBounds" type="StaticBody2D" parent="." unique_id=2009329749]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="GroundBounds" unique_id=1464946687]
+position = Vector2(0, 163)
 shape = ExtResource("1_uxmis")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="GroundBounds" unique_id=1266447055]
+position = Vector2(2, -164.25)
+shape = ExtResource("1_uxmis")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="GroundBounds" unique_id=439016883]
+position = Vector2(-212, -1)
+shape = SubResource("RectangleShape2D_nfcv3")
+
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="GroundBounds" unique_id=885326335]
+position = Vector2(214, 0)
+shape = SubResource("RectangleShape2D_nfcv3")
 
 [node name="PlayerSpawn" type="Marker2D" parent="." unique_id=1067747]
 position = Vector2(200, 400)
@@ -19,3 +39,4 @@ position = Vector2(200, 400)
 position = Vector2(800, 380)
 
 [node name="PlayerInstance" type="Node2D" parent="." unique_id=1710437178]
+position = Vector2(1, 0)

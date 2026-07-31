@@ -18,9 +18,6 @@ func _ready() -> void:
 	if npc_spawn and padwin:
 		padwin.global_position = npc_spawn.global_position
 
-	# 玩家加入 "player" group，供 NPC 检测
-	player.add_to_group("player")
-
 	# 监听时间信号
 	get_node("/root/EventBus").time_changed.connect(_on_time_changed)
 	get_node("/root/EventBus").loop_reset.connect(_on_loop_reset)

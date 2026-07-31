@@ -1,13 +1,65 @@
 [gd_scene format=3 uid="uid://cn2d7ukn283u5"]
 
-[ext_resource type="Shape2D" uid="uid://bolexa6t76ku4" path="res://resources/player_collision.tres" id="col_shape"]
+[ext_resource type="Texture2D" uid="uid://bcrognywdr6ip" path="res://assets/tilesets/alison_tileset.png" id="2_g2els"]
+[ext_resource type="Shape2D" uid="uid://e8vmfv03g8ga" path="res://resources/player_collision.tres" id="col_shape"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qhqgy"]
+atlas = ExtResource("2_g2els")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dqkch"]
+atlas = ExtResource("2_g2els")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qlg0r"]
+atlas = ExtResource("2_g2els")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_tuyoq"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qhqgy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dqkch")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qhqgy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qlg0r")
+}],
+"loop": true,
+"name": &"walk_down",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"walk_left",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"walk_right",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"walk_up",
+"speed": 5.0
+}]
 
 [node name="Player" type="CharacterBody2D" unique_id=1773355530]
-[node name="Sprite" type="Sprite2D" parent="." unique_id=1241044076]
-scale = Vector2(4, 4)
 
 [node name="Collision" type="CollisionShape2D" parent="." unique_id=2019897450]
+position = Vector2(-0.5, 0.5)
 shape = ExtResource("col_shape")
 
 [node name="Camera" type="Camera2D" parent="." unique_id=684957449]
+zoom = Vector2(2, 2)
 position_smoothing_enabled = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1347030106]
+sprite_frames = SubResource("SpriteFrames_tuyoq")
+animation = &"walk_right"

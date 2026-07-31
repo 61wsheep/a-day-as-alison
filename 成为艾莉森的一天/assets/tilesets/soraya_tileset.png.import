@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bhbski7og7m7i"
-path="res://.godot/imported/soraya.png-f632ad8f7df7c03a04aaa44a0c3cf216.ctex"
+path="res://.godot/imported/soraya_tileset.png-0d9c839670c52d4784e14a8355ec1558.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/soraya.png"
-dest_files=["res://.godot/imported/soraya.png-f632ad8f7df7c03a04aaa44a0c3cf216.ctex"]
+source_file="res://assets/tilesets/soraya_tileset.png"
+dest_files=["res://.godot/imported/soraya_tileset.png-0d9c839670c52d4784e14a8355ec1558.ctex"]
 
 [params]
 

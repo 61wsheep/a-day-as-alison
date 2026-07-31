@@ -1,12 +1,129 @@
 [gd_scene format=3 uid="uid://dkg68xdhp5h2b"]
 
-[ext_resource type="Shape2D" uid="uid://bujhv1gm4nr38" path="res://resources/npc_collision.tres" id="npc_shape"]
-[ext_resource type="Shape2D" uid="uid://jmd1rs6tu4th" path="res://resources/interact_zone.tres" id="zone_shape"]
+[ext_resource type="Texture2D" uid="uid://b0l85ba1pcv2g" path="res://assets/tilesets/padwin_tileset.png" id="3_rekb7"]
+[ext_resource type="Shape2D" path="res://resources/npc_collision.tres" id="npc_shape"]
+[ext_resource type="Shape2D" path="res://resources/interact_zone.tres" id="zone_shape"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uqdom"]
+atlas = ExtResource("3_rekb7")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cvwgq"]
+atlas = ExtResource("3_rekb7")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a1u7l"]
+atlas = ExtResource("3_rekb7")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t2l6i"]
+atlas = ExtResource("3_rekb7")
+region = Rect2(48, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lwd7b"]
+atlas = ExtResource("3_rekb7")
+region = Rect2(0, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dpy77"]
+atlas = ExtResource("3_rekb7")
+region = Rect2(96, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rq334"]
+atlas = ExtResource("3_rekb7")
+region = Rect2(48, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wl8bl"]
+atlas = ExtResource("3_rekb7")
+region = Rect2(0, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2mgly"]
+atlas = ExtResource("3_rekb7")
+region = Rect2(96, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x6ay0"]
+atlas = ExtResource("3_rekb7")
+region = Rect2(48, 144, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i64ip"]
+atlas = ExtResource("3_rekb7")
+region = Rect2(0, 144, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v87oo"]
+atlas = ExtResource("3_rekb7")
+region = Rect2(96, 144, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_r4lds"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uqdom")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cvwgq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uqdom")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a1u7l")
+}],
+"loop": true,
+"name": &"walk_down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t2l6i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lwd7b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t2l6i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dpy77")
+}],
+"loop": true,
+"name": &"walk_left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rq334")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wl8bl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rq334")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2mgly")
+}],
+"loop": true,
+"name": &"walk_right",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x6ay0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i64ip")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x6ay0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v87oo")
+}],
+"loop": true,
+"name": &"walk_up",
+"speed": 5.0
+}]
 
 [node name="Padwin" type="CharacterBody2D" unique_id=875644259]
-
-[node name="Sprite" type="Sprite2D" parent="." unique_id=2002980590]
-scale = Vector2(4, 4)
 
 [node name="Collision" type="CollisionShape2D" parent="." unique_id=1046317024]
 shape = ExtResource("npc_shape")
@@ -15,3 +132,7 @@ shape = ExtResource("npc_shape")
 
 [node name="ZoneShape" type="CollisionShape2D" parent="InteractZone" unique_id=1104897335]
 shape = ExtResource("zone_shape")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=427535180]
+sprite_frames = SubResource("SpriteFrames_r4lds")
+animation = &"walk_right"
