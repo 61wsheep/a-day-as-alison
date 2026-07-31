@@ -11,11 +11,12 @@ var _mushroom_scene: PackedScene
 
 
 func _ready() -> void:
-	# 计算世界边界（基于背景精灵）
+	# 计算世界边界（基于背景精灵的实际位置和缩放）
 	var bg: Sprite2D = $Plaza/Background
 	if bg and bg.texture:
 		var tex_size: Vector2 = bg.texture.get_size()
-		_world_rect = Rect2(Vector2.ZERO, tex_size * bg.scale)
+		var scaled: Vector2 = tex_size * bg.scale
+		_world_rect = Rect2(bg.position, scaled)
 	else:
 		_world_rect = Rect2(0, 0, 3456, 648)
 
