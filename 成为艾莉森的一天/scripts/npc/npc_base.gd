@@ -74,7 +74,7 @@ func _show_choices() -> void:
 	get_node("/root/EventBus").dialogue_choices_show.emit(npc_id, npc_name, pre_written)
 
 
-func on_choice_made(choice_index: int, reply_text: String) -> void:
+func on_choice_made(_npc_id: String, choice_index: int, reply_text: String) -> void:
 	_waiting_for_choice = false
 
 	# 短暂显示玩家回复
