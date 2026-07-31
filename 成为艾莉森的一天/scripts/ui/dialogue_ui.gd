@@ -20,6 +20,9 @@ func _ready() -> void:
 	interact_hint.hide()
 	choice_panel.hide()
 
+	# 自由输入字数上限
+	choice_free_input.max_length = 100
+
 	# 信号连接
 	get_node("/root/EventBus").interaction_hint_show.connect(_show_hint)
 	get_node("/root/EventBus").interaction_hint_hide.connect(_hide_hint)
@@ -70,14 +73,18 @@ func _on_choices_show(_npc_id: String, _npc_name: String, pre_written: String) -
 	choice_free_input.text = ""
 	choice_panel.show()
 	hint_label.text = ""
+	# 自动聚焦输入框，键盘事件优先输入文字而非触发游戏动作
+	choice_free_input.grab_focus()
 
 
 func _on_pre_written() -> void:
+	choice_free_input.release_focus()
 	choice_panel.hide()
 	get_node("/root/EventBus").dialogue_choice_made.emit("padwin", 0, choice_pre_btn.text)
 
 
 func _on_silent() -> void:
+	choice_free_input.release_focus()
 	choice_panel.hide()
 	get_node("/root/EventBus").dialogue_choice_made.emit("padwin", 1, "（沉默不语）")
 
@@ -85,6 +92,7 @@ func _on_silent() -> void:
 func _on_free_input_submitted(text: String) -> void:
 	if text.strip_edges().is_empty():
 		return
+	choice_free_input.release_focus()
 	choice_panel.hide()
 	get_node("/root/EventBus").dialogue_choice_made.emit("padwin", 2, text)
 
