@@ -1,28 +1,31 @@
 extends Node2D
 
-## 游戏主场景控制器 — 初始化、时间推进、午夜循环、蘑菇刷新、背景切换
+## Game scene controller — init, time, midnight loop, mushrooms, terrain tint
 
 @onready var player: CharacterBody2D = $Player
 @onready var padwin: CharacterBody2D = $Padwin
+@onready var terrain_ground: TileMapLayer = $Plaza/Ground
+@onready var terrain_plants: TileMapLayer = $Plaza/Plants
+@onready var terrain_canopy: TileMapLayer = $Plaza/Canopy
 
-var _world_rect: Rect2 = Rect2()
+const TILE_SIZE := 32
+const WORLD_W := 40
+const WORLD_H := 24
+
+var _world_rect: Rect2
 var _mushroom_timer: Timer
 var _auto_advance_timer: Timer
+var _tileset_ready: bool = false
 
 
 func _ready() -> void:
-	# 计算世界边界（基于背景精灵的实际位置和缩放）
-	var bg: Sprite2D = $Plaza/Background
-	if bg and bg.texture:
-		var tex_size: Vector2 = bg.texture.get_size()
-		var scaled: Vector2 = tex_size * bg.scale
-		_world_rect = Rect2(bg.position, scaled)
+	_world_rect = Rect2(0, 0, WORLD_W * TILE_SIZE, WORLD_H * TILE_SIZE)
 
-	# 设定玩家和相机边界
+	_setup_tileset()
+
 	if player and player.has_method("setup_camera_limits"):
 		player.setup_camera_limits(_world_rect)
 
-	# 放置玩家和 NPC
 	var spawn = $Plaza/PlayerSpawn
 	if spawn and player:
 		player.global_position = spawn.global_position
@@ -30,23 +33,18 @@ func _ready() -> void:
 	if npc_spawn and padwin:
 		padwin.global_position = npc_spawn.global_position
 
-	# 监听时间信号
 	get_node("/root/EventBus").time_changed.connect(_on_time_changed)
 	get_node("/root/EventBus").loop_reset.connect(_on_loop_reset)
-
-	# 将对话选择路由到 Padwin NPC
 	var bus = get_node("/root/EventBus")
 	if padwin and padwin.has_method("on_choice_made"):
 		bus.dialogue_choice_made.connect(padwin.on_choice_made)
 
-	# 蘑菇随机刷新定时器
 	_mushroom_timer = Timer.new()
 	_mushroom_timer.one_shot = true
 	_mushroom_timer.timeout.connect(_spawn_mushroom)
 	add_child(_mushroom_timer)
 	_schedule_next_mushroom()
 
-	# 30 秒自动推进时间定时器
 	_auto_advance_timer = Timer.new()
 	_auto_advance_timer.one_shot = false
 	_auto_advance_timer.wait_time = 30.0
@@ -54,25 +52,81 @@ func _ready() -> void:
 	add_child(_auto_advance_timer)
 	_auto_advance_timer.start()
 
-	# 初始背景
 	_switch_background("morning")
 
 
+# ---------------------------------------------------------------------------
+# TileSet setup
+# ---------------------------------------------------------------------------
+func _setup_tileset() -> void:
+	_tileset_ready = false
+
+	var ts_path := "res://assets/tilesets/plaza_tiles.tres"
+	var tex_path := "res://assets/tilesets/tile_plaza.png"
+
+	if not FileAccess.file_exists(ts_path):
+		var ts := TileSet.new()
+		ResourceSaver.save(ts, ts_path)
+
+	var ts := load(ts_path) as TileSet
+	if ts.get_source_count() == 0:
+		var tex := load(tex_path) as Texture2D
+		if tex:
+			var atlas := TileSetAtlasSource.new()
+			atlas.texture = tex
+			atlas.texture_region_size = Vector2i(TILE_SIZE, TILE_SIZE)
+			var tw := int(tex.get_size().x) / TILE_SIZE
+			var th := int(tex.get_size().y) / TILE_SIZE
+			for y in th:
+				for x in tw:
+					atlas.create_tile(Vector2i(x, y))
+			ts.add_source(atlas)
+			ResourceSaver.save(ts, ts_path)
+
+	ts = load(ts_path) as TileSet
+	terrain_ground.tile_set = ts
+	terrain_plants.tile_set = ts
+	terrain_canopy.tile_set = ts
+
+	# Paint ground if never painted
+	if terrain_ground.get_used_cells().size() == 0:
+		_paint_ground()
+
+	_tileset_ready = true
+
+
+func _paint_ground() -> void:
+	for y in WORLD_H:
+		for x in WORLD_W:
+			var coord := Vector2i(x, y)
+			if x < 3 or x >= WORLD_W - 3 or y < 2 or y >= WORLD_H - 2:
+				terrain_ground.set_cell(coord, 0, Vector2i(0, 2))
+			elif x > WORLD_W / 2 - 4 and x < WORLD_W / 2 + 4 and y > 6 and y < 18:
+				terrain_ground.set_cell(coord, 0, Vector2i(0, 1))
+			else:
+				terrain_ground.set_cell(coord, 0, Vector2i(x % 2, y % 2))
+
+
+# ---------------------------------------------------------------------------
+# Time-of-day tint
+# ---------------------------------------------------------------------------
 func _switch_background(time_id: String) -> void:
-	var bg: Sprite2D = $Plaza/Background
-	if not bg:
-		return
-	# 当前所有时段统一使用 forest_draft.png
-	# 后续替换为不同时段的纹理时，在此 match 分支中指定不同 texture
+	var color: Color
 	match time_id:
-		"morning", "afternoon":
-			pass  # 保持当前纹理
-		"evening", "night":
-			pass
-		"midnight":
-			pass
+		"morning":   color = Color(1.0, 0.95, 0.90, 1.0)
+		"afternoon": color = Color(1.0, 1.0, 1.0, 1.0)
+		"evening":   color = Color(1.0, 0.75, 0.55, 1.0)
+		"night":     color = Color(0.35, 0.35, 0.60, 1.0)
+		"midnight":  color = Color(0.20, 0.20, 0.35, 1.0)
+
+	for layer in [terrain_ground, terrain_plants, terrain_canopy]:
+		var tween = create_tween()
+		tween.tween_property(layer, "self_modulator", color, 1.0)
 
 
+# ---------------------------------------------------------------------------
+# Mushrooms
+# ---------------------------------------------------------------------------
 func _schedule_next_mushroom() -> void:
 	_mushroom_timer.wait_time = randf_range(3.0, 10.0)
 	_mushroom_timer.start()
@@ -86,16 +140,18 @@ func _spawn_mushroom() -> void:
 	if candidates.is_empty():
 		_schedule_next_mushroom()
 		return
-
 	var shroom: Area2D = candidates.pick_random()
-	var rx := randf_range(_world_rect.position.x + 48, _world_rect.end.x - 48)
-	var ry := randf_range(_world_rect.position.y + 48, _world_rect.end.y - 48)
+	var rx := randf_range(_world_rect.position.x + 64, _world_rect.end.x - 64)
+	var ry := randf_range(_world_rect.position.y + 64, _world_rect.end.y - 64)
 	shroom.global_position = Vector2(rx, ry)
 	shroom.show()
 	shroom.monitoring = true
 	_schedule_next_mushroom()
 
 
+# ---------------------------------------------------------------------------
+# Input / time
+# ---------------------------------------------------------------------------
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("advance_time"):
 		_advance_time()
@@ -103,7 +159,6 @@ func _input(event: InputEvent) -> void:
 
 func _advance_time() -> void:
 	get_node("/root/TimeManager").advance_time()
-	# 重置 30 秒计时器
 	_auto_advance_timer.stop()
 	_auto_advance_timer.start()
 
@@ -123,17 +178,13 @@ func _on_time_changed(time_id: String) -> void:
 
 
 func _on_loop_reset() -> void:
-	# 重置 TimeManager 的索引 + 30 秒计时器
 	get_node("/root/TimeManager").reset_to_morning()
 	_auto_advance_timer.stop()
 	_auto_advance_timer.start()
-	# 刷新采集物
 	_refresh_collectibles()
-	# 放回出生点
 	var spawn = $Plaza/PlayerSpawn
 	if spawn and player:
 		player.global_position = spawn.global_position
-	# 背景切回清晨
 	_switch_background("morning")
 
 
