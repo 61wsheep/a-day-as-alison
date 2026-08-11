@@ -31,6 +31,14 @@ def main():
                         help="运行第几批验证（1=核心验证, 2=深度验证）")
     parser.add_argument("--chat", type=str, metavar="NPC",
                         help="交互式对话模式（如: --chat padwin）")
+    parser.add_argument("--reset", action="store_true",
+                        help="配合 --chat: 清除跨天记忆重新开始")
+    parser.add_argument("--verbose", action="store_true",
+                        help="配合 --chat: 显示 AI 内部推理")
+    parser.add_argument("--day", type=int, default=None,
+                        help="配合 --chat: 指定天数")
+    parser.add_argument("--affection", type=int, default=None,
+                        help="配合 --chat: 指定初始好感度")
     parser.add_argument("--list-npcs", action="store_true", help="列出可用的 NPC 角色卡")
     args = parser.parse_args()
 
@@ -41,7 +49,8 @@ def main():
 
     # ── 特殊命令：交互式对话 ──
     if args.chat:
-        _launch_chat(args.chat)
+        _launch_chat(args.chat, reset=args.reset, verbose=args.verbose,
+                     day=args.day, affection=args.affection)
         return
 
     # ── 批量验证 ──
@@ -65,11 +74,12 @@ def _list_npcs():
     print("  用法: python run_all.py --chat <npc_id>")
 
 
-def _launch_chat(npc_id: str):
+def _launch_chat(npc_id: str, *, reset: bool = False, verbose: bool = False,
+                 day: int = None, affection: int = None):
     """启动交互式对话"""
     from interactive_chat import run_chat
     try:
-        run_chat(npc_id)
+        run_chat(npc_id, day=day, affection=affection, reset=reset, verbose=verbose)
     except FileNotFoundError as e:
         print(f"[ERROR] {e}")
         print("  可用 NPC：")
