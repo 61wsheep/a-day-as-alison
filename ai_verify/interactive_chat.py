@@ -60,7 +60,7 @@ def _save_memory(npc_id: str, day: int, affection: int, memory_updates: list[str
     data = _sanitize_dict({
         "npc_id": npc_id,
         "last_saved": datetime.now().isoformat(),
-        "day": day + 1,
+        "day": min(day + 1, 20),   # 硬上限 20 天
         "affection": affection,
         "memory_updates": memory_updates[-20:],
         "total_turns": total_turns + len(history),
@@ -271,6 +271,8 @@ def run_chat(npc_id: str, day: int = None, affection: int = None,
     _print_divider("=")
     print(f"  交互式对话模式 —— {npc_id}")
     print(f"  第 {day} 天 | 初始好感度: {current_affection}/100")
+    if day >= 20:
+        print(f"  [!] 已到达 20 天硬上限 —— 这是循环的最后一天")
     if total_turns_before > 0:
         print(f"  跨天记忆: {len(memory_updates)} 条摘要 (累计 {total_turns_before} 轮对话)")
     if verbose:
