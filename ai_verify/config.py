@@ -10,9 +10,10 @@ ai_verify ——「天」Agent AI 离线验证工具
 import os
 import sys
 
-# Windows GBK 控制台编码修复 —— 强制 stdout/stderr 使用 UTF-8
+# Windows GBK 控制台编码修复 —— 强制 stdin/stdout/stderr 使用 UTF-8
 if sys.platform == "win32":
     import io
+    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8", errors="replace")
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
