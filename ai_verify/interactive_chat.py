@@ -55,7 +55,7 @@ def _print_topic_suggestions(topics: list[str]):
     """打印话题建议"""
     if not topics:
         return
-    print("  💬 你可以聊聊这些:")
+    print("  你可以聊聊这些:")
     for t in topics:
         print(f"     · {t}")
     print()
@@ -255,7 +255,7 @@ def run_chat(npc_id: str, day: int = 3, affection: int = 50):
                 parsed = result.parsed
 
         if parsed is None:
-            print("  ⚠️  [AI 未能生成有效回复，请重试]")
+            print("  [!] [AI 未能生成有效回复，请重试]")
             print(f"  [raw: {raw_text[:100]}...]")
             continue
 
@@ -282,7 +282,7 @@ def run_chat(npc_id: str, day: int = 3, affection: int = 50):
             print(f"  [好感度 {sign}{emotional_shift} → {current_affection}/100]")
 
         if hints:
-            print(f"  💡 线索: {' | '.join(hints)}")
+            print(f"  [线索] {' | '.join(hints)}")
 
         if should_end:
             print()
@@ -301,7 +301,7 @@ def run_chat(npc_id: str, day: int = 3, affection: int = 50):
 
     # 输出完整历史供回顾
     print()
-    print("  📜 完整对话记录已保存。输入 'history' 查看，或直接忽略。")
+    print("  完整对话记录已保存。输入 'history' 查看，或直接忽略。")
     _history = history
 
 
