@@ -10,9 +10,33 @@
 
 import json
 import time
+import re
 from openai import OpenAI
 
 # anthropic SDK 为可选依赖——仅在使用 Claude provider 时需要
+
+
+def _sanitize_str(s: str) -> str:
+    """
+    清理字符串中的非法 Unicode surrogate 字符。
+    当 Prompt 文件或 API 响应包含 lone surrogate 时，
+    Python 的 json 序列化会抛出 UnicodeEncodeError。
+    """
+    if not isinstance(s, str):
+        return s
+    # 移除 lone surrogates (U+D800–U+DFFF)
+    return re.sub(r'[\ud800-\udfff]', '', s)
+
+
+def _sanitize_dict(obj):
+    """递归清理 dict/list/str 中的 surrogate 字符"""
+    if isinstance(obj, str):
+        return _sanitize_str(obj)
+    elif isinstance(obj, dict):
+        return {k: _sanitize_dict(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [_sanitize_dict(v) for v in obj]
+    return obj
 try:
     import anthropic
     HAS_ANTHROPIC = True
@@ -87,12 +111,12 @@ def _call_openai_compatible(
         model=model,
         max_tokens=max_tokens,
         temperature=temperature,
-        messages=[
+        messages=_sanitize_dict([
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},
-        ],
+        ]),
     )
-    return response.choices[0].message.content or ""
+    return _sanitize_str(response.choices[0].message.content or "")
 
 
 def call_llm(
