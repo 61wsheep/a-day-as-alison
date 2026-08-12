@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from config import PROMPTS_DIR, SCHEMAS_DIR, DEFAULT_PROVIDER, DEFAULT_MODEL
 from utils.api_client import _sanitize_dict, _sanitize_str
+from utils.json_parser import parse_json_response
 
 # ── 常量 ──
 MAX_TURNS = 50                # 硬上限：单次会话绝对最大轮数
