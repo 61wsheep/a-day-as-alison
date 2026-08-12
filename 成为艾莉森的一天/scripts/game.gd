@@ -4,9 +4,7 @@ extends Node2D
 
 @onready var player: CharacterBody2D = $Player
 @onready var padwin: CharacterBody2D = $Padwin
-@onready var terrain_ground: TileMapLayer = $Plaza/Ground
-@onready var terrain_plants: TileMapLayer = $Plaza/Plants
-@onready var terrain_canopy: TileMapLayer = $Plaza/Canopy
+@onready var daylight: CanvasModulate = $Plaza/DaylightModulate
 
 const TILE_SIZE := 32
 const WORLD_W := 40
@@ -84,33 +82,40 @@ func _setup_tileset() -> void:
 			ResourceSaver.save(ts, ts_path)
 
 	ts = load(ts_path) as TileSet
-	terrain_ground.tile_set = ts
-	terrain_plants.tile_set = ts
-	terrain_canopy.tile_set = ts
+	var g: TileMapLayer = get_node_or_null("Plaza/Ground")
+	var p: TileMapLayer = get_node_or_null("Plaza/Plants")
+	var c: TileMapLayer = get_node_or_null("Plaza/Canopy")
+	if g: g.tile_set = ts
+	if p: p.tile_set = ts
+	if c: c.tile_set = ts
 
 	# Paint ground if never painted
-	if terrain_ground.get_used_cells().size() == 0:
+	if g and g.get_used_cells().size() == 0:
 		_paint_ground()
 
 	_tileset_ready = true
 
 
 func _paint_ground() -> void:
+	var g: TileMapLayer = get_node_or_null("Plaza/Ground") as TileMapLayer
+	if not g: return
 	for y in WORLD_H:
 		for x in WORLD_W:
 			var coord := Vector2i(x, y)
 			if x < 3 or x >= WORLD_W - 3 or y < 2 or y >= WORLD_H - 2:
-				terrain_ground.set_cell(coord, 0, Vector2i(0, 2))
+				g.set_cell(coord, 0, Vector2i(0, 2))
 			elif x > WORLD_W / 2 - 4 and x < WORLD_W / 2 + 4 and y > 6 and y < 18:
-				terrain_ground.set_cell(coord, 0, Vector2i(0, 1))
+				g.set_cell(coord, 0, Vector2i(0, 1))
 			else:
-				terrain_ground.set_cell(coord, 0, Vector2i(x % 2, y % 2))
+				g.set_cell(coord, 0, Vector2i(x % 2, y % 2))
 
 
 # ---------------------------------------------------------------------------
 # Time-of-day tint
 # ---------------------------------------------------------------------------
 func _switch_background(time_id: String) -> void:
+	if not daylight:
+		return
 	var color: Color
 	match time_id:
 		"morning":   color = Color(1.0, 0.92, 0.85, 1.0)
@@ -119,14 +124,8 @@ func _switch_background(time_id: String) -> void:
 		"night":     color = Color(0.30, 0.30, 0.55, 1.0)
 		"midnight":  color = Color(0.15, 0.15, 0.30, 1.0)
 
-	var layers: Array[TileMapLayer] = []
-	if terrain_ground: layers.append(terrain_ground)
-	if terrain_plants: layers.append(terrain_plants)
-	if terrain_canopy: layers.append(terrain_canopy)
-
-	for layer in layers:
-		var tween = create_tween()
-		tween.tween_property(layer, "self_modulator", color, 1.0)
+	var tween = create_tween()
+	tween.tween_property(daylight, "color", color, 1.0)
 
 
 # ---------------------------------------------------------------------------

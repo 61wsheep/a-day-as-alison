@@ -13,7 +13,8 @@
 [node name="Main" type="Node2D" unique_id=568387427]
 position = Vector2(4, -1)
 script = ExtResource("13_game")
-metadata/_edit_horizontal_guides_ = [54.0]
+metadata/_edit_horizontal_guides_ = [-257.0]
+metadata/_edit_vertical_guides_ = [-316.0]
 
 [node name="Plaza" type="Node2D" parent="." unique_id=1297434545]
 
@@ -60,6 +61,9 @@ script = ExtResource("3_trceg")
 shape = ExtResource("2_tefeu")
 
 [node name="Icon" type="Sprite2D" parent="Plaza/Mushrooms/Mushroom3" unique_id=125857141]
+
+[node name="DaylightModulate" type="CanvasModulate" parent="Plaza" unique_id=999111000]
+color = Color(1, 1, 1, 1)
 
 [node name="Ground" type="TileMapLayer" parent="Plaza" unique_id=368949481]
 z_index = -3
