@@ -383,9 +383,14 @@ def run_chat(npc_id: str, day: int = None, affection: int = None,
                 parsed = result.parsed
 
         if parsed is None:
-            print("  [!] [AI 未能生成有效回复，请重试]")
-            if verbose:
-                print(f"  [raw text: {raw_text[:200]}...]")
+            # 显示失败原因 —— 不只是重试提示，让玩家知道到底出了什么问题
+            if raw_text and raw_text.startswith("[API_ERROR]"):
+                print(f"  [!] API 调用失败: {raw_text[12:]}")
+            elif raw_text:
+                print(f"  [!] AI 返回了无法解析的内容。")
+                print(f"  [raw 前 200 字符]: {raw_text[:200]}")
+            else:
+                print(f"  [!] AI 返回了空响应，可能是 API 超时")
             continue
 
         response_text = parsed.get("response_text", "")

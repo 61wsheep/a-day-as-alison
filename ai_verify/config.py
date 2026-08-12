@@ -77,4 +77,4 @@ V5_CRACK_SCENARIOS = 3      # 裂缝触发场景数
 V5_RUNS_PER_SCENARIO = 3    # 每种场景重复次数
 
 # ── API 超时 ──
-REQUEST_TIMEOUT = 30  # 秒
+REQUEST_TIMEOUT = 90  # 秒 (DeepSeek-V3 长上下文响应可能超过 30s)
