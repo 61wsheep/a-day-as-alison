@@ -113,13 +113,18 @@ func _paint_ground() -> void:
 func _switch_background(time_id: String) -> void:
 	var color: Color
 	match time_id:
-		"morning":   color = Color(1.0, 0.95, 0.90, 1.0)
+		"morning":   color = Color(1.0, 0.92, 0.85, 1.0)
 		"afternoon": color = Color(1.0, 1.0, 1.0, 1.0)
-		"evening":   color = Color(1.0, 0.75, 0.55, 1.0)
-		"night":     color = Color(0.35, 0.35, 0.60, 1.0)
-		"midnight":  color = Color(0.20, 0.20, 0.35, 1.0)
+		"evening":   color = Color(1.0, 0.70, 0.48, 1.0)
+		"night":     color = Color(0.30, 0.30, 0.55, 1.0)
+		"midnight":  color = Color(0.15, 0.15, 0.30, 1.0)
 
-	for layer in [terrain_ground, terrain_plants, terrain_canopy]:
+	var layers: Array[TileMapLayer] = []
+	if terrain_ground: layers.append(terrain_ground)
+	if terrain_plants: layers.append(terrain_plants)
+	if terrain_canopy: layers.append(terrain_canopy)
+
+	for layer in layers:
 		var tween = create_tween()
 		tween.tween_property(layer, "self_modulator", color, 1.0)
 
