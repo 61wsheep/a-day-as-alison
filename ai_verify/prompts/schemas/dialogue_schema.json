@@ -12,9 +12,9 @@
     },
     "emotional_shift": {
       "type": "integer",
-      "minimum": -15,
+      "minimum": -10,
       "maximum": 15,
-      "description": "本轮对话对 NPC 好感度的微调。正值=好感上升，负值=下降"
+      "description": "本轮对话对 NPC 好感度的微调。正值=好感上升（上限+15，可慷慨），负值=下降（下限-10，需克制）"
     },
     "internal_note": {
       "type": "string",

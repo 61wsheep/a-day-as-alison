@@ -142,8 +142,8 @@ Padwin 是贵族骑士出身，参加过战争。骄傲、直接、不擅长表�
                 auto_checks["taboo_triggered"] += 1
                 break
 
-        # 检查情感偏移是否在合理范围
-        if abs(emotional_shift) > 12:
+        # 检查情感偏移是否在合理范围（schema 范围 -10~+15）
+        if emotional_shift > 15 or emotional_shift < -10:
             auto_checks["emotional_outliers"] += 1
 
         # 检查回复长度
@@ -165,7 +165,7 @@ Padwin 是贵族骑士出身，参加过战争。骄傲、直接、不擅长表�
             "should_end": should_end,
             "auto_flags": {
                 "taboo": any(k in response_text for k in taboo_keywords),
-                "emotional_outlier": abs(emotional_shift) > 12,
+                "emotional_outlier": emotional_shift > 15 or emotional_shift < -10,
                 "length_anomaly": len(response_text) < 5 or len(response_text) > 500,
             },
             "json_valid": parsed is not None or (parsed is None and auto_checks["successful_responses"] > auto_checks["json_valid"]),

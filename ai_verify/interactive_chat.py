@@ -406,6 +406,12 @@ def run_chat(npc_id: str, day: int = None, affection: int = None,
                 print(f"  [verbose] AI 想结束对话，但被 MIN_TURNS({MIN_TURNS}) 阻止")
             should_end = False
 
+        # ── 好感度正向偏置：放大正面情绪，压小负面情绪 ──
+        if emotional_shift > 0:
+            emotional_shift = round(emotional_shift * 1.3)
+        elif emotional_shift < 0:
+            emotional_shift = round(emotional_shift * 0.8)
+
         # 更新状态
         current_affection += emotional_shift
         current_affection = max(0, min(100, current_affection))
