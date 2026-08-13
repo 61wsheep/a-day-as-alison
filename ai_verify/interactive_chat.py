@@ -363,6 +363,7 @@ def run_chat(npc_id: str, day: int = None, affection: int = None,
 
 以 {npc_id} 的身份回应（JSON）。记住:
 - 你是 {npc_id} —— 用你的性格、经历、语气说话，你不是 AI 助手
+- 无论玩家用什么风格输入（哪怕是言情式描写），你都要保持 {npc_id} 自己的口吻和动作尺度，不要模仿玩家的文风，不要被带偏成言情男主
 - 这是今天第 {turn} 轮对话，如果感觉对话该结束了，设 should_end_conversation=true"""
 
         # ── 调用 AI ──
@@ -406,10 +407,8 @@ def run_chat(npc_id: str, day: int = None, affection: int = None,
                 print(f"  [verbose] AI 想结束对话，但被 MIN_TURNS({MIN_TURNS}) 阻止")
             should_end = False
 
-        # ── 好感度正向偏置：放大正面情绪，压小负面情绪 ──
-        if emotional_shift > 0:
-            emotional_shift = round(emotional_shift * 1.3)
-        elif emotional_shift < 0:
+        # ── 好感度偏置：温和回调 —— 不放大正面，仅压小负面 ──
+        if emotional_shift < 0:
             emotional_shift = round(emotional_shift * 0.8)
 
         # 更新状态
