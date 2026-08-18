@@ -13,3 +13,9 @@ godot.windows.editor.x86_64.exe
 
 # 角色行走图源文件（已导入到项目 assets/sprites/）
 /行走图/
+
+# Godot 导出构建产物（125MB exe）
+build/
+
+# 素材下载临时目录
+_preview/

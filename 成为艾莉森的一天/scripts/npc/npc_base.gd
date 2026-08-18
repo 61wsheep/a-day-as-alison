@@ -1,47 +1,70 @@
 extends CharacterBody2D
 class_name NPCBase
 
-## NPC 基类 — 交互检测 + 对话数据 + 交替对话流。
+## NPC 基类 — JSON 数据驱动的对话引擎。
 ##
-## 对话流：NPC 说一句 → 玩家按 E → 3 个选项出现
-## → 玩家选一个 → NPC 说下一句 → 循环直到对话结束。
+## 对话数据：res://resources/dialogues/<npc>.json
+## 流程：E 开始 → 逐行推进（E）→ 遇到 choices 行弹出选项
+## → 选择后应用 effects，可选 reply → 继续/跳转/结束。
 
 signal interaction_available(npc_id: String)
 
 @export var npc_id: String = ""
-@export var npc_name: String = ""
-@export_multiline var npc_lines: Array[String] = []
-@export_multiline var player_lines: Array[String] = []
+@export var dialogue_file: String = ""
 
-var _player_in_range: bool = false
+var _data: Dictionary = {}
+var _lines: Array = []
+var _end_effects: Dictionary = {}
+var _line_idx: int = 0
 var _dialogue_active: bool = false
 var _waiting_for_choice: bool = false
-var _current_line: int = 0
+var _showing_reply: bool = false
+var _pending_end: bool = false
+var _pending_end_effects: Dictionary = {}
+var _player_in_range: bool = false
 
 
 func _ready() -> void:
-	var zone = $InteractZone
+	var zone = get_node_or_null("InteractZone")
 	if zone:
 		zone.body_entered.connect(_on_body_entered)
 		zone.body_exited.connect(_on_body_exited)
+	_load_dialogue_data()
+	get_node("/root/EventBus").dialogue_choice_made.connect(_on_choice_made)
+
+
+func _load_dialogue_data() -> void:
+	if dialogue_file.is_empty() or not FileAccess.file_exists(dialogue_file):
+		return
+	var f := FileAccess.open(dialogue_file, FileAccess.READ)
+	if f:
+		var parsed = JSON.parse_string(f.get_as_text())
+		f.close()
+		if parsed is Dictionary:
+			_data = parsed
 
 
 func _input(event: InputEvent) -> void:
-	# Esc 随时退出对话（仅在对话激活时）
 	if _dialogue_active and event.is_action_pressed("ui_cancel"):
 		_end_dialogue()
 		return
 	if not _player_in_range:
 		return
 	if event.is_action_pressed("ui_accept"):
-		if _dialogue_active and _waiting_for_choice:
-			# 玩家按 E 但还在等选择 → 忽略
+		if _waiting_for_choice:
 			return
 		if _dialogue_active:
-			# NPC 说完一句 → 显示选择
-			_show_choices()
+			if _showing_reply:
+				_showing_reply = false
+				if _pending_end:
+					_end_dialogue()
+					return
+				_line_idx += 1
+				_advance()
+			else:
+				_line_idx += 1
+				_advance()
 		else:
-			# 开始对话
 			_start_dialogue()
 
 
@@ -60,42 +83,132 @@ func _on_body_exited(body: Node2D) -> void:
 			_end_dialogue()
 
 
+# ---------------------------------------------------------------------------
+# 对话选择与推进
+# ---------------------------------------------------------------------------
 func _start_dialogue() -> void:
-	if npc_lines.is_empty():
+	var dlg := _select_dialogue()
+	if dlg.is_empty():
+		return
+	_lines = dlg.get("lines", [])
+	_end_effects = dlg.get("end_effects", {})
+	if _lines.is_empty():
 		return
 	_dialogue_active = true
 	_waiting_for_choice = false
-	_current_line = 0
+	_showing_reply = false
+	_pending_end = false
+	_pending_end_effects = {}
+	_line_idx = 0
 	get_node("/root/EventBus").interaction_hint_hide.emit()
-	get_node("/root/EventBus").dialogue_started.emit(npc_id, npc_name, npc_lines[0])
+	get_node("/root/EventBus").dialogue_started.emit()
+	_advance()
 
 
-func _show_choices() -> void:
-	_waiting_for_choice = true
-	var pre_written := ""
-	if _current_line < player_lines.size():
-		pre_written = player_lines[_current_line]
-	get_node("/root/EventBus").dialogue_choices_show.emit(npc_id, npc_name, pre_written)
+func _select_dialogue() -> Dictionary:
+	var gm = get_node("/root/GameManager")
+	var best: Dictionary = {}
+	var best_priority := -1
+	for dlg in _data.get("dialogues", []):
+		if gm.conditions_met(dlg.get("conditions", {})):
+			var p := int(dlg.get("priority", 0))
+			if p > best_priority:
+				best_priority = p
+				best = dlg
+	return best
 
 
-func on_choice_made(_npc_id: String, choice_index: int, reply_text: String) -> void:
+func _advance() -> void:
+	var gm = get_node("/root/GameManager")
+	var bus = get_node("/root/EventBus")
+	while _line_idx < _lines.size():
+		var line: Dictionary = _lines[_line_idx]
+		if line.has("conditions") and not gm.conditions_met(line["conditions"]):
+			_line_idx += 1
+			continue
+		if line.has("choices"):
+			var valid: Array = []
+			for choice in line["choices"]:
+				if gm.conditions_met(choice.get("conditions", {})):
+					valid.append(choice)
+			if valid.is_empty():
+				_line_idx += 1
+				continue
+			_waiting_for_choice = true
+			var labels: Array = []
+			for c in valid:
+				labels.append(str(c.get("text", "……")))
+			bus.dialogue_choices.emit(labels)
+			# 同时显示该行文本作为选项前的铺垫
+			if str(line.get("text", "")) != "":
+				_emit_line(line)
+			return
+		_emit_line(line)
+		return
+	_end_dialogue()
+
+
+func _emit_line(line: Dictionary) -> void:
+	var speaker := str(line.get("speaker", npc_id))
+	var display := _display_name(speaker)
+	get_node("/root/EventBus").dialogue_line.emit(
+		speaker, display, str(line.get("text", "")), str(line.get("emotion", "")))
+
+
+func _display_name(speaker: String) -> String:
+	if speaker == "player":
+		return "艾莉森"
+	if speaker == "narrator":
+		return ""
+	return str(_data.get("display_name", speaker))
+
+
+func _on_choice_made(choice_index: int) -> void:
+	if not _dialogue_active or not _waiting_for_choice:
+		return
 	_waiting_for_choice = false
+	var gm = get_node("/root/GameManager")
+	var line: Dictionary = _lines[_line_idx]
+	var valid: Array = []
+	for choice in line["choices"]:
+		if gm.conditions_met(choice.get("conditions", {})):
+			valid.append(choice)
+	if choice_index < 0 or choice_index >= valid.size():
+		return
+	var chosen: Dictionary = valid[choice_index]
 
-	# 短暂显示玩家回复
-	get_node("/root/EventBus").player_reply_shown.emit(reply_text)
+	gm.apply_effects(chosen.get("effects", {}))
+	_pending_end_effects = chosen.get("end_effects", {})
+	_pending_end = bool(chosen.get("end", false))
 
-	# 推进到 NPC 下一句
-	_current_line += 1
-	if _current_line < npc_lines.size():
-		await get_tree().create_timer(1.5).timeout
-		get_node("/root/EventBus").dialogue_advanced.emit(npc_id, npc_lines[_current_line])
-	else:
-		await get_tree().create_timer(1.5).timeout
+	var reply := str(chosen.get("reply", ""))
+	if reply != "":
+		_showing_reply = true
+		_emit_line({
+			"speaker": npc_id,
+			"text": reply,
+			"emotion": str(chosen.get("reply_emotion", "")),
+		})
+		return
+
+	if _pending_end:
 		_end_dialogue()
+		return
+	if chosen.has("goto"):
+		_line_idx = int(chosen["goto"])
+	else:
+		_line_idx += 1
+	_advance()
 
 
 func _end_dialogue() -> void:
+	if not _dialogue_active:
+		return
 	_dialogue_active = false
 	_waiting_for_choice = false
-	_current_line = 0
-	get_node("/root/EventBus").dialogue_ended.emit(npc_id)
+	_showing_reply = false
+	var gm = get_node("/root/GameManager")
+	gm.apply_effects(_pending_end_effects)
+	gm.apply_effects(_end_effects)
+	_pending_end_effects = {}
+	get_node("/root/EventBus").dialogue_ended.emit()

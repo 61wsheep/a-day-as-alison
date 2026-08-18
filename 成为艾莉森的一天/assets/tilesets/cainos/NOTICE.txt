@@ -1,0 +1,9 @@
+素材来源声明 / Asset Attribution
+================================
+
+本目录下的贴图（grass.png / stone.png / wall.png / plant.png / props.png / struct.png）
+来自素材包：Pixel Art Top Down - Basic
+作者：Cainos
+来源：https://cainos.itch.io/pixel-art-top-down-basic
+许可：免费用于商业与非商业项目，无需署名；禁止转售原始素材文件本身。
+（License: Free for commercial projects, credit not needed, no redistribution or resale.）

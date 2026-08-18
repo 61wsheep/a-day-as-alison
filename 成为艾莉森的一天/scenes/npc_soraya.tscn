@@ -1,0 +1,144 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/tilesets/soraya_tileset.png" id="tex_soraya"]
+[ext_resource type="Script" path="res://scripts/npc/npc_base.gd" id="npc_base"]
+[ext_resource type="Shape2D" path="res://resources/interact_zone.tres" id="zone_shape"]
+
+[sub_resource type="CircleShape2D" id="body_col"]
+radius = 20.0
+
+[sub_resource type="AtlasTexture" id="d0"]
+atlas = ExtResource("tex_soraya")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="d1"]
+atlas = ExtResource("tex_soraya")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="d2"]
+atlas = ExtResource("tex_soraya")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="l0"]
+atlas = ExtResource("tex_soraya")
+region = Rect2(48, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="l1"]
+atlas = ExtResource("tex_soraya")
+region = Rect2(0, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="l2"]
+atlas = ExtResource("tex_soraya")
+region = Rect2(96, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="r0"]
+atlas = ExtResource("tex_soraya")
+region = Rect2(48, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="r1"]
+atlas = ExtResource("tex_soraya")
+region = Rect2(0, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="r2"]
+atlas = ExtResource("tex_soraya")
+region = Rect2(96, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="u0"]
+atlas = ExtResource("tex_soraya")
+region = Rect2(48, 144, 48, 48)
+
+[sub_resource type="AtlasTexture" id="u1"]
+atlas = ExtResource("tex_soraya")
+region = Rect2(0, 144, 48, 48)
+
+[sub_resource type="AtlasTexture" id="u2"]
+atlas = ExtResource("tex_soraya")
+region = Rect2(96, 144, 48, 48)
+
+[sub_resource type="SpriteFrames" id="frames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("d0")
+}, {
+"duration": 1.0,
+"texture": SubResource("d1")
+}, {
+"duration": 1.0,
+"texture": SubResource("d0")
+}, {
+"duration": 1.0,
+"texture": SubResource("d2")
+}],
+"loop": true,
+"name": &"walk_down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("l0")
+}, {
+"duration": 1.0,
+"texture": SubResource("l1")
+}, {
+"duration": 1.0,
+"texture": SubResource("l0")
+}, {
+"duration": 1.0,
+"texture": SubResource("l2")
+}],
+"loop": true,
+"name": &"walk_left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("r0")
+}, {
+"duration": 1.0,
+"texture": SubResource("r1")
+}, {
+"duration": 1.0,
+"texture": SubResource("r0")
+}, {
+"duration": 1.0,
+"texture": SubResource("r2")
+}],
+"loop": true,
+"name": &"walk_right",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("u0")
+}, {
+"duration": 1.0,
+"texture": SubResource("u1")
+}, {
+"duration": 1.0,
+"texture": SubResource("u0")
+}, {
+"duration": 1.0,
+"texture": SubResource("u2")
+}],
+"loop": true,
+"name": &"walk_up",
+"speed": 5.0
+}]
+
+[node name="Soraya" type="CharacterBody2D"]
+script = ExtResource("npc_base")
+npc_id = "soraya"
+dialogue_file = "res://resources/dialogues/soraya.json"
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+shape = SubResource("body_col")
+
+[node name="InteractZone" type="Area2D" parent="."]
+
+[node name="ZoneShape" type="CollisionShape2D" parent="InteractZone"]
+shape = ExtResource("zone_shape")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("frames")
+animation = &"walk_down"

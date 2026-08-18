@@ -52,6 +52,11 @@ func is_midnight() -> bool:
 	return _current_index == 4
 
 
+func skip_to_midnight() -> void:
+	_current_index = TIME_ORDER.size() - 1
+	get_node("/root/GameManager").set_time("midnight")
+
+
 func _get_index(time_id: String) -> int:
 	return TIME_ORDER.find(time_id)
 

@@ -1,0 +1,30 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/tilesets/cainos/props.png" id="tex_props"]
+[ext_resource type="Script" path="res://scripts/npc/npc_base.gd" id="npc_base"]
+[ext_resource type="Shape2D" path="res://resources/interact_zone.tres" id="zone_shape"]
+
+[sub_resource type="CircleShape2D" id="body_col"]
+radius = 36.0
+
+[sub_resource type="AtlasTexture" id="altar_tex"]
+atlas = ExtResource("tex_props")
+region = Rect2(345, 265, 110, 80)
+
+[node name="TianAltar" type="CharacterBody2D"]
+script = ExtResource("npc_base")
+npc_id = "tian"
+dialogue_file = "res://resources/dialogues/tower_voice.json"
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+position = Vector2(0, 10)
+shape = SubResource("body_col")
+
+[node name="InteractZone" type="Area2D" parent="."]
+
+[node name="ZoneShape" type="CollisionShape2D" parent="InteractZone"]
+shape = ExtResource("zone_shape")
+
+[node name="AltarSprite" type="Sprite2D" parent="."]
+texture = SubResource("altar_tex")
+offset = Vector2(0, -30)

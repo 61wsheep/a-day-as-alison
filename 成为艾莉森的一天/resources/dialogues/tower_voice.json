@@ -1,0 +1,32 @@
+{
+  "npc_id": "tian",
+  "display_name": "？？？",
+  "dialogues": [
+    {
+      "id": "qna",
+      "priority": 100,
+      "conditions": {"time": "midnight"},
+      "lines": [
+        {"speaker": "narrator", "text": "石巢塔楼的顶端没有窗。午夜的钟声敲到第十二下时，黑暗里亮起了一点微光。"},
+        {"speaker": "tian", "text": "违背规则者……哦？是你自己走进来的。有趣。很久没有「人」自己走进来了。"},
+        {"speaker": "tian", "text": "那么——猜猜我是谁？"},
+        {"speaker": "player", "emotion": "talk_01", "text": "……", "choices": [
+          {"text": "你是卡克特斯主教！这一切……都是教会的把戏！", "reply": "哈——哈哈哈哈！好，好一个答案。", "effects": {"action": "ending:fool"}},
+          {"text": "我不猜。我要亲眼看看这座塔里藏着什么。", "reply": "……不回答，也是一种回答。去吧，看吧。", "effects": {"set_flag": ["tower_searched"], "discover_clue": ["clue_forest_fake"], "action": "ending:temperance"}},
+          {"text": "你不是「天」。你是「我们」——是被烧死的女巫们汇集而成的意识，对吗？", "conditions": {"flag": ["soraya_awakened"]}, "reply": "………………是啊。你终于猜到了。", "effects": {"action": "ending:high_priestess"}},
+          {"text": "……我不知道。", "reply": "不知道，也是一种答案。回去吧。明天——还是今天。", "effects": {"action": "pass_night"}}
+        ]},
+        {"speaker": "narrator", "text": "钟声余韵散尽，微光熄灭了。"}
+      ]
+    },
+    {
+      "id": "too_early",
+      "priority": 10,
+      "conditions": {},
+      "lines": [
+        {"speaker": "narrator", "text": "塔内寂静得能听见自己的心跳。石壁上刻满了看不懂的符号。"},
+        {"speaker": "narrator", "text": "——只有午夜，这里才会有声音。先去别处看看，午夜再来吧。"}
+      ]
+    }
+  ]
+}

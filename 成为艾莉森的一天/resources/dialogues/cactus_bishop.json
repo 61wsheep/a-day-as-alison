@@ -1,0 +1,32 @@
+{
+  "npc_id": "cactus_bishop",
+  "display_name": "卡克特斯主教",
+  "dialogues": [
+    {
+      "id": "intro",
+      "priority": 100,
+      "conditions": {"flag_not": ["met_cactus"]},
+      "lines": [
+        {"speaker": "cactus", "emotion": "idle", "text": "……新居民。愿「天」护佑你。"},
+        {"speaker": "player", "emotion": "angry_talk", "text": "（主教？！他的声音，和当年在火刑架前宣判的人一模一样……）"},
+        {"speaker": "player", "emotion": "talk_01", "text": "……", "choices": [
+          {"text": "（凑近，盯着他的脖子看）", "reply": "无礼。", "reply_emotion": "angry", "effects": {"set_flag": ["cactus_scar_seen", "self_burn_scar"], "discover_clue": ["clue_cactus_scar", "clue_burn_scar"], "affection": {"cactus_bishop": -5}}},
+          {"text": "谢谢您的祝福，主教大人。", "reply": "遵守规则，孩子。规则即慈悲。", "reply_emotion": "idle", "effects": {"affection": {"cactus_bishop": 3}}}
+        ]},
+        {"speaker": "narrator", "text": "就在他转身的一瞬，你看见他的衣领下有一圈淡淡的、陈旧的勒痕——像是自缢留下的痕迹。", "conditions": {"flag": ["cactus_scar_seen"]}},
+        {"speaker": "player", "emotion": "cry", "text": "（那……我呢？）当天夜里，你在树屋的镜子前褪下衣衫——你的背上，有一片烧伤的疤痕。", "conditions": {"flag": ["self_burn_scar"]}}
+      ],
+      "end_effects": {"set_flag": ["met_cactus"]}
+    },
+    {
+      "id": "daily",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"]},
+      "lines": [
+        {"speaker": "cactus", "emotion": "idle", "text": "今天也要谨言慎行。"},
+        {"speaker": "cactus", "emotion": "think", "text": "猎巫的季节早已过去。如今的森林里，不需要火焰——「天」自会审判。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他说这话的时候，手指一直按着喉咙。）"}
+      ]
+    }
+  ]
+}

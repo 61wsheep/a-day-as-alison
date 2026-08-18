@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://autotest_wrapper"]
+
+[ext_resource type="PackedScene" path="res://scenes/main.tscn" id="1_main"]
+[ext_resource type="Script" path="res://scripts/autotest.gd" id="2_driver"]
+
+[node name="Autotest" type="Node"]
+
+[node name="Main" parent="." instance=ExtResource("1_main")]
+
+[node name="Driver" type="Node" parent="."]
+script = ExtResource("2_driver")

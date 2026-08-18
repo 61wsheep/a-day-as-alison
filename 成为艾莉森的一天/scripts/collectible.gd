@@ -11,11 +11,18 @@ class_name Collectible
 func _ready() -> void:
 	add_to_group("collectible")
 	body_entered.connect(_on_body_entered)
-	# 自动生成占位可视化: 红色小方块
+	# 用 Cainos 灌木丛作为蘑菇的视觉（蘑菇藏在草丛里）
 	if not has_node("Icon") or $Icon is not Sprite2D:
 		return
 	var icon: Sprite2D = $Icon
 	if icon.texture == null:
+		var tex := load("res://assets/tilesets/cainos/plant.png") as Texture2D
+		if tex:
+			var at := AtlasTexture.new()
+			at.atlas = tex
+			at.region = Rect2(33, 190, 38, 34)
+			icon.texture = at
+			return
 		var rect = ColorRect.new()
 		rect.color = Color(0.75, 0.15, 0.15, 1.0)
 		rect.size = Vector2(16, 16)
@@ -27,7 +34,13 @@ func _ready() -> void:
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
 		var gm = get_node("/root/GameManager")
-		gm.add_gold(gold_value)
+		# 塔罗运势影响售价：吉 ×1.5 / 平 ×1 / 凶 ×0.5
+		var mult := 1.0
+		if gm.daily_luck > 0:
+			mult = 1.5
+		elif gm.daily_luck < 0:
+			mult = 0.5
+		gm.add_gold(int(gold_value * mult))
 		hide()
 		# 禁用碰撞，防止重复拾取
 		set_deferred("monitoring", false)

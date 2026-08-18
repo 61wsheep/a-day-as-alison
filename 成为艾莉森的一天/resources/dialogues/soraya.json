@@ -1,0 +1,71 @@
+{
+  "npc_id": "soraya",
+  "display_name": "索拉雅",
+  "dialogues": [
+    {
+      "id": "intro",
+      "priority": 100,
+      "conditions": {"flag_not": ["met_soraya"]},
+      "lines": [
+        {"speaker": "narrator", "text": "你跌跌撞撞地穿过陌生的林地——直通天际的树屋、空中滑行的缆车，没有一棵烧焦的树。然后，你撞上了一个人。"},
+        {"speaker": "soraya", "emotion": "intro", "text": "哎呀——！我的蘑菇……"},
+        {"speaker": "player", "emotion": "cry", "text": "对、对不起！我帮你捡……"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "没关系没关系～你是新来的吧？这张脸我从来没见过。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "……", "choices": [
+          {"text": "请问……你是女巫吗？", "reply": "嘘——！！这种话在这里可不能乱问！", "reply_emotion": "laugh_talk_01", "effects": {"affection": {"soraya": -3}, "set_flag": ["asked_identity"]}},
+          {"text": "这里……是什么地方？", "reply": "第一次见面就问这个呀。这里是贝戈尼亚森林，你以后的家。", "reply_emotion": "smile_02"},
+          {"text": "我叫艾莉森。我不记得自己是怎么来的……", "reply": "别紧张，先深呼吸。每一个来到这里的人，开头都这样。", "reply_emotion": "smile_01", "effects": {"affection": {"soraya": 5}}}
+        ]},
+        {"speaker": "soraya", "emotion": "intro", "text": "听好了，贝戈尼亚森林只有一条最高准则——永远、永远不要打探别人的「真实身份」。"},
+        {"speaker": "soraya", "emotion": "intro", "text": "狼人、女巫、精灵、祭司和普通人比邻而居，从外表谁也分不清谁。说破别人的身份，是这里最严重的罪行。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "最严重的罪行……那会怎么样？"},
+        {"speaker": "soraya", "emotion": "smile_03", "text": "会被带去石巢塔楼，接受「天」的审判。法律是「天」定下的——违背道德、伤害他人的人，都会受到上天的惩戒。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "「天」……那是谁？"},
+        {"speaker": "soraya", "emotion": "smile_02", "text": "这是森林大学的学生们日夜研究的最高课题。我只知道这么多啦。"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "给你这个——贝戈尼亚森林的地图。先去东边的树屋区挑一栋树屋办理入住吧。租金不够的话，广场上采蘑菇就能换金币。", "effects": {"set_flag": ["got_map"]}},
+        {"speaker": "narrator", "text": "索拉雅把一张还带着温度的地图塞进你手里，拎起蘑菇，哼着歌走远了。"}
+      ],
+      "end_effects": {"set_flag": ["met_soraya"], "affection": {"soraya": 5}}
+    },
+    {
+      "id": "confront",
+      "priority": 90,
+      "conditions": {"flag": ["met_soraya"], "flag_not": ["soraya_confronted"], "day_min": 2},
+      "lines": [
+        {"speaker": "soraya", "emotion": "smile_01", "text": "艾莉森，今天也顺利吗？蘑菇在广场南边长得最好哦。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "索拉雅。我昨天看到你了——你对另一个新居民，说了和对我一模一样的话。一个字都不差。", "choices": [
+          {"text": "你到底是谁？为什么从不说起你自己的过去？", "reply": "…………我。", "reply_emotion": "intro", "effects": {"set_flag": ["soraya_confronted"], "discover_clue": ["clue_soraya_repeat"]}},
+          {"text": "……没什么，当我没问。", "reply": "欸？好、好吧。那记得吃饭哦。", "reply_emotion": "smile_02", "end": true}
+        ]},
+        {"speaker": "soraya", "emotion": "intro", "text": "我能讲出森林里每个人的生平往事。可是你问我……我的生日，我的童年，我醒来之前的事——我什么都说不出来。"},
+        {"speaker": "soraya", "emotion": "intro", "text": "我只知道要站在这里，迎接每一个迷路的人。这……正常吗？"},
+        {"speaker": "player", "emotion": "smile_01", "text": "……", "choices": [
+          {"text": "索拉雅，你不必做一台迎接的机器。做你自己。", "reply": "做自己……谢谢你，艾莉森。我好像……想起了什么。一片很黑的地底，和一盏小小的灯。", "reply_emotion": "smile_03", "effects": {"set_flag": ["soraya_awakened"], "affection": {"soraya": 15}}},
+          {"text": "至少从现在开始，为自己活着试试看？", "reply": "为自己……活。嗯，我记住了。", "reply_emotion": "smile_01", "effects": {"set_flag": ["soraya_awakened"], "affection": {"soraya": 10}}}
+        ]},
+        {"speaker": "narrator", "text": "那一刻，索拉雅的眼神第一次不像一面打磨过的镜子，而像一潭被风吹皱的水。"}
+      ]
+    },
+    {
+      "id": "awakened",
+      "priority": 80,
+      "conditions": {"flag": ["soraya_awakened"]},
+      "lines": [
+        {"speaker": "soraya", "emotion": "laugh_talk_02", "text": "艾莉森！今天我试着没去接新居民——你猜怎么着？天没有塌下来。"},
+        {"speaker": "player", "emotion": "smile_02", "text": "看吧，做自己也没那么难。"},
+        {"speaker": "soraya", "emotion": "smile_03", "text": "对了……如果你想知道「天」的秘密，午夜去石巢塔楼。那里有人等着你——等着你问出那个问题。"},
+        {"speaker": "soraya", "emotion": "laugh_talk_01", "text": "但别在广场上暴露身份哦，除非你已经准备好了。"}
+      ]
+    },
+    {
+      "id": "daily",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"]},
+      "lines": [
+        {"speaker": "soraya", "emotion": "smile_01", "text": "今天也顺利吗？蘑菇在广场上刷新得很快，攒够租金就去树屋区看看吧。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "你每天都站在这里吗？"},
+        {"speaker": "soraya", "emotion": "smile_02", "text": "迎接新居民是我的……职责呀。"}
+      ]
+    }
+  ]
+}

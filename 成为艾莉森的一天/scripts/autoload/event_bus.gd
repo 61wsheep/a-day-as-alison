@@ -6,6 +6,7 @@ extends Node
 # -- 时间相关 --
 signal time_changed(time_of_day: String)
 signal day_started(day_number: int)
+signal midnight_reached()
 
 # -- 玩家状态相关 --
 signal gold_changed(new_amount: int)
@@ -13,17 +14,26 @@ signal gold_changed(new_amount: int)
 # -- 对话相关 --
 signal interaction_hint_show()
 signal interaction_hint_hide()
-signal dialogue_started(npc_id: String, npc_name: String, text: String)
-signal dialogue_advanced(npc_id: String, text: String)
-signal dialogue_ended(npc_id: String)
-signal dialogue_choices_show(npc_id: String, npc_name: String, text: String)
-signal dialogue_choice_made(npc_id: String, choice_index: int, reply_text: String)
-signal player_reply_shown(text: String)
+signal dialogue_started()
+signal dialogue_line(speaker_id: String, display_name: String, text: String, emotion: String)
+signal dialogue_choices(choices: Array)
+signal dialogue_choice_made(choice_index: int)
+signal dialogue_ended()
 
 # -- 探索相关 --
 signal clue_found(clue_id: String)
-signal area_entered(area_id: String)
+signal area_changed(area_id: String)
+signal door_entered(target_area: String, target_spawn: String)
 
-# -- 结局相关 --
-signal ending_triggered(ending_id: String)
+# -- 游戏动作（由剧情 effects 触发，game.gd 统一路由） --
+signal game_action(action_id: String)
+
+# -- 塔罗 / 结局 --
+signal tarot_drawn(card: Dictionary)
+signal ending_reached(ending_id: String)
+
+# -- 循环 --
 signal loop_reset()
+
+# -- 提示 --
+signal toast(message: String)

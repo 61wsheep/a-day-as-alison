@@ -1,25 +1,9 @@
 extends NPCBase
 
-## Padwin NPC — 帕德温，前贵族战士，现森林守护者。
-##
-## 在 v2.0 第 1 步中作为唯一的 NPC，提供 5 轮交替对话。
-## 每轮：NPC 说一句 → 玩家从 3 个选项中选择 → NPC 说下一句。
+## Padwin NPC — 帕德温，前贵族战士，现树屋区看守。
+## 对话数据见 res://resources/dialogues/padwin.json
 
 func _ready() -> void:
 	npc_id = "padwin"
-	npc_name = "帕德温"
-	npc_lines = [
-		"你……你是新来的？这片森林很久没有新面孔了。",
-		"我叫帕德温。以前打过仗，现在只是个看林子的。",
-		"番茄……我对番茄过敏。别问我怎么知道的。",
-		"有时候我觉得这森林很奇怪——像是活的一样。你觉得吗？",
-		"天快黑了……小心点。晚上这地方不一样。",
-	]
-	player_lines = [
-		"嗯……我刚到这里，还不太熟悉。",
-		"打过仗？那你一定经历过很多事情吧。",
-		"过敏？听起来不是什么好的回忆。",
-		"我也觉得……这里好像藏着什么秘密。",
-		"谢谢提醒，我会注意的。",
-	]
+	dialogue_file = "res://resources/dialogues/padwin.json"
 	super._ready()

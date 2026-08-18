@@ -1,0 +1,26 @@
+{
+  "cards": [
+    {"id": "fool", "name": "0 · 愚人", "luck": 0, "reading": "今天适合迈出不假思索的一步。别急着给任何事下结论——你以为的答案，未必是答案。"},
+    {"id": "magician", "name": "I · 魔术师", "luck": 1, "reading": "万事俱备的一天。你手里的材料比你以为的更多，蘑菇也会卖得更好。"},
+    {"id": "high_priestess", "name": "II · 女祭司", "luck": 1, "reading": "直觉比证据可靠。今天留意那些欲言又止的人——秘密藏在水面之下。"},
+    {"id": "empress", "name": "III · 女皇", "luck": 1, "reading": "丰饶之日。森林会慷慨地对待采集它果实的人。"},
+    {"id": "emperor", "name": "IV · 皇帝", "luck": 0, "reading": "规则今天格外沉重。谨言慎行，别触碰任何禁令的边界。"},
+    {"id": "hierophant", "name": "V · 教皇", "luck": 0, "reading": "聆听的一天。年长者的只言片语里，可能藏着解开谜团的钥匙。"},
+    {"id": "lovers", "name": "VI · 恋人", "luck": 1, "reading": "羁绊升温的一天。今天做出的选择，会让某个人离你更近。"},
+    {"id": "chariot", "name": "VII · 战车", "luck": 1, "reading": "勇往直前。犹豫才是今天唯一的敌人。"},
+    {"id": "strength", "name": "VIII · 力量", "luck": 0, "reading": "温柔比强硬更有力量。今天，耐心能打开用力推不开的门。"},
+    {"id": "hermit", "name": "IX · 隐士", "luck": 0, "reading": "独处的一天。避开人群，去森林的角落看看——那里有你没发现的东西。"},
+    {"id": "wheel", "name": "X · 命运之轮", "luck": 1, "reading": "轮子转动了。今天会发生意想不到的事——顺着它走。"},
+    {"id": "justice", "name": "XI · 正义", "luck": 0, "reading": "因果分明的一天。你昨天种下的因，今天会结果。"},
+    {"id": "hanged_man", "name": "XII · 倒吊人", "luck": -1, "reading": "换个角度看世界。今天强行推进只会原地踏步，不如停下来观察。"},
+    {"id": "death", "name": "XIII · 死神", "luck": -1, "reading": "结束即开始。今天适合告别某个旧习惯、旧执念。"},
+    {"id": "temperance", "name": "XIV · 节制", "luck": 1, "reading": "不偏不倚的一天。不急着回答的问题，往往能看到更多。"},
+    {"id": "devil", "name": "XV · 恶魔", "luck": -1, "reading": "小心诱惑。今天太容易的路，多半通向陷阱。"},
+    {"id": "tower", "name": "XVI · 高塔", "luck": -1, "reading": "骤变之日。今天建立的东西可能轰然倒塌——但废墟之下有真相。"},
+    {"id": "star", "name": "XVII · 星星", "luck": 1, "reading": "希望之日。即使困在同一天里，今晚的星光也是新的。"},
+    {"id": "moon", "name": "XVIII · 月亮", "luck": -1, "reading": "幻象丛生。今天看到的、听到的，都别全信——包括你自己的记忆。"},
+    {"id": "sun", "name": "XIX · 太阳", "luck": 1, "reading": "明媚的一天。坦率和笑容会为你带来意想不到的好运。"},
+    {"id": "judgement", "name": "XX · 审判", "luck": 0, "reading": "审判之日。有些问题终究要面对——也许你该去一趟石巢塔楼。"},
+    {"id": "world", "name": "XXI · 世界", "luck": 1, "reading": "圆满近在咫尺。今天，所有的线索都可能连成完整的圆。"}
+  ]
+}

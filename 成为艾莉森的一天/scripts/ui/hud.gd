@@ -8,12 +8,22 @@ extends CanvasLayer
 @onready var gold_label: Label = $MarginContainer/HBoxContainer/GoldLabel
 @onready var day_label: Label = $MarginContainer/HBoxContainer/DayLabel
 
+var _tarot_label: Label
+
 
 func _ready() -> void:
+	_tarot_label = Label.new()
+	_tarot_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.5))
+	$MarginContainer/HBoxContainer.add_child(_tarot_label)
 	_refresh()
 	get_node("/root/EventBus").time_changed.connect(_on_time_changed)
 	get_node("/root/EventBus").gold_changed.connect(_on_gold_changed)
 	get_node("/root/EventBus").day_started.connect(_on_day_started)
+	get_node("/root/EventBus").tarot_drawn.connect(_on_tarot_drawn)
+
+
+func _on_tarot_drawn(card: Dictionary) -> void:
+	_tarot_label.text = "🃏 " + str(card.get("name", ""))
 
 
 func _refresh() -> void:

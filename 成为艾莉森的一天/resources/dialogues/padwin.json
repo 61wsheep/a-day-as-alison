@@ -1,0 +1,34 @@
+{
+  "npc_id": "padwin",
+  "display_name": "帕德温",
+  "dialogues": [
+    {
+      "id": "intro",
+      "priority": 100,
+      "conditions": {"flag_not": ["met_padwin"]},
+      "lines": [
+        {"speaker": "padwin", "emotion": "talk", "text": "站住。生面孔。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（这张脸……不可能。他怎么会在这里？他明明——）"},
+        {"speaker": "padwin", "emotion": "idle", "text": "盯着我做什么。我叫帕德温，替人看守这片树屋区。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "……", "choices": [
+          {"text": "（把带来的番茄递过去）见面礼。", "reply": "番茄？！拿走拿走——我对这东西过敏。别问我怎么知道的。", "reply_emotion": "awkward", "effects": {"set_flag": ["tomato_test_done"], "discover_clue": ["clue_padwin_no_memory"], "affection": {"padwin": 5}}},
+          {"text": "你……真的不记得我了吗？", "reply": "我们见过？抱歉，没印象。你认错人了。", "reply_emotion": "helpless", "effects": {"discover_clue": ["clue_padwin_no_memory"]}},
+          {"text": "……打扰了。", "reply": "嗯。", "reply_emotion": "idle", "end": true, "end_effects": {"set_flag": ["met_padwin"]}}
+        ]},
+        {"speaker": "player", "emotion": "cry", "text": "（他拒绝了番茄——前世的帕德温也是这样。可是他的眼睛里，没有一点认得我的意思。）"},
+        {"speaker": "padwin", "emotion": "think", "text": "这森林一来新人，就有麻烦跟着。晚上别乱逛，尤其是广场西边那座石塔。"}
+      ],
+      "end_effects": {"set_flag": ["met_padwin"]}
+    },
+    {
+      "id": "daily",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"]},
+      "lines": [
+        {"speaker": "padwin", "emotion": "idle", "text": "又是你。租金攒够了？树屋区还有空房。"},
+        {"speaker": "padwin", "emotion": "talk", "text": "提醒你一句：广场西边的石巢塔楼，别靠近。触犯「天」的规矩的人，都被带去了那里——没有一个回来讲过里面的事。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（没有记忆的他，这一世却像还在守着什么。）"}
+      ]
+    }
+  ]
+}

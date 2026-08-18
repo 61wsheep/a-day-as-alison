@@ -12,8 +12,8 @@ var _movement_locked: bool = false
 
 func _ready() -> void:
 	add_to_group("player")
-	get_node("/root/EventBus").dialogue_started.connect(func(_a,_b,_c): _movement_locked = true)
-	get_node("/root/EventBus").dialogue_ended.connect(func(_a): _movement_locked = false)
+	get_node("/root/EventBus").dialogue_started.connect(func(): _movement_locked = true)
+	get_node("/root/EventBus").dialogue_ended.connect(func(): _movement_locked = false)
 
 
 func setup_camera_limits(world_rect: Rect2) -> void:
