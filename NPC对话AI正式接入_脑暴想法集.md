@@ -1,8 +1,8 @@
 # NPC 对话 AI 正式接入 —— 脑暴想法集
 
-> 状态：**v1 · 基线存档** · 2026-08-19
+> 状态：**v2 · 已适配「无AI试玩Demo v1.1」数据驱动引擎** · 2026-08-19
 > 目的：把 NPC 对话 AI 从"离线验证合格"推进到"正式接入游戏"的决策支持材料。
-> 说明：本文档 v1 基于项目早期结构（硬编码对话骨架）撰写；项目随后升级为「无AI试玩Demo v1.1」数据驱动对话引擎，适配评估与调整见 v2 章节。
+> 版本说明：v1 为基线存档（基于早期硬编码对话骨架）；2026-08-19 项目升级为「无AI试玩Demo v1.1」（JSON 数据驱动对话引擎），v2 为适配评估与调整。
 
 ---
 
@@ -210,4 +210,102 @@
 
 ---
 
-> **下一章节（v2）：适配「无AI试玩Demo v1.1」数据驱动对话引擎后的调整。**
+---
+
+# v2 适配：对「无AI试玩Demo v1.1」数据驱动引擎的调整
+
+> 2026-08-19 重新检查更新后的 Godot 项目。结论：**项目结构与脑暴撰写时已大不相同**——游戏从"硬编码对话骨架"升级为"完整可玩的确定性叙事 Demo（无 AI）"。脑暴的核心方向仍然成立，但**接入方式从"替换硬编码"变为"在确定性引擎上叠加 AI 表现层"**，且多个前提已变化。
+
+## v2.1 架构变更摘要（对照 v1 前提）
+
+新提交 `774bb36 feat: 无AI试玩Demo v1.1——三区域+3 NPC对话+塔罗+租房+午夜塔楼问答+循环结局`：
+
+| 系统 | 现状（无AI版） | 对应文件 |
+|------|---------------|---------|
+| **对话引擎** | JSON 数据驱动：`dialogues[]` + `conditions`/`priority`/`lines`/`choices`/`effects`/`reply`/`goto`/`end`/`end_effects` | `scripts/npc/npc_base.gd` + `resources/dialogues/{padwin,soraya,cactus_bishop,tower_voice}.json` |
+| **条件/效果** | `conditions_met()`（flag/flag_not/clue/clue_not/day_min/time/rented）、`apply_effects()`（set_flag/discover_clue/affection/gold/action） | `scripts/autoload/game_manager.gd` |
+| **NPC** | 3 NPC + 塔楼之声（"天"）：索拉雅（intro/confront/awakened/daily）、帕德温（intro/daily，番茄测试）、卡克特斯（intro/daily，勒痕线）、塔楼（午夜"猜猜我是谁"） | `scenes/npc_*.tscn` |
+| **线索** | 6 条线索 + `discover_clue()` + toast：帕德温无前世记忆 / 主教勒痕 / 自己烧伤疤 / 索拉雅机械重复 / 森林起源书 / 身份证 | `game_manager.gd` CLUE_NAMES |
+| **剧情标记** | flags：met_soraya / soraya_awakened / tomato_test_done / cactus_scar_seen / self_burn_scar / tower_searched 等 | `game_manager.gd` |
+| **塔罗** | **22 张大阿尔卡那完整**（每张带 luck + reading），每日清晨抽牌 | `resources/tarot/major_arcana.json` + `tarot_ui.gd` |
+| **结局** | 3/22 已做（愚人/女祭司/节制），塔楼回答路由 `ending:*` / `pass_night` | `resources/endings/endings.json` + `ending_ui.gd` |
+| **区域** | 三区域切换（广场/树屋区/石巢塔楼），门 + 出生点 | `scripts/game.gd` + `door.gd` |
+| **租房** | 树屋租赁系统 | `rental_ui.gd` + `treehouse_door.gd` |
+| **测试** | 自动化回归测试（全流程驱动 + 截图） | `scripts/autotest.gd` + `scenes/autotest.tscn` |
+
+## v2.2 适配性评估（v1 脑暴 × 新架构）
+
+| v1 假设/方案 | 新架构现状 | 结论 |
+|-------------|-----------|------|
+| 对话硬编码 5 句，需"替换为 AI" | 已是 JSON 数据驱动引擎（条件/选项/效果/跳转全确定） | **前提变了**。接入 = 叠加 AI 表现层，不是替换。A5（AI与剧本混合）从"一个方案"升级为**必然架构** |
+| "三入口 UI 骨架已在"（预写/沉默/自由输入） | 新版 `dialogue_ui.gd` **已无自由输入框**，只有动态选项按钮 | **需要新增自由输入框 UI**，才能接"暗门" |
+| 塔罗只有 5 张，需补 17 张 | **22 张已完整**（带 luck + reading） | B3 每日塔罗任务前提已具备，**不用再补内容** |
+| 无塔楼/无结局/无任务 | 塔楼之声（猜猜我是谁）+ 3 结局 + 6 线索 + flags 条件系统**都已存在** | B1/B2/B5 有了落点；结局判定 S10 已有雏形 |
+| A1 门控表（从零建） | `conditions`/`flags` 就是现成的门控基础设施 | **复用**：AI 门控 = 白名单 + 注入"当前可说清单"，无需另起炉灶 |
+| A3 锚点接管（AI 暂停插作者文本） | 关键节点（intro/confront/awakened/tower）**已经是作者文本** | **已实现**，AI 不需要接管；AI 只负责"作者没写满"的地方 |
+| 兜底文本库（从零建，⭐⭐⭐ 高优先） | JSON 对话树就是**天然兜底层**——AI 失败可回落作者文本 | **优先级降级**：不用新建兜底库，回落 JSON 即可（成本大降） |
+| `hints_to_other_npcs` → 线索闭环（⭐⭐⭐） | 线索系统已存在，但 AI 字段仍无人消费 | **仍然成立**，是探秘闭环入口 |
+| benevolence/engagement/truth_proximity 缺失 | 仍然缺失 | **仍然成立**，C 系列需要加状态层 |
+| 记忆存储缺失 | 仍然缺失 | **仍然成立** |
+| V2/V3 人工评分空白 | 仍然空白 | **仍然成立**（验证合格的证据缺口） |
+| autotest（v1 未提） | 已有自动化回归测试 | **新资产**：AI 接入后可扩展覆盖"AI 成功/AI 回落"双路径 |
+
+## v2.3 核心问题重构：AI 在确定性引擎上"开什么缝"
+
+现在游戏已有一套完整、可玩、作者手写的确定性叙事骨架。AI 的接入不是替换它，而是在**确定性骨架的留白处**叠加表现层。候选缝隙（可组合，从高优先级排起）：
+
+| 缝隙 | 机制 | 与 v1 方案的对应 | 优先级 |
+|------|------|----------------|--------|
+| **S1 · AI 日常变奏** | 现有 `daily` 分支很薄（3-4 句固定）。AI 按（天 × 好感段 × flags × 已获线索 × 今日塔罗 reading）生成每日新鲜对话，输出 `response_text` + `emotional_shift` + `memory_update` + `hints_to_other_npcs`，映射到现有 `apply_effects`（affection/clues/flags 白名单） | A5 + B1 + B3 + C1 | ⭐⭐⭐ |
+| **S2 · 自由输入暗门** | 对话 UI **新增自由输入框**（当前不存在），玩家输入 → AI 以 NPC 人设响应（受门控），命中白名单线索/flag → `discover_clue`/`set_flag`；超纲问题走 C4 挡刀 | A1/A2/C4 | ⭐⭐⭐ |
+| **S3 · 塔楼之声 AI 化** | "猜猜我是谁"目前 4 个固定选项 → 增加自由回答通道，AI 判定意图并路由到 22 结局（现有 3 个）或推进 | B2 + B5 | ⭐⭐ |
+| **S4 · 天的存在层** | 加 benevolence/engagement 状态，午夜审判回顾、预言应验判定、裂缝借 NPC 之嘴 | C1/C2/C3/C6 | ⭐⭐ |
+| **S5 · 塔罗预言注入对话** | 今日 reading 注入对话 prompt，让 NPC 日常回应呼应今日牌 | B3 | ⭐⭐ |
+
+**状态所有权契约（v2 强调，比 v1 更具体）**：AI 永远只输出"表现"——`response_text` / `emotional_shift` / `memory_update` / `hints_to_other_npcs` / 意图标记。**一切数值/flag/线索变更都必须经 Godot 白名单校验**：`emotional_shift` → 校验后 `change_affection()`；`hints` → 命中白名单才 `discover_clue()`；AI 不能直接写 flags。这与现有 `apply_effects` 的设计完全一致，AI 只是"内容生产者"，不是"状态写入者"。
+
+## v2.4 调整后的差距清单（在 v1 基础上增删）
+
+**新增缺口（v1 未覆盖）**：
+- AI Bridge 需与**事件驱动对话引擎**对接（`dialogue_line` / `dialogue_choices` / `dialogue_choice_made` / `dialogue_ended` / `game_action` 信号），而不是接硬编码流程。
+- AI 输出 → 现有 effects 系统的**映射与白名单**（见 v2.3 契约）。
+- **自由输入框 UI 需要从零新增**（v1 误以为已存在）。
+- 记忆存储 + 每日对话轮次/时段收束约束（v1 已提，现更明确：JSON 对话天然有结束，AI 日常需要"聊够了"的收束）。
+
+**已解决 / 降级的缺口（新架构已提供）**：
+- 剧情锚点接管（A3）→ JSON 引擎确定性实现，AI 不需要接管。
+- 塔罗内容补全 → 22 张已齐。
+- 任务/线索系统骨架 → clues + flags + conditions 已存在。
+- 兜底文本库 → JSON 对话树即天然兜底，降级为"AI 失败回落 JSON"。
+
+## v2.5 调整后的推荐路径
+
+### 路径 A'（原路径 A 调整）—— 在引擎上开缝，第一批 S1 + S2
+1. AI Bridge Node：HTTPRequest + 异步 + 超时 + **回落 JSON 兜底**（失败/超时 → 走现有 `daily` 分支，玩家无感知）。
+2. **S1 AI 日常变奏**：新增"AI 对话提供者"接入 `npc_base.gd` 的 daily 入口——AI 生成当日对话，`emotional_shift`→`change_affection`、`hints`→白名单 `discover_clue`。
+3. **S2 自由输入暗门**：`dialogue_ui.gd` 新增自由输入框（复用 v1 曾有过的 LineEdit 设计），输入走 AI 响应 + 门控挡刀。
+4. 门控：复用现有 flags/conditions，prompt 注入"当前可说/不可说清单"（极简版 ~10 条硬事实）。
+5. 记忆：per-NPC 本地 JSON（移植验证侧 `memories/padwin.json` 结构），Godot 持有。
+6. 契约：`dialogue_schema.json` 原样复用，`hints_to_other_npcs` 升必填。
+7. 测试：扩展 `autotest.gd`，覆盖"AI 成功 / AI 回落"双路径。
+
+### 路径 B'（原路径 B 调整）—— 内容资产
+- Soraya / 卡克特斯 **AI 角色卡**（用于 S1/S2 的 AI 表现，现有 JSON 是"无 AI 剧本"不是"角色卡"）。
+- 结局 3 → 22 补全（塔罗已齐，结局才 3 个）。
+- AI daily 话题方向标签（curriculum）。
+- **不再需要补塔罗内容**（v1 误判）。
+
+### 路径 C'（接口契约预留）—— 不变
+- 四面具接口（oracle/dialogue/judgment/crack）+ 状态层字段（benevolence/engagement/truth_proximity/prophecy_resistance）进 GameManager，只实现化身面具。
+
+## v2.6 关键结论（v2 新增）
+
+1. **新架构让 AI 接入更安全、更便宜**：确定性骨架 + JSON 作者文本兜底，即使 AI 全部失败，游戏仍完整可玩。**最大的接入成本顾虑（兜底库）被架构本身消解了。**
+2. **核心风险从"AI 剧透击穿结局"降级为**：(a) AI 表现与手写剧情风格不一致；(b) AI 输出与现有 effects 系统衔接出错；(c) 新增自由输入引入的内容安全。
+3. **最高性价比的接入缝是 S1（AI 日常变奏）+ S2（自由输入暗门）**——都在现有引擎上插，都能复用验证合格的角色卡/管线/JSON 兜底。
+4. **AI 永远是"内容生产者"，不是"状态写入者"**——一切数值/flag/线索变更经 Godot 白名单校验，与现有 `apply_effects` 哲学一致。
+5. v1 的"三件套（门控 + 挡刀 + hints 闭环）"仍然成立，但落地方式变了：门控复用 flags、挡刀用于自由输入、hints 闭环接入现成线索系统。
+
+---
+
+> 下一步：请策划从 v2 的方向中选择要推进的缝隙组合（推荐 **S1 + S2 起步**），我们据此制定具体开发计划并动代码。
