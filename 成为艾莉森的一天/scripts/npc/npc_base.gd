@@ -54,8 +54,7 @@ func _load_dialogue_data() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if _ai_mode and _is_text_focus_owner():
-		return                     # 自由输入框聚焦时，E/Esc 不旁路给对话
+	# Esc 退出对话 —— 无论是否在自由输入框聚焦、无论 AI/JSON 模式，都生效
 	if _ai_mode and event.is_action_pressed("ui_cancel"):
 		if _ai_thinking:
 			var bridge = get_node_or_null("/root/AIBridge")
@@ -67,6 +66,8 @@ func _input(event: InputEvent) -> void:
 	if _dialogue_active and event.is_action_pressed("ui_cancel"):
 		_end_dialogue()
 		return
+	if _ai_mode and _is_text_focus_owner():
+		return                     # 自由输入框聚焦时，E 不旁路给对话
 	if not _player_in_range:
 		return
 	if event.is_action_pressed("ui_accept"):
