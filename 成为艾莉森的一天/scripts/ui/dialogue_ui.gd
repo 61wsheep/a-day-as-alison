@@ -68,8 +68,7 @@ var _toast_label: Label
 var _toast_timer: Timer
 var _portrait_cache: Dictionary = {}
 var _thinking_label: Label
-var _input_row: HBoxContainer
-var _input_edit: LineEdit
+var _free_input: LineEdit
 
 # -- AI 对话状态 --
 var _ai_mode := false
@@ -178,35 +177,6 @@ func _build_ui() -> void:
 	_choice_box.add_theme_constant_override("separation", 5)
 	_choice_panel.add_child(_choice_box)
 
-	# -- 自由输入行（LineEdit + 发送），初始隐藏；置于选项与面板之间 --
-	_input_row = HBoxContainer.new()
-	_input_row.add_theme_constant_override("separation", 8)
-	_input_row.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-	_input_row.offset_left = 216
-	_input_row.offset_right = -216
-	_input_row.offset_top = -248
-	_input_row.offset_bottom = -222
-	_input_row.hide()
-	add_child(_input_row)
-
-	_input_edit = LineEdit.new()
-	_input_edit.placeholder_text = "说点什么……（100 字以内）"
-	_input_edit.max_length = 100
-	_input_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_input_row.add_child(_input_edit)
-
-	var send := Button.new()
-	send.text = "发送"
-	send.pressed.connect(_on_free_input_submit)
-	_input_row.add_child(send)
-
-	# Esc 在输入框内先被消费，不误触对话退出
-	_input_edit.gui_input.connect(func(ev: InputEvent) -> void:
-		if ev is InputEventKey and ev.keycode == KEY_ESCAPE and ev.pressed:
-			_input_row.hide()
-			_input_edit.clear()
-			get_viewport().set_input_as_handled())
-
 	# -- 提示气泡（顶部中央） --
 	_toast_label = Label.new()
 	_toast_label.set_anchors_preset(Control.PRESET_CENTER_TOP)
@@ -296,7 +266,6 @@ func _set_portrait(target: TextureRect, key: String, emotion: String) -> void:
 
 func _on_choices(choices: Array) -> void:
 	_hint_label.text = ""
-	_input_row.hide()
 	for child in _choice_box.get_children():
 		child.queue_free()
 
@@ -310,8 +279,33 @@ func _on_choices(choices: Array) -> void:
 		_choice_box.add_child(btn)
 
 	_choice_box.add_child(_make_choice_sep())
-	_append_ai_button("不回答", _on_silence)
-	_append_ai_button("自由输入（100字内）…", _open_free_input)
+
+	# 不回答 —— 一种真实的「选择沉默」回应，NPC 会对此作出反应
+	var silent := Button.new()
+	silent.text = "不回答"
+	silent.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	silent.add_theme_font_size_override("font_size", 14)
+	silent.pressed.connect(_on_silence)
+	_choice_box.add_child(silent)
+
+	# 自由输入（100字内）—— 始终可见的输入框，回车/发送提交
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	_choice_box.add_child(row)
+
+	_free_input = LineEdit.new()
+	_free_input.placeholder_text = "自由输入（100字内）…"
+	_free_input.max_length = 100
+	_free_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_free_input.add_theme_font_size_override("font_size", 14)
+	_free_input.text_submitted.connect(func(_t): _on_free_input_submit())
+	row.add_child(_free_input)
+
+	var send := Button.new()
+	send.text = "发送"
+	send.add_theme_font_size_override("font_size", 13)
+	send.pressed.connect(_on_free_input_submit)
+	row.add_child(send)
 
 	_choice_panel.show()
 	if _choice_box.get_child_count() > 0:
@@ -329,16 +323,19 @@ func _on_choice_pressed(index: int) -> void:
 	get_node("/root/EventBus").dialogue_choice_made.emit(index)
 
 
-## 不回答 → 结束当前对话（JSON 模式也生效，见 npc_base._request_exit）。
+## 不回答 → 以「（沉默不语）」作为玩家输入，交给 NPC（AI 会话 / S2 旁路）回应。
 func _on_silence() -> void:
 	_choice_panel.hide()
-	get_node("/root/EventBus").dialogue_exit_requested.emit()
+	if not _ai_can_respond():
+		_show_toast("（对方没有回应……）")
+		_choice_panel.show()
+		return
+	get_node("/root/EventBus").dialogue_free_input.emit("（沉默不语）")
 
 
 func _on_dialogue_ended() -> void:
 	_panel.hide()
 	_choice_panel.hide()
-	_input_row.hide()
 	_npc_portrait.hide()
 	_player_portrait.hide()
 	_ai_badge.hide()
@@ -377,30 +374,23 @@ func _display_name_or_id(npc_id: String) -> String:
 	return {"padwin": "帕德温", "soraya": "索拉雅", "cactus_bishop": "卡克特斯主教"}.get(npc_id, npc_id)
 
 
-func _append_ai_button(text: String, cb: Callable) -> void:
-	var btn := Button.new()
-	btn.text = text
-	btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	btn.add_theme_font_size_override("font_size", 14)
-	btn.pressed.connect(cb)
-	_choice_box.add_child(btn)
-
-
-func _open_free_input() -> void:
-	_choice_panel.hide()
-	_input_row.show()
-	_input_edit.grab_focus()
-
-
 func _on_free_input_submit() -> void:
-	var text := _input_edit.text.strip_edges()
+	if _free_input == null:
+		return
+	var text := _free_input.text.strip_edges()
 	if text.is_empty():
 		return
-	_input_row.hide()
-	# 无 AI 支持（无 key / 无角色卡）→ 对方没有回应，恢复选项面板
-	var bridge = get_node_or_null("/root/AIBridge")
-	if bridge == null or not bridge.is_available() or not bridge.has_role_card(_thinking_npc):
+	_choice_panel.hide()
+	if not _ai_can_respond():
 		_show_toast("（对方没有回应……）")
 		_choice_panel.show()
 		return
 	get_node("/root/EventBus").dialogue_free_input.emit(text)
+
+
+## AI 是否能对自由输入/沉默作出回应（key 有效 且 有角色卡）。
+func _ai_can_respond() -> bool:
+	var bridge = get_node_or_null("/root/AIBridge")
+	if bridge == null:
+		return false
+	return bridge.is_available() and bridge.has_role_card(_thinking_npc)
