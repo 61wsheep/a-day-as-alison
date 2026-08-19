@@ -1,206 +1,1746 @@
-[gd_scene format=3]
+[gd_scene format=4 uid="uid://dswq222l67yja"]
 
-[ext_resource type="Script" path="res://scripts/game.gd" id="game_script"]
-[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="player_scene"]
-[ext_resource type="PackedScene" path="res://scenes/npc_padwin.tscn" id="padwin_scene"]
-[ext_resource type="PackedScene" path="res://scenes/npc_soraya.tscn" id="soraya_scene"]
+[ext_resource type="Texture2D" uid="uid://bsfnygm210cic" path="res://assets/tilesets/cainos/grass.png" id="2_pm3ni"]
+[ext_resource type="Texture2D" uid="uid://ccecwt8f3s3rm" path="res://assets/tilesets/cainos/stone.png" id="3_y6deb"]
+[ext_resource type="Texture2D" uid="uid://co2op5dljwuy7" path="res://assets/tilesets/cainos/plant.png" id="4_og1vs"]
+[ext_resource type="Texture2D" uid="uid://8l88rppgrxx3" path="res://assets/tilesets/cainos/props.png" id="5_2wyq8"]
+[ext_resource type="Texture2D" uid="uid://d3hb16lr0ox5k" path="res://assets/tilesets/cainos/struct.png" id="15_yq6so"]
 [ext_resource type="PackedScene" path="res://scenes/npc_cactus_bishop.tscn" id="cactus_scene"]
+[ext_resource type="Script" uid="uid://b07le8jfojm0" path="res://scripts/collectible.gd" id="collectible_script"]
+[ext_resource type="Script" uid="uid://cty0kby1vtln0" path="res://scripts/ui/dialogue_ui.gd" id="dialogue_ui_script"]
+[ext_resource type="Script" uid="uid://cnh8sw8p00fdk" path="res://scripts/systems/door.gd" id="door_script"]
+[ext_resource type="Script" uid="uid://b8inrd7c81x4w" path="res://scripts/ui/ending_ui.gd" id="ending_ui_script"]
+[ext_resource type="Script" uid="uid://bjocfry6uvigw" path="res://scripts/game.gd" id="game_script"]
+[ext_resource type="Script" uid="uid://d3rfgnt7gmlhx" path="res://scripts/ui/hud.gd" id="hud_script"]
+[ext_resource type="Shape2D" uid="uid://c3sk36happfle" path="res://resources/mushroom_collision.tres" id="mushroom_shape"]
+[ext_resource type="PackedScene" uid="uid://dkg68xdhp5h2b" path="res://scenes/npc_padwin.tscn" id="padwin_scene"]
+[ext_resource type="PackedScene" uid="uid://cn2d7ukn283u5" path="res://scenes/player.tscn" id="player_scene"]
+[ext_resource type="Script" uid="uid://bn86qwpgdvhgg" path="res://scripts/ui/rental_ui.gd" id="rental_ui_script"]
+[ext_resource type="PackedScene" path="res://scenes/npc_soraya.tscn" id="soraya_scene"]
+[ext_resource type="Script" uid="uid://bpcv48fa8d7fa" path="res://scripts/ui/tarot_ui.gd" id="tarot_ui_script"]
+[ext_resource type="Script" uid="uid://b5268vlc2q1jl" path="res://scripts/systems/treehouse_door.gd" id="thdoor_script"]
 [ext_resource type="PackedScene" path="res://scenes/npc_tian.tscn" id="tian_scene"]
-[ext_resource type="Script" path="res://scripts/collectible.gd" id="collectible_script"]
-[ext_resource type="Shape2D" path="res://resources/mushroom_collision.tres" id="mushroom_shape"]
-[ext_resource type="Script" path="res://scripts/systems/door.gd" id="door_script"]
-[ext_resource type="Script" path="res://scripts/systems/treehouse_door.gd" id="thdoor_script"]
-[ext_resource type="Script" path="res://scripts/ui/dialogue_ui.gd" id="dialogue_ui_script"]
-[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="hud_script"]
-[ext_resource type="Script" path="res://scripts/ui/tarot_ui.gd" id="tarot_ui_script"]
-[ext_resource type="Script" path="res://scripts/ui/rental_ui.gd" id="rental_ui_script"]
-[ext_resource type="Script" path="res://scripts/ui/ending_ui.gd" id="ending_ui_script"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pm3ni"]
+texture = ExtResource("2_pm3ni")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+7:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+7:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+5:5/0 = 0
+6:5/0 = 0
+7:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+3:6/0 = 0
+4:6/0 = 0
+5:6/0 = 0
+6:6/0 = 0
+7:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+7:7/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_y6deb"]
+texture = ExtResource("3_y6deb")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+7:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+7:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+5:5/0 = 0
+6:5/0 = 0
+7:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+3:6/0 = 0
+4:6/0 = 0
+5:6/0 = 0
+6:6/0 = 0
+7:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+7:7/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_og1vs"]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_pm3ni")
+sources/1 = SubResource("TileSetAtlasSource_y6deb")
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2wyq8"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vxglm"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2f3dj"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_yq6so"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fv21b"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tel4y"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qkpxi"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5q0nq"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dgi5k"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_j8jky"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kmb1v"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fuf3a"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pibwh"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_c6pm6"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5he1u"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5poiv"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2cjbq"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_chjal"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cjqg0"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vchkt"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_txyw0"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vc5cj"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nvyfr"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ty1g6"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j2jfr"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bjg73"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bu4jf"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_o7ddy"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0loja"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ids8r"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dnhof"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1v6qk"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_augu2"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tm6hj"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kf5aa"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_t5ykj"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e755i"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ro3en"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_od4ux"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xhfw6"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1epgm"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_152kg"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r4e17"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_y57op"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mlv25"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_a82wo"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gdvew"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kjtvk"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xrs0c"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xljpf"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j4bwh"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ksmap"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ygd8o"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(277, 187, 42, 37)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2s0kr"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(210, 180, 50, 45)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xaipn"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(152, 187, 42, 35)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ndrjj"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(37, 197, 25, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ih3m7"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(210, 180, 50, 45)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_11yus"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(277, 187, 42, 37)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b6ruc"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(152, 187, 42, 35)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_155or"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(37, 197, 25, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vtx2l"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(37, 197, 25, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_63lxy"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(277, 187, 42, 37)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fjhjs"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(98, 163, 29, 29)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bfu41"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(98, 163, 29, 29)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r4ag1"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(5, 475, 55, 35)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_v0wtd"]
+radius = 12.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sgvw8"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(160, 150, 30, 38)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6nfnn"]
 
 [sub_resource type="CircleShape2D" id="door_zone"]
 radius = 22.0
 
-[node name="Main" type="Node2D"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_73205"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(33, 190, 38, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0tljd"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(33, 190, 38, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mgpkq"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(33, 190, 38, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4ue30"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_k42av"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gr8w0"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_673bd"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_akjxb"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vrx01"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1uevf"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tc087"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xmrkg"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_wvlrk"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_engxj"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_raiwf"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_roort"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_gm02q"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_07pt3"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_37xlc"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_83607"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vny5k"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8lcmr"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ga3rw"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f5chs"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_eh25q"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_joh2r"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_yton5"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4ahvx"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2cr71"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1hbcg"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_m4o51"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jp61a"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_esrwe"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4b36k"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1v8b0"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_683hg"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ow8of"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hj4tt"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kqx4a"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pfcs8"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_50d7c"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ruytr"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_la3dr"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hcsi8"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_wi1le"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o7pr5"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hyj2l"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vuqay"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_wfmv0"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wxrqn"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(265, 37, 105, 98)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_n756u"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k33j2"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2cjf7"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4e8e3"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5gihh"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_407df"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(150, 22, 95, 123)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4sqen"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w6a6y"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(345, 190, 50, 35)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_knlx5"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(37, 197, 25, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pes4l"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(95, 195, 30, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s5e0g"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(95, 195, 30, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uya8e"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(345, 190, 50, 35)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2tiby"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(95, 195, 30, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1m7le"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(152, 187, 42, 35)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qqwal"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(95, 195, 30, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qr8e4"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_d7502"]
+radius = 14.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_avynn"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(28, 103, 39, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eo1ke"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(98, 163, 29, 29)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j5vj0"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kec7f"]
+radius = 14.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jgau6"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(28, 103, 39, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6a1ct"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(98, 163, 29, 29)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xhrfq"]
+atlas = ExtResource("4_og1vs")
+region = Rect2(22, 12, 96, 138)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2xesh"]
+radius = 14.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jexbj"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(28, 103, 39, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0n3pv"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(98, 163, 29, 29)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lgnnt"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(160, 150, 30, 38)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6r4by"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0gito"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(167, 218, 25, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oh722"]
+atlas = ExtResource("15_yq6so")
+region = Rect2(30, 30, 65, 95)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_m4lup"]
+radius = 16.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_redio"]
+atlas = ExtResource("15_yq6so")
+region = Rect2(30, 30, 65, 95)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_aiee3"]
+radius = 16.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8ojta"]
+atlas = ExtResource("15_yq6so")
+region = Rect2(30, 160, 65, 95)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kmcm6"]
+radius = 16.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8jwmc"]
+atlas = ExtResource("15_yq6so")
+region = Rect2(30, 160, 65, 95)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ybi5g"]
+radius = 16.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f4wrh"]
+atlas = ExtResource("15_yq6so")
+region = Rect2(410, 25, 80, 65)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_smy15"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(5, 475, 55, 35)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_d51im"]
+radius = 12.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_og54j"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(70, 488, 36, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_404go"]
+atlas = ExtResource("5_2wyq8")
+region = Rect2(70, 488, 36, 22)
+
+[node name="Main" type="Node2D" unique_id=1813857311]
 script = ExtResource("game_script")
 
-[node name="DaylightModulate" type="CanvasModulate" parent="."]
-color = Color(1, 1, 1, 1)
+[node name="DaylightModulate" type="CanvasModulate" parent="." unique_id=309313081]
 
-[node name="Areas" type="Node2D" parent="."]
+[node name="Areas" type="Node2D" parent="." unique_id=345921568]
 
-[node name="Plaza" type="Node2D" parent="Areas"]
+[node name="Plaza" type="Node2D" parent="Areas" unique_id=1922488672]
 
-[node name="Ground" type="TileMapLayer" parent="Areas/Plaza"]
+[node name="Ground" type="TileMapLayer" parent="Areas/Plaza" unique_id=1000783117]
 z_index = -3
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAEAAAABAAAAAAABAAEAAAACAAAAAAADAAMAAAADAAAAAAACAAMAAAAEAAAAAAAAAAIAAAAFAAAAAAAAAAEAAAAGAAAAAAAAAAIAAAAHAAAAAAADAAMAAAAIAAAAAAACAAEAAAAJAAAAAAADAAEAAAAKAAAAAAADAAEAAAALAAAAAAADAAIAAAAMAAAAAAAAAAMAAAANAAAAAAABAAIAAAAOAAAAAAADAAIAAAAPAAAAAAAAAAIAAAAQAAAAAAAAAAMAAAARAAAAAAAAAAAAAAASAAAAAAACAAEAAAATAAAAAAAHAAIAAAAUAAAAAAAGAAIAAAAVAAAAAAADAAAAAAAWAAAAAAACAAEAAAAXAAAAAAACAAAAAAAYAAAAAAABAAIAAAAZAAAAAAABAAIAAAAaAAAAAAADAAEAAAAbAAAAAAACAAIAAAAcAAAAAAADAAMAAAAdAAAAAAABAAIAAAAeAAAAAAAHAAAAAAAfAAAAAAACAAAAAAAgAAAAAAAAAAMAAAAhAAAAAAAEAAMAAAAiAAAAAAAHAAIAAAAjAAAAAAADAAMAAAAkAAAAAAAGAAIAAAAlAAAAAAAAAAAAAAAmAAAAAAAAAAIAAAAnAAAAAAACAAIAAAAAAAEAAAACAAMAAAABAAEAAAACAAAAAAACAAEAAAACAAAAAAADAAEAAAACAAIAAAAEAAEAAAACAAAAAAAFAAEAAAACAAEAAAAGAAEAAAADAAEAAAAHAAEAAAAFAAAAAAAIAAEAAAAAAAIAAAAJAAEAAAAAAAEAAAAKAAEAAAAAAAMAAAALAAEAAAACAAMAAAAMAAEAAAAAAAEAAAANAAEAAAABAAIAAAAOAAEAAAADAAMAAAAPAAEAAAACAAEAAAAQAAEAAAABAAMAAAARAAEAAAAAAAEAAAASAAEAAAACAAMAAAATAAEAAAACAAAAAAAUAAEAAAAAAAIAAAAVAAEAAAADAAEAAAAWAAEAAAAAAAMAAAAXAAEAAAACAAAAAAAYAAEAAAADAAMAAAAZAAEAAAAAAAEAAAAaAAEAAAABAAIAAAAbAAEAAAAGAAEAAAAcAAEAAAAAAAEAAAAdAAEAAAABAAMAAAAeAAEAAAADAAAAAAAfAAEAAAADAAMAAAAgAAEAAAACAAEAAAAhAAEAAAABAAIAAAAiAAEAAAAEAAIAAAAjAAEAAAADAAIAAAAkAAEAAAAAAAMAAAAlAAEAAAAAAAEAAAAmAAEAAAAHAAEAAAAnAAEAAAABAAAAAAAAAAIAAAAEAAEAAAABAAIAAAADAAIAAAACAAIAAAACAAMAAAADAAIAAAADAAIAAAAEAAIAAAABAAAAAAAFAAIAAAACAAAAAAAGAAIAAAABAAMAAAAHAAIAAAABAAEAAAAIAAIAAAABAAEAAAAJAAIAAAABAAAAAAAKAAIAAAADAAMAAAALAAIAAAABAAIAAAAMAAIAAAAAAAIAAAANAAIAAAABAAMAAAAOAAIAAAAAAAMAAAAPAAIAAAAGAAEAAAAQAAIAAAAAAAIAAAARAAIAAAACAAMAAAASAAIAAAADAAIAAAATAAIAAAACAAAAAAAUAAIAAAABAAAAAAAVAAIAAAACAAEAAAAWAAIAAAABAAEAAAAXAAIAAAAAAAMAAAAYAAIAAAABAAAAAAAZAAIAAAABAAMAAAAaAAIAAAABAAAAAAAbAAIAAAAAAAAAAAAcAAIAAAAEAAIAAAAdAAIAAAADAAAAAAAeAAIAAAABAAMAAAAfAAIAAAACAAAAAAAgAAIAAAADAAMAAAAhAAIAAAABAAAAAAAiAAIAAAABAAEAAAAjAAIAAAAAAAEAAAAkAAIAAAADAAIAAAAlAAIAAAAHAAIAAAAmAAIAAAACAAIAAAAnAAIAAAADAAIAAAAAAAMAAAAAAAEAAAABAAMAAAABAAEAAAACAAMAAAACAAIAAAADAAMAAAABAAMAAAAEAAMAAAADAAAAAAAFAAMAAAADAAAAAAAGAAMAAAADAAMAAAAHAAMAAAADAAAAAAAIAAMAAAACAAMAAAAJAAMAAAADAAIAAAAKAAMAAAABAAIAAAALAAMAAAAAAAEAAAAMAAMAAAAGAAAAAAANAAMAAAACAAIAAAAOAAMAAAACAAEAAAAPAAMAAAADAAAAAAAQAAMAAAACAAAAAAARAAMAAAADAAIAAAASAAMAAAABAAMAAAATAAMAAAAAAAAAAAAUAAMAAAADAAAAAAAVAAMAAAAEAAEAAAAWAAMAAAAAAAEAAAAXAAMAAAAAAAEAAAAYAAMAAAAAAAEAAAAZAAMAAAACAAIAAAAaAAMAAAAHAAMAAAAbAAMAAAAHAAIAAAAcAAMAAAABAAAAAAAdAAMAAAACAAEAAAAeAAMAAAADAAIAAAAfAAMAAAAAAAMAAAAgAAMAAAACAAMAAAAhAAMAAAAHAAIAAAAiAAMAAAAEAAEAAAAjAAMAAAAAAAMAAAAkAAMAAAABAAIAAAAlAAMAAAABAAMAAAAmAAMAAAACAAAAAAAnAAMAAAABAAMAAAAAAAQAAAAGAAMAAAABAAQAAAAFAAAAAAACAAQAAAADAAIAAAADAAQAAAAAAAIAAAAEAAQAAAADAAIAAAAFAAQAAAAAAAEAAAAGAAQAAAAHAAMAAAAHAAQAAAABAAAAAAAIAAQAAAAHAAIAAAAJAAQAAAADAAMAAAAKAAQAAAADAAEAAAALAAQAAAAAAAIAAAAMAAQAAAACAAAAAAANAAQAAAABAAIAAAAOAAQAAAAAAAAAAAAPAAQAAAADAAEAAAAQAAQAAAACAAAAAAARAAQAAAABAAIAAAASAAQAAQAEAAEAAAATAAQAAQAEAAEAAAAUAAQAAQAEAAIAAAAVAAQAAQAEAAAAAAAWAAQAAAADAAIAAAAXAAQAAAABAAMAAAAYAAQAAAACAAAAAAAZAAQAAAAAAAEAAAAaAAQAAAAAAAIAAAAbAAQAAAADAAIAAAAcAAQAAAACAAIAAAAdAAQAAAADAAAAAAAeAAQAAAAAAAEAAAAfAAQAAAACAAEAAAAgAAQAAAABAAMAAAAhAAQAAAADAAAAAAAiAAQAAAABAAAAAAAjAAQAAAADAAAAAAAkAAQAAAAEAAMAAAAlAAQAAAADAAMAAAAmAAQAAAAAAAMAAAAnAAQAAAACAAMAAAAAAAUAAAADAAAAAAABAAUAAAADAAAAAAACAAUAAAAAAAMAAAADAAUAAAADAAIAAAAEAAUAAAACAAMAAAAFAAUAAAAFAAMAAAAGAAUAAAADAAIAAAAHAAUAAAAHAAIAAAAIAAUAAAADAAEAAAAJAAUAAAABAAMAAAAKAAUAAAAEAAIAAAALAAUAAAAAAAIAAAAMAAUAAAAHAAIAAAANAAUAAAACAAIAAAAOAAUAAAAAAAAAAAAPAAUAAAADAAEAAAAQAAUAAAAAAAEAAAARAAUAAAAAAAAAAAASAAUAAQAEAAEAAAATAAUAAQAEAAEAAAAUAAUAAQAEAAEAAAAVAAUAAQAEAAAAAAAWAAUAAAABAAAAAAAXAAUAAAAAAAEAAAAYAAUAAAADAAIAAAAZAAUAAAAAAAAAAAAaAAUAAAAAAAIAAAAbAAUAAAADAAIAAAAcAAUAAAAAAAEAAAAdAAUAAAADAAIAAAAeAAUAAAADAAIAAAAfAAUAAAADAAMAAAAgAAUAAAADAAAAAAAhAAUAAAABAAIAAAAiAAUAAAABAAIAAAAjAAUAAAACAAAAAAAkAAUAAAABAAAAAAAlAAUAAAACAAEAAAAmAAUAAAABAAAAAAAnAAUAAAAGAAIAAAAAAAYAAAAHAAEAAAABAAYAAAAGAAMAAAACAAYAAAAAAAAAAAADAAYAAAAAAAEAAAAEAAYAAAADAAAAAAAFAAYAAAADAAIAAAAGAAYAAAACAAMAAAAHAAYAAAACAAMAAAAIAAYAAAABAAMAAAAJAAYAAAABAAIAAAAKAAYAAAADAAAAAAALAAYAAAADAAAAAAAMAAYAAAABAAMAAAANAAYAAAABAAIAAAAOAAYAAAADAAIAAAAPAAYAAAABAAMAAAAQAAYAAAADAAAAAAARAAYAAAACAAMAAAASAAYAAQAEAAAAAAATAAYAAQAEAAMAAAAUAAYAAQAEAAAAAAAVAAYAAQAEAAIAAAAWAAYAAAACAAEAAAAXAAYAAAABAAMAAAAYAAYAAAADAAMAAAAZAAYAAAADAAMAAAAaAAYAAAABAAMAAAAbAAYAAAABAAIAAAAcAAYAAAAAAAEAAAAdAAYAAAAAAAAAAAAeAAYAAAACAAMAAAAfAAYAAAABAAAAAAAgAAYAAAABAAAAAAAhAAYAAAAAAAEAAAAiAAYAAAAGAAMAAAAjAAYAAAACAAMAAAAkAAYAAAAHAAIAAAAlAAYAAAAAAAMAAAAmAAYAAAABAAEAAAAnAAYAAAABAAEAAAAAAAcAAAADAAEAAAABAAcAAAADAAEAAAACAAcAAAABAAMAAAADAAcAAAABAAAAAAAEAAcAAAABAAAAAAAFAAcAAAAAAAIAAAAGAAcAAAACAAEAAAAHAAcAAAACAAEAAAAIAAcAAAABAAIAAAAJAAcAAAADAAIAAAAKAAcAAAADAAIAAAALAAcAAAAAAAMAAAAMAAcAAAAAAAEAAAANAAcAAAACAAMAAAAOAAcAAAADAAEAAAAPAAcAAAABAAAAAAAQAAcAAAADAAAAAAARAAcAAAADAAMAAAASAAcAAQAEAAIAAAATAAcAAQAEAAAAAAAUAAcAAQAEAAIAAAAVAAcAAQAEAAMAAAAWAAcAAAADAAMAAAAXAAcAAAAAAAMAAAAYAAcAAAABAAMAAAAZAAcAAAABAAIAAAAaAAcAAAAAAAAAAAAbAAcAAAABAAAAAAAcAAcAAAADAAAAAAAdAAcAAAAAAAAAAAAeAAcAAAADAAMAAAAfAAcAAAADAAAAAAAgAAcAAAAEAAAAAAAhAAcAAAADAAIAAAAiAAcAAAADAAAAAAAjAAcAAAAAAAAAAAAkAAcAAAABAAMAAAAlAAcAAAABAAEAAAAmAAcAAAACAAIAAAAnAAcAAAADAAAAAAAAAAgAAAABAAAAAAABAAgAAAAAAAMAAAACAAgAAAADAAAAAAADAAgAAAADAAEAAAAEAAgAAAABAAEAAAAFAAgAAAACAAMAAAAGAAgAAAABAAIAAAAHAAgAAAACAAMAAAAIAAgAAAAGAAAAAAAJAAgAAAAAAAMAAAAKAAgAAAAAAAAAAAALAAgAAAAAAAIAAAAMAAgAAAAAAAAAAAANAAgAAAABAAEAAAAOAAgAAAAEAAMAAAAPAAgAAAAAAAEAAAAQAAgAAAABAAIAAAARAAgAAAACAAMAAAASAAgAAQAEAAMAAAATAAgAAQAEAAMAAAAUAAgAAQAEAAMAAAAVAAgAAQAEAAEAAAAWAAgAAAACAAIAAAAXAAgAAAACAAAAAAAYAAgAAAADAAEAAAAZAAgAAAACAAAAAAAaAAgAAAABAAIAAAAbAAgAAAADAAEAAAAcAAgAAAAAAAMAAAAdAAgAAAADAAIAAAAeAAgAAAACAAEAAAAfAAgAAAABAAEAAAAgAAgAAAABAAMAAAAhAAgAAAAHAAIAAAAiAAgAAAAAAAEAAAAjAAgAAAABAAMAAAAkAAgAAAADAAAAAAAlAAgAAAACAAMAAAAmAAgAAAAAAAIAAAAnAAgAAAAFAAAAAAAAAAkAAAABAAEAAAABAAkAAAAAAAIAAAACAAkAAAACAAAAAAADAAkAAAAGAAMAAAAEAAkAAAABAAEAAAAFAAkAAAACAAMAAAAGAAkAAAAAAAMAAAAHAAkAAAAGAAMAAAAIAAkAAAABAAMAAAAJAAkAAAABAAIAAAAKAAkAAAAAAAAAAAALAAkAAAAGAAEAAAAMAAkAAAADAAAAAAANAAkAAAABAAAAAAAOAAkAAAABAAAAAAAPAAkAAAACAAAAAAAQAAkAAAADAAEAAAARAAkAAAACAAIAAAASAAkAAQAEAAEAAAATAAkAAQAEAAMAAAAUAAkAAQAEAAEAAAAVAAkAAQAEAAMAAAAWAAkAAAABAAEAAAAXAAkAAAAGAAEAAAAYAAkAAAAGAAAAAAAZAAkAAAAAAAIAAAAaAAkAAAAHAAAAAAAbAAkAAAACAAAAAAAcAAkAAAACAAMAAAAdAAkAAAADAAAAAAAeAAkAAAAAAAEAAAAfAAkAAAADAAIAAAAgAAkAAAABAAAAAAAhAAkAAAAGAAAAAAAiAAkAAAACAAEAAAAjAAkAAAADAAIAAAAkAAkAAAAAAAAAAAAlAAkAAAACAAEAAAAmAAkAAAABAAAAAAAnAAkAAAADAAMAAAAAAAoAAAAFAAEAAAABAAoAAAAAAAEAAAACAAoAAAABAAAAAAADAAoAAAABAAEAAAAEAAoAAAADAAAAAAAFAAoAAAABAAEAAAAGAAoAAAACAAMAAAAHAAoAAAABAAAAAAAIAAoAAAAEAAMAAAAJAAoAAAADAAAAAAAKAAoAAAABAAIAAAALAAoAAAADAAEAAAAMAAoAAAAEAAEAAAANAAoAAAADAAEAAAAOAAoAAAABAAEAAAAPAAoAAAAAAAEAAAAQAAoAAAACAAEAAAARAAoAAAADAAAAAAASAAoAAQAEAAAAAAATAAoAAQAEAAMAAAAUAAoAAQAEAAAAAAAVAAoAAQAEAAMAAAAWAAoAAAABAAEAAAAXAAoAAAADAAAAAAAYAAoAAAACAAAAAAAZAAoAAAAAAAMAAAAaAAoAAAAFAAEAAAAbAAoAAAABAAAAAAAcAAoAAAACAAAAAAAdAAoAAAAGAAMAAAAeAAoAAAAFAAIAAAAfAAoAAAABAAMAAAAgAAoAAAADAAMAAAAhAAoAAAABAAMAAAAiAAoAAAAAAAMAAAAjAAoAAAADAAIAAAAkAAoAAAACAAMAAAAlAAoAAAACAAMAAAAmAAoAAAAAAAAAAAAnAAoAAAACAAEAAAAAAAsAAQAEAAAAAAABAAsAAQAEAAAAAAACAAsAAQAEAAIAAAADAAsAAQAEAAEAAAAEAAsAAQAEAAMAAAAFAAsAAQAEAAIAAAAGAAsAAQAEAAAAAAAHAAsAAQAEAAAAAAAIAAsAAQAEAAEAAAAJAAsAAQAEAAMA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AAAjABAAAAAAAAAAAAAkABAAAAACAAMAAAAlABAAAAABAAIAAAAmABAAAAAHAAIAAAAnABAAAAAAAAEAAAAAABEAAAAAAAEAAAABABEAAAABAAMAAAACABEAAAABAAEAAAADABEAAAADAAEAAAAEABEAAAADAAIAAAAFABEAAAACAAIAAAAGABEAAAABAAEAAAAHABEAAAABAAMAAAAIABEAAAAAAAEAAAAJABEAAAACAAIAAAAKABEAAAACAAEAAAALABEAAAAEAAIAAAAMABEAAAACAAIAAAANABEAAAABAAIAAAAOABEAAAACAAIAAAAPABEAAAACAAIAAAAQABEAAAACAAIAAAARABEAAAAAAAAAAAASABEAAQAEAAIAAAATABEAAQAEAAMAAAAUABEAAQAEAAMAAAAVABEAAQAEAAIAAAAWABEAAAACAAEAAAAXABEAAAACAAIAAAAYABEAAAAAAAMAAAAZABEAAAADAAMAAAAaABEAAAACAAEAAAAbABEAAAAAAAEAAAAcABEAAAAHAAAAAAAdABEAAAAAAAEAAAAeABEAAAADAAAAAAAfABEAAAAAAAMAAAAgABEAAAACAAMAAAAhABEAAAACAAIAAAAiABEAAAACAAIAAAAjABEAAAACAAMAAAAkABEAAAACAAIAAAAlABEAAAAAAAMAAAAmABEAAAAFAAMAAAAnABEAAAAAAAAAAAAAABIAAAACAAEAAAABABIAAAAEAAAAAAACABIAAAABAAEAAAADABIAAAABAAMAAAAEABIAAAAFAAAAAAAFABIAAAACAAIAAAAGABIAAAAGAAAAAAAHABIAAAADAAAAAAAIABIAAAACAAAAAAAJABIAAAADAAIAAAAKABIAAAADAAIAAAALABIAAAADAAAAAAAMABIAAAAFAAEAAAANABIAAAAHAAMAAAAOABIAAAACAAIAAAAPABIAAAABAAEAAAAQABIAAAAAAAAAAAARABIAAAADAAMAAAASABIAAQAEAAAAAAATABIAAQAEAAAAAAAUABIAAQAEAAAAAAAVABIAAQAEAAAAAAAWABIAAAABAAAAAAAXABIAAAADAAMAAAAYABIAAAAAAAIAAAAZABIAAAADAAAAAAAaABIAAAAAAAEAAAAbABIAAAAGAAEAAAAcABIAAAAAAAEAAAAdABIAAAAHAAEAAAAeABIAAAACAAMAAAAfABIAAAACAAIAAAAgABIAAAABAAAAAAAhABIAAAADAAEAAAAiABIAAAADAAMAAAAjABIAAAABAAIAAAAkABIAAAAAAAMAAAAlABIAAAADAAMAAAAmABIAAAAEAAMAAAAnABIAAAABAAEAAAAAABMAAAABAAEAAAABABMAAAABAAMAAAACABMAAAAAAAAAAAADABMAAAADAAAAAAAEABMAAAAAAAMAAAAFABMAAAAAAAIAAAAGABMAAAAAAAEAAAAHABMAAAAHAAIAAAAIABMAAAADAAEAAAAJABMAAAAAAAAAAAAKABMAAAABAAIAAAALABMAAAABAAMAAAAMABMAAAADAAMAAAANABMAAAABAAAAAAAOABMAAAABAAAAAAAPABMAAAABAAMAAAAQABMAAAACAAEAAAARABMAAAABAAMAAAASABMAAQAEAAMAAAATABMAAQAEAAEAAAAUABMAAQAEAAMAAAAVABMAAQAEAAIAAAAWABMAAAADAAIAAAAXABMAAAAAAAIAAAAYABMAAAABAAIAAAAZABMAAAAFAAIAAAAaABMAAAAGAAAAAAAbABMAAAABAAEAAAAcABMAAAAEAAIAAAAdABMAAAAAAAAAAAAeABMAAAAFAAMAAAAfABMAAAAAAAAAAAAgABMAAAAGAAMAAAAhABMAAAACAAEAAAAiABMAAAAAAAAAAAAjABMAAAABAAAAAAAkABMAAAAAAAEAAAAlABMAAAAGAAIAAAAmABMAAAACAAMAAAAnABMAAAADAAIAAAAAABQAAAABAAAAAAABABQAAAAAAAIAAAACABQAAAAAAAAAAAADABQAAAABAAEAAAAEABQAAAACAAMAAAAFABQAAAADAAMAAAAGABQAAAADAAIAAAAHABQAAAABAAEAAAAIABQAAAABAAEAAAAJABQAAAADAAIAAAAKABQAAAABAAAAAAALABQAAAAAAAMAAAAMABQAAAADAAIAAAANABQAAAACAAIAAAAOABQAAAACAAEAAAAPABQAAAACAAMAAAAQABQAAAACAAEAAAARABQAAAAAAAIAAAASABQAAAABAAAAAAATABQAAAAEAAAAAAAUABQAAAACAAIAAAAVABQAAAAFAAMAAAAWABQAAAADAAMAAAAXABQAAAACAAEAAAAYABQAAAADAAAAAAAZABQAAAABAAEAAAAaABQAAAACAAEAAAAbABQAAAAAAAAAAAAcABQAAAABAAEAAAAdABQAAAAAAAAAAAAeABQAAAADAAMAAAAfABQAAAADAAAAAAAgABQAAAAAAAEAAAAhABQAAAACAAAAAAAiABQAAAABAAEAAAAjABQAAAADAAAAAAAkABQAAAACAAMAAAAlABQAAAABAAIAAAAmABQAAAAFAAMAAAAnABQAAAAAAAAAAAAAABUAAAACAAEAAAABABUAAAACAAMAAAACABUAAAACAAEAAAADABUAAAABAAAAAAAEABUAAAABAAAAAAAFABUAAAACAAMAAAAGABUAAAABAAIAAAAHABUAAAAAAAEAAAAIABUAAAAAAAEAAAAJABUAAAADAAIAAAAKABUAAAABAAAAAAALABUAAAAFAAEAAAAMABUAAAABAAAAAAANABUAAAADAAEAAAAOABUAAAAFAAIAAAAPABUAAAABAAEAAAAQABUAAAADAAAAAAARABUAAAADAAIAAAASABUAAAAAAAAAAAATABUAAAADAAMAAAAUABUAAAABAAIAAAAVABUAAAACAAAAAAAWABUAAAACAAMAAAAXABUAAAAFAAEAAAAYABUAAAADAAAAAAAZABUAAAABAAIAAAAaABUAAAAAAAIAAAAbABUAAAACAAEAAAAcABUAAAACAAMAAAAdABUAAAADAAMAAAAeABUAAAACAAEAAAAfABUAAAADAAAAAAAgABUAAAABAAEAAAAhABUAAAAAAAAAAAAiABUAAAADAAEAAAAjABUAAAABAAMAAAAkABUAAAAAAAEAAAAlABUAAAAEAAIAAAAmABUAAAABAAMAAAAnABUAAAACAAMAAAAAABYAAAADAAEAAAABABYAAAAAAAEAAAACABYAAAADAAAAAAADABYAAAAFAAIAAAAEABYAAAAHAAEAAAAFABYAAAABAAEAAAAGABYAAAADAAMAAAAHABYAAAACAAAAAAAIABYAAAADAAAAAAAJABYAAAAAAAIAAAAKABYAAAADAAEAAAALABYAAAAAAAMAAAAMABYAAAAFAAAAAAANABYAAAAAAAAAAAAOABYAAAAAAAAAAAAPABYAAAABAAIAAAAQABYAAAAHAAAAAAARABYAAAABAAIAAAASABYAAAAGAAIAAAATABYAAAADAAEAAAAUABYAAAAAAAMAAAAVABYAAAADAAIAAAAWABYAAAABAAAAAAAXABYAAAADAAAAAAAYABYAAAADAAMAAAAZABYAAAAAAAIAAAAaABYAAAACAAAAAAAbABYAAAADAAMAAAAcABYAAAACAAMAAAAdABYAAAACAAMAAAAeABYAAAABAAEAAAAfABYAAAADAAMAAAAgABYAAAABAAEAAAAhABYAAAADAAIAAAAiABYAAAAAAAAAAAAjABYAAAADAAAAAAAkABYAAAAFAAEAAAAlABYAAAADAAEAAAAmABYAAAACAAMAAAAnABYAAAABAAIAAAAAABcAAAAAAAMAAAABABcAAAACAAAAAAACABcAAAACAAMAAAADABcAAAAFAAMAAAAEABcAAAAAAAIAAAAFABcAAAADAAAAAAAGABcAAAADAAAAAAAHABcAAAAAAAAAAAAIABcAAAACAAIAAAAJABcAAAACAAMAAAAKABcAAAAAAAMAAAALABcAAAABAAIAAAAMABcAAAAHAAMAAAANABcAAAABAAIAAAAOABcAAAABAAAAAAAPABcAAAACAAMAAAAQABcAAAAAAAEAAAARABcAAAADAAMAAAASABcAAAAAAAIAAAATABcAAAAAAAIAAAAUABcAAAADAAIAAAAVABcAAAAAAAAAAAAWABcAAAAAAAMAAAAXABcAAAAAAAMAAAAYABcAAAADAAAAAAAZABcAAAACAAAAAAAaABcAAAAAAAEAAAAbABcAAAADAAAAAAAcABcAAAAAAAEAAAAdABcAAAADAAIAAAAeABcAAAABAAEAAAAfABcAAAABAAAAAAAgABcAAAAAAAMAAAAhABcAAAABAAIAAAAiABcAAAABAAAAAAAjABcAAAACAAEAAAAkABcAAAABAAMAAAAlABcAAAABAAEAAAAmABcAAAAGAAEAAAAnABcAAAAAAAAAAAA=")
+tile_set = SubResource("TileSet_og1vs")
 
-[node name="Props" type="Node2D" parent="Areas/Plaza"]
+[node name="Props" type="Node2D" parent="Areas/Plaza" unique_id=1692147885]
 
-[node name="PlayerSpawn" type="Marker2D" parent="Areas/Plaza"]
+[node name="_Sprite2D_39" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=577790571]
+position = Vector2(80, 70)
+texture = SubResource("AtlasTexture_2wyq8")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@40" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=1016759077]
+position = Vector2(80, 62)
+
+[node name="@CollisionShape2D@41" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@40" unique_id=74073032]
+shape = SubResource("CircleShape2D_vxglm")
+
+[node name="@Sprite2D@42" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1523479883]
+position = Vector2(80, 730)
+texture = SubResource("AtlasTexture_2f3dj")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@43" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=1971345336]
+position = Vector2(80, 722)
+
+[node name="@CollisionShape2D@44" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@43" unique_id=1033012082]
+shape = SubResource("CircleShape2D_yq6so")
+
+[node name="@Sprite2D@45" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1340262117]
+position = Vector2(210, 70)
+texture = SubResource("AtlasTexture_fv21b")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@46" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=400550949]
+position = Vector2(210, 62)
+
+[node name="@CollisionShape2D@47" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@46" unique_id=1762290445]
+shape = SubResource("CircleShape2D_tel4y")
+
+[node name="@Sprite2D@48" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1759394043]
+position = Vector2(210, 730)
+texture = SubResource("AtlasTexture_qkpxi")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@49" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=524267326]
+position = Vector2(210, 722)
+
+[node name="@CollisionShape2D@50" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@49" unique_id=1898654946]
+shape = SubResource("CircleShape2D_5q0nq")
+
+[node name="@Sprite2D@51" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=457130146]
+position = Vector2(340, 70)
+texture = SubResource("AtlasTexture_dgi5k")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@52" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=443796228]
+position = Vector2(340, 62)
+
+[node name="@CollisionShape2D@53" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@52" unique_id=1906107943]
+shape = SubResource("CircleShape2D_j8jky")
+
+[node name="@Sprite2D@54" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=2074468958]
+position = Vector2(340, 730)
+texture = SubResource("AtlasTexture_kmb1v")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@55" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=1282988071]
+position = Vector2(340, 722)
+
+[node name="@CollisionShape2D@56" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@55" unique_id=573834858]
+shape = SubResource("CircleShape2D_fuf3a")
+
+[node name="@Sprite2D@57" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1492701442]
+position = Vector2(470, 70)
+texture = SubResource("AtlasTexture_pibwh")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@58" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=239208347]
+position = Vector2(470, 62)
+
+[node name="@CollisionShape2D@59" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@58" unique_id=1068567443]
+shape = SubResource("CircleShape2D_c6pm6")
+
+[node name="@Sprite2D@60" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1474571200]
+position = Vector2(470, 730)
+texture = SubResource("AtlasTexture_5he1u")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@61" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=132886726]
+position = Vector2(470, 722)
+
+[node name="@CollisionShape2D@62" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@61" unique_id=1430409837]
+shape = SubResource("CircleShape2D_5poiv")
+
+[node name="@Sprite2D@63" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1127979146]
+position = Vector2(600, 70)
+texture = SubResource("AtlasTexture_2cjbq")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@64" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=1124841910]
+position = Vector2(600, 62)
+
+[node name="@CollisionShape2D@65" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@64" unique_id=245886943]
+shape = SubResource("CircleShape2D_chjal")
+
+[node name="@Sprite2D@66" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=141304054]
+position = Vector2(600, 730)
+texture = SubResource("AtlasTexture_cjqg0")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@67" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=32808103]
+position = Vector2(600, 722)
+
+[node name="@CollisionShape2D@68" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@67" unique_id=721945641]
+shape = SubResource("CircleShape2D_vchkt")
+
+[node name="@Sprite2D@69" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1299037583]
+position = Vector2(730, 70)
+texture = SubResource("AtlasTexture_txyw0")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@70" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=959789897]
+position = Vector2(730, 62)
+
+[node name="@CollisionShape2D@71" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@70" unique_id=2099035241]
+shape = SubResource("CircleShape2D_vc5cj")
+
+[node name="@Sprite2D@72" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=118225465]
+position = Vector2(730, 730)
+texture = SubResource("AtlasTexture_nvyfr")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@73" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=637031845]
+position = Vector2(730, 722)
+
+[node name="@CollisionShape2D@74" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@73" unique_id=382969105]
+shape = SubResource("CircleShape2D_ty1g6")
+
+[node name="@Sprite2D@75" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1852502388]
+position = Vector2(860, 70)
+texture = SubResource("AtlasTexture_j2jfr")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@76" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=1697234941]
+position = Vector2(860, 62)
+
+[node name="@CollisionShape2D@77" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@76" unique_id=1353816694]
+shape = SubResource("CircleShape2D_bjg73")
+
+[node name="@Sprite2D@78" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=113006128]
+position = Vector2(860, 730)
+texture = SubResource("AtlasTexture_bu4jf")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@79" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=1779959134]
+position = Vector2(860, 722)
+
+[node name="@CollisionShape2D@80" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@79" unique_id=1548747088]
+shape = SubResource("CircleShape2D_o7ddy")
+
+[node name="@Sprite2D@81" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1140226989]
+position = Vector2(990, 70)
+texture = SubResource("AtlasTexture_0loja")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@82" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=1341175093]
+position = Vector2(990, 62)
+
+[node name="@CollisionShape2D@83" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@82" unique_id=746054]
+shape = SubResource("CircleShape2D_ids8r")
+
+[node name="@Sprite2D@84" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1319236369]
+position = Vector2(990, 730)
+texture = SubResource("AtlasTexture_dnhof")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@85" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=2070788740]
+position = Vector2(990, 722)
+
+[node name="@CollisionShape2D@86" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@85" unique_id=156468086]
+shape = SubResource("CircleShape2D_1v6qk")
+
+[node name="@Sprite2D@87" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1284233420]
+position = Vector2(1120, 70)
+texture = SubResource("AtlasTexture_augu2")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@88" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=1529969395]
+position = Vector2(1120, 62)
+
+[node name="@CollisionShape2D@89" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@88" unique_id=1727981191]
+shape = SubResource("CircleShape2D_tm6hj")
+
+[node name="@Sprite2D@90" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1634537653]
+position = Vector2(1120, 730)
+texture = SubResource("AtlasTexture_kf5aa")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@91" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=1083730835]
+position = Vector2(1120, 722)
+
+[node name="@CollisionShape2D@92" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@91" unique_id=737213866]
+shape = SubResource("CircleShape2D_t5ykj")
+
+[node name="@Sprite2D@93" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1373098746]
+position = Vector2(40, 160)
+texture = SubResource("AtlasTexture_e755i")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@94" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=820041137]
+position = Vector2(40, 152)
+
+[node name="@CollisionShape2D@95" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@94" unique_id=1057542050]
+shape = SubResource("CircleShape2D_ro3en")
+
+[node name="@Sprite2D@96" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=83264785]
+position = Vector2(1240, 160)
+texture = SubResource("AtlasTexture_od4ux")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@97" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=569431733]
+position = Vector2(1240, 152)
+
+[node name="@CollisionShape2D@98" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@97" unique_id=524204938]
+shape = SubResource("CircleShape2D_xhfw6")
+
+[node name="@Sprite2D@99" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1563367607]
+position = Vector2(40, 290)
+texture = SubResource("AtlasTexture_1epgm")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@100" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=1071507393]
+position = Vector2(40, 282)
+
+[node name="@CollisionShape2D@101" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@100" unique_id=467415780]
+shape = SubResource("CircleShape2D_152kg")
+
+[node name="@Sprite2D@102" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=640525067]
+position = Vector2(1240, 290)
+texture = SubResource("AtlasTexture_r4e17")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@103" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=2129327371]
+position = Vector2(1240, 282)
+
+[node name="@CollisionShape2D@104" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@103" unique_id=1193277300]
+shape = SubResource("CircleShape2D_y57op")
+
+[node name="@Sprite2D@105" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1841147551]
+position = Vector2(40, 550)
+texture = SubResource("AtlasTexture_mlv25")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@106" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=133375920]
+position = Vector2(40, 542)
+
+[node name="@CollisionShape2D@107" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@106" unique_id=1351817775]
+shape = SubResource("CircleShape2D_a82wo")
+
+[node name="@Sprite2D@108" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=221541809]
+position = Vector2(1240, 550)
+texture = SubResource("AtlasTexture_gdvew")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@109" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=2009524955]
+position = Vector2(1240, 542)
+
+[node name="@CollisionShape2D@110" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@109" unique_id=1426229226]
+shape = SubResource("CircleShape2D_kjtvk")
+
+[node name="@Sprite2D@111" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=817905700]
+position = Vector2(40, 680)
+texture = SubResource("AtlasTexture_xrs0c")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@112" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=509761544]
+position = Vector2(40, 672)
+
+[node name="@CollisionShape2D@113" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@112" unique_id=140999223]
+shape = SubResource("CircleShape2D_xljpf")
+
+[node name="@Sprite2D@114" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1714519937]
+position = Vector2(1240, 680)
+texture = SubResource("AtlasTexture_j4bwh")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@115" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=1610827298]
+position = Vector2(1240, 672)
+
+[node name="@CollisionShape2D@116" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@115" unique_id=1109491880]
+shape = SubResource("CircleShape2D_ksmap")
+
+[node name="@Sprite2D@117" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=644331472]
+position = Vector2(1073.6069, 435.82138)
+texture = SubResource("AtlasTexture_ygd8o")
+offset = Vector2(0, -18.5)
+
+[node name="@Sprite2D@118" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1881725545]
+position = Vector2(143.80681, 645.46436)
+texture = SubResource("AtlasTexture_2s0kr")
+offset = Vector2(0, -22.5)
+
+[node name="@Sprite2D@119" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1994482823]
+position = Vector2(680.6642, 638.59625)
+texture = SubResource("AtlasTexture_xaipn")
+offset = Vector2(0, -17.5)
+
+[node name="@Sprite2D@120" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=259081750]
+position = Vector2(1007.9979, 143.68494)
+texture = SubResource("AtlasTexture_ndrjj")
+offset = Vector2(0, -10)
+
+[node name="@Sprite2D@121" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=708125602]
+position = Vector2(860.5717, 627.89954)
+texture = SubResource("AtlasTexture_ih3m7")
+offset = Vector2(0, -22.5)
+
+[node name="@Sprite2D@122" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=135613470]
+position = Vector2(854.54486, 689.96155)
+texture = SubResource("AtlasTexture_11yus")
+offset = Vector2(0, -18.5)
+
+[node name="@Sprite2D@123" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=859563678]
+position = Vector2(464.1592, 500.05338)
+texture = SubResource("AtlasTexture_b6ruc")
+offset = Vector2(0, -17.5)
+
+[node name="@Sprite2D@124" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1471883846]
+position = Vector2(733.5217, 335.9276)
+texture = SubResource("AtlasTexture_155or")
+offset = Vector2(0, -10)
+
+[node name="@Sprite2D@125" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=319107927]
+position = Vector2(800.6483, 259.9555)
+texture = SubResource("AtlasTexture_vtx2l")
+offset = Vector2(0, -10)
+
+[node name="@Sprite2D@126" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=311404281]
+position = Vector2(257.61218, 687.5377)
+texture = SubResource("AtlasTexture_63lxy")
+offset = Vector2(0, -18.5)
+
+[node name="@Sprite2D@127" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=1005203300]
+position = Vector2(1190, 340)
+texture = SubResource("AtlasTexture_fjhjs")
+offset = Vector2(0, -14.5)
+
+[node name="@Sprite2D@128" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=988762540]
+position = Vector2(80, 340)
+texture = SubResource("AtlasTexture_bfu41")
+offset = Vector2(0, -14.5)
+
+[node name="@Sprite2D@129" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=548151728]
+position = Vector2(760, 260)
+texture = SubResource("AtlasTexture_r4ag1")
+offset = Vector2(0, -17.5)
+
+[node name="@StaticBody2D@130" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=1253586946]
+position = Vector2(760, 252)
+
+[node name="@CollisionShape2D@131" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@130" unique_id=1571961521]
+shape = SubResource("CircleShape2D_v0wtd")
+
+[node name="@Sprite2D@132" type="Sprite2D" parent="Areas/Plaza/Props" unique_id=992343553]
+position = Vector2(480, 300)
+texture = SubResource("AtlasTexture_sgvw8")
+offset = Vector2(0, -19)
+
+[node name="@StaticBody2D@133" type="StaticBody2D" parent="Areas/Plaza/Props" unique_id=76582216]
+position = Vector2(480, 292)
+
+[node name="@CollisionShape2D@134" type="CollisionShape2D" parent="Areas/Plaza/Props/@StaticBody2D@133" unique_id=1946330618]
+shape = SubResource("CircleShape2D_6nfnn")
+
+[node name="PlayerSpawn" type="Marker2D" parent="Areas/Plaza" unique_id=1740127954]
 position = Vector2(640, 480)
 
-[node name="SpawnFromEast" type="Marker2D" parent="Areas/Plaza"]
+[node name="SpawnFromEast" type="Marker2D" parent="Areas/Plaza" unique_id=1339676992]
 position = Vector2(1160, 384)
 
-[node name="SpawnFromWest" type="Marker2D" parent="Areas/Plaza"]
+[node name="SpawnFromWest" type="Marker2D" parent="Areas/Plaza" unique_id=7533962]
 position = Vector2(130, 384)
 
-[node name="DoorEast" type="Area2D" parent="Areas/Plaza"]
+[node name="DoorEast" type="Area2D" parent="Areas/Plaza" unique_id=68856034]
 position = Vector2(1248, 384)
 script = ExtResource("door_script")
 target_area = "treehouse_district"
 target_spawn = "SpawnFromPlaza"
 
-[node name="Zone" type="CollisionShape2D" parent="Areas/Plaza/DoorEast"]
+[node name="Zone" type="CollisionShape2D" parent="Areas/Plaza/DoorEast" unique_id=443835959]
 shape = SubResource("door_zone")
 
-[node name="DoorWest" type="Area2D" parent="Areas/Plaza"]
+[node name="DoorWest" type="Area2D" parent="Areas/Plaza" unique_id=833702469]
 position = Vector2(20, 384)
 script = ExtResource("door_script")
 target_area = "stone_nest_tower"
 target_spawn = "SpawnFromPlaza"
 
-[node name="Zone" type="CollisionShape2D" parent="Areas/Plaza/DoorWest"]
+[node name="Zone" type="CollisionShape2D" parent="Areas/Plaza/DoorWest" unique_id=1433302491]
 shape = SubResource("door_zone")
 
-[node name="Mushrooms" type="Node2D" parent="Areas/Plaza"]
+[node name="Mushrooms" type="Node2D" parent="Areas/Plaza" unique_id=395089219]
 
-[node name="Mushroom1" type="Area2D" parent="Areas/Plaza/Mushrooms"]
+[node name="Mushroom1" type="Area2D" parent="Areas/Plaza/Mushrooms" unique_id=2144188267]
 position = Vector2(500, 420)
 script = ExtResource("collectible_script")
 
-[node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Mushrooms/Mushroom1"]
+[node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Mushrooms/Mushroom1" unique_id=65420023]
 shape = ExtResource("mushroom_shape")
 
-[node name="Icon" type="Sprite2D" parent="Areas/Plaza/Mushrooms/Mushroom1"]
+[node name="Icon" type="Sprite2D" parent="Areas/Plaza/Mushrooms/Mushroom1" unique_id=1350669099]
+texture = SubResource("AtlasTexture_73205")
 
-[node name="Mushroom2" type="Area2D" parent="Areas/Plaza/Mushrooms"]
+[node name="Mushroom2" type="Area2D" parent="Areas/Plaza/Mushrooms" unique_id=477610003]
 position = Vector2(1000, 380)
 script = ExtResource("collectible_script")
 
-[node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Mushrooms/Mushroom2"]
+[node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Mushrooms/Mushroom2" unique_id=1899063753]
 shape = ExtResource("mushroom_shape")
 
-[node name="Icon" type="Sprite2D" parent="Areas/Plaza/Mushrooms/Mushroom2"]
+[node name="Icon" type="Sprite2D" parent="Areas/Plaza/Mushrooms/Mushroom2" unique_id=971245128]
+texture = SubResource("AtlasTexture_0tljd")
 
-[node name="Mushroom3" type="Area2D" parent="Areas/Plaza/Mushrooms"]
+[node name="Mushroom3" type="Area2D" parent="Areas/Plaza/Mushrooms" unique_id=823661353]
 position = Vector2(891, 500)
 script = ExtResource("collectible_script")
 
-[node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Mushrooms/Mushroom3"]
+[node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Mushrooms/Mushroom3" unique_id=1131058073]
 shape = ExtResource("mushroom_shape")
 
-[node name="Icon" type="Sprite2D" parent="Areas/Plaza/Mushrooms/Mushroom3"]
+[node name="Icon" type="Sprite2D" parent="Areas/Plaza/Mushrooms/Mushroom3" unique_id=362941843]
+texture = SubResource("AtlasTexture_mgpkq")
 
-[node name="Soraya" parent="Areas/Plaza" instance=ExtResource("soraya_scene")]
+[node name="Soraya" parent="Areas/Plaza" unique_id=1842856679 instance=ExtResource("soraya_scene")]
 position = Vector2(640, 300)
 
-[node name="TreehouseDistrict" type="Node2D" parent="Areas"]
+[node name="TreehouseDistrict" type="Node2D" parent="Areas" unique_id=1339552219]
 
-[node name="Ground" type="TileMapLayer" parent="Areas/TreehouseDistrict"]
+[node name="Ground" type="TileMapLayer" parent="Areas/TreehouseDistrict" unique_id=1698090374]
 z_index = -3
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAEAAAABAAAAAAADAAMAAAACAAAAAAACAAMAAAADAAAAAAACAAIAAAAEAAAAAAABAAMAAAAFAAAAAAAAAAEAAAAGAAAAAAADAAIAAAAHAAAAAAAAAAIAAAAIAAAAAAACAAAAAAAJAAAAAAACAAMAAAAKAAAAAAAAAAEAAAALAAAAAAAAAAMAAAAMAAAAAAABAAEAAAANAAAAAAACAAAAAAAOAAAAAAAAAAEAAAAPAAAAAAABAAEAAAAQAAAAAAADAAAAAAARAAAAAAADAAMAAAASAAAAAAAAAAEAAAATAAAAAAACAAEAAAAUAAAAAAAAAAAAAAAVAAAAAAADAAAAAAAWAAAAAAACAAIAAAAXAAAAAAADAAMAAAAYAAAAAAACAAAAAAAZAAAAAAABAAEAAAAaAAAAAAACAAMAAAAbAAAAAAAEAAIAAAAcAAAAAAADAAMAAAAdAAAAAAAAAAIAAAAeAAAAAAAGAAMAAAAfAAAAAAAAAAEAAAAgAAAAAAABAAIAAAAhAAAAAAAAAAIAAAAiAAAAAAAAAAAAAAAjAAAAAAACAAMAAAAkAAAAAAACAAIAAAAlAAAAAAACAAMAAAAmAAAAAAABAAMAAAAnAAAAAAAAAAAAAAAAAAEAAAADAAIAAAABAAEAAAAHAAAAAAACAAEAAAADAAIAAAADAAEAAAADAAIAAAAEAAEAAAADAAEAAAAFAAEAAAAAAAAAAAAGAAEAAAADAAEAAAAHAAEAAAACAAIAAAAIAAEAAAACAAEAAAAJAAEAAAACAAMAAAAKAAEAAAAAAAIAAAALAAEAAAADAAIAAAAMAAEAAAADAAEAAAANAAEAAAAGAAEAAAAOAAEAAAABAAMAAAAPAAEAAAAHAAEAAAAQAAEAAAAAAAMAAAARAAEAAAAGAAMAAAASAAEAAAACAAMAAAATAAEAAAACAAEAAAAUAAEAAAACAAMAAAAVAAEAAAACAAMAAAAWAAEAAAABAAEAAAAXAAEAAAABAAAAAAAYAAEAAAACAAEAAAAZAAEAAAAAAAIAAAAaAAEAAAABAAEAAAAbAAEAAAAFAAAAAAAcAAEAAAADAAEAAAAdAAEAAAABAAAAAAAeAAEAAAAAAAEAAAAfAAEAAAADAAMAAAAgAAEAAAADAAEAAAAhAAEAAAAAAAEAAAAiAAEAAAADAAIAAAAjAAEAAAACAAMAAAAkAAEAAAABAAIAAAAlAAEAAAADAAAAAAAmAAEAAAAEAAAAAAAnAAEAAAACAAAAAAAAAAIAAAACAAMAAAABAAIAAAAAAAEAAAACAAIAAAAAAAEAAAADAAIAAAABAAEAAAAEAAIAAAACAAMAAAAFAAIAAAADAAAAAAAGAAIAAAAAAAMAAAAHAAIAAAAAAAIAAAAIAAIAAAADAAIAAAAJAAIAAAADAAAAAAAKAAIAAAABAAMAAAALAAIAAAAEAAIAAAAMAAIAAAADAAAAAAANAAIAAAACAAIAAAAOAAIAAAACAAIAAAAPAAIAAAAEAAAAAAAQAAIAAAABAAMAAAARAAIAAAAHAAEAAAASAAIAAAAEAAIAAAATAAIAAAAHAAIAAAAUAAIAAAAHAAIAAAAVAAIAAAABAAMAAAAWAAIAAAADAAMAAAAXAAIAAAABAAMAAAAYAAIAAAAAAAMAAAAZAAIAAAAGAAEAAAAaAAIAAAADAAIAAAAbAAIAAAAGAAIAAAAcAAIAAAAAAAEAAAAdAAIAAAACAAEAAAAeAAIAAAAEAAMAAAAfAAIAAAACAAEAAAAgAAIAAAAGAAIAAAAhAAIAAAADAAAAAAAiAAIAAAABAAEAAAAjAAIAAAAAAAAAAAAkAAIAAAADAAAAAAAlAAIAAAABAAEAAAAmAAIAAAACAAEAAAAnAAIAAAABAAAAAAAAAAMAAAAAAAMAAAABAAMAAAACAAIAAAACAAMAAAADAAMAAAADAAMAAAADAAMAAAAEAAMAAAAHAAAAAAAFAAMAAAAEAAAAAAAGAAMAAAAFAAMAAAAHAAMAAAACAAMAAAAIAAMAAAABAAAAAAAJAAMAAAABAAAAAAAKAAMAAAABAAEAAAALAAMAAAACAAEAAAAMAAMAAAACAAIAAAANAAMAAAADAAAAAAAOAAMAAAADAAAAAAAPAAMAAAADAAIAAAAQAAMAAAADAAAAAAARAAMAAAABAAMAAAASAAMAAAACAAEAAAATAAMAAAACAAAAAAAUAAMAAAABAAMAAAAVAAMAAAABAAIAAAAWAAMAAAADAAAAAAAXAAMAAAACAAEAAAAYAAMAAAAAAAIAAAAZAAMAAAACAAEAAAAaAAMAAAAAAAIAAAAbAAMAAAACAAAAAAAcAAMAAAADAAAAAAAdAAMAAAADAAMAAAAeAAMAAAAFAAIAAAAfAAMAAAABAAEAAAAgAAMAAAACAAIAAAAhAAMAAAAAAAIAAAAiAAMAAAAAAAAAAAAjAAMAAAAAAAIAAAAkAAMAAAACAAMAAAAlAAMAAAAEAAMAAAAmAAMAAAAFAAAAAAAnAAMAAAADAAAAAAAAAAQAAAAAAAIAAAABAAQAAAAAAAIAAAACAAQAAAAEAAIAAAADAAQAAAAAAAEAAAAEAAQAAAAAAAAAAAAFAAQAAAABAAEAAAAGAAQAAAAAAAMAAAAHAAQAAAADAAMAAAAIAAQAAAACAAAAAAAJAAQAAAAAAAMAAAAKAAQAAAAAAAMAAAALAAQAAAAFAAIAAAAMAAQAAAAAAAMAAAANAAQAAAADAAMAAAAOAAQAAAACAAMAAAAPAAQAAAABAAIAAAAQAAQAAAABAAAAAAARAAQAAAAFAAIAAAASAAQAAAABAAAAAAATAAQAAAADAAIAAAAUAAQAAAAAAAIAAAAVAAQAAAAAAAMAAAAWAAQAAAADAAEAAAAXAAQAAAACAAMAAAAYAAQAAAADAAMAAAAZAAQAAAADAAIAAAAaAAQAAAAFAAMAAAAbAAQAAAAAAAIAAAAcAAQAAAADAAAAAAAdAAQAAAAAAAMAAAAeAAQAAAABAAAAAAAfAAQAAAABAAEAAAAgAAQAAAABAAEAAAAhAAQAAAADAAEAAAAiAAQAAAADAAIAAAAjAAQAAAAGAAIAAAAkAAQAAAADAAEAAAAlAAQAAAADAAIAAAAmAAQAAAABAAMAAAAnAAQAAAAGAAAAAAAAAAUAAAADAAIAAAABAAUAAAAAAAEAAAACAAUAAAAAAAIAAAADAAUAAAAAAAMAAAAEAAUAAAADAAMAAAAFAAUAAAADAAIAAAAGAAUAAAABAAAAAAAHAAUAAAABAAAAAAAIAAUAAAADAAAAAAAJAAUAAAAAAAEAAAAKAAUAAAAAAAMAAAALAAUAAAABAAAAAAAMAAUAAAABAAAAAAANAAUAAAADAAEAAAAOAAUAAAADAAAAAAAPAAUAAAAAAAMAAAAQAAUAAAAAAAAAAAARAAUAAAADAAEAAAASAAUAAAADAAMAAAATAAUAAAABAAMAAAAUAAUAAAACAAAAAAAVAAUAAAACAAMAAAAWAAUAAAADAAAAAAAXAAUAAAADAAEAAAAYAAUAAAABAAMAAAAZAAUAAAAAAAIAAAAaAAUAAAADAAIAAAAbAAUAAAACAAAAAAAcAAUAAAAEAAEAAAAdAAUAAAAAAAMAAAAeAAUAAAADAAIAAAAfAAUAAAAAAAMAAAAgAAUAAAABAAAAAAAhAAUAAAABAAIAAAAiAAUAAAABAAEAAAAjAAUAAAAAAAMAAAAkAAUAAAACAAIAAAAlAAUAAAACAAAAAAAmAAUAAAAGAAAAAAAnAAUAAAABAAAAAAAAAAYAAAADAAAAAAABAAYAAAADAAIAAAACAAYAAAADAAIAAAADAAYAAAABAAAAAAAEAAYAAAABAAEAAAAFAAYAAAACAAIAAAAGAAYAAAABAAAAAAAHAAYAAAAFAAEAAAAIAAYAAAABAAMAAAAJAAYAAAADAAMAAAAKAAYAAAADAAEAAAALAAYAAAADAAMAAAAMAAYAAAACAAMAAAANAAYAAAAAAAMAAAAOAAYAAAABAAIAAAAPAAYAAAAAAAAAAAAQAAYAAAACAAAAAAARAAYAAAABAAEAAAASAAYAAAAHAAAAAAATAAYAAAAGAAIAAAAUAAYAAAAAAAIAAAAVAAYAAAADAAEAAAAWAAYAAAABAAIAAAAXAAYAAAACAAEAAAAYAAYAAAACAAIAAAAZAAYAAAADAAEAAAAaAAYAAAAHAAAAAAAbAAYAAAAHAAMAAAAcAAYAAAAFAAEAAAAdAAYAAAACAAAAAAAeAAYAAAABAAEAAAAfAAYAAAABAAIAAAAgAAYAAAABAAIAAAAhAAYAAAACAAIAAAAiAAYAAAAFAAIAAAAjAAYAAAAAAAAAAAAkAAYAAAAAAAMAAAAlAAYAAAAAAAMAAAAmAAYAAAAAAAAAAAAnAAYAAAADAAEAAAAAAAcAAAADAAIAAAABAAcAAAACAAEAAAACAAcAAAAFAAMAAAADAAcAAAADAAIAAAAEAAcAAAAAAAMAAAAFAAcAAAAAAAEAAAAGAAcAAAAAAAMAAAAHAAcAAAACAAMAAAAIAAcAAAADAAIAAAAJAAcAAAADAAMAAAAKAAcAAAABAAIAAAALAAcAAAAAAAAAAAAMAAcAAAADAAAAAAANAAcAAAAAAAEAAAAOAAcAAAACAAIAAAAPAAcAAAAAAAIAAAAQAAcAAAACAAMAAAARAAcAAAADAAMAAAASAAcAAAAAAAIAAAATAAcAAAADAAAAAAAUAAcAAAAAAAMAAAAVAAcAAAABAAMAAAAWAAcAAAABAAAAAAAXAAcAAAABAAMAAAAYAAcAAAACAAMAAAAZAAcAAAABAAMAAAAaAAcAAAACAAAAAAAbAAcAAAACAAEAAAAcAAcAAAACAAMAAAAdAAcAAAABAAAAAAAeAAcAAAAHAAMAAAAfAAcAAAADAAMAAAAgAAcAAAAFAAMAAAAhAAcAAAADAAAAAAAiAAcAAAABAAMAAAAjAAcAAAAAAAMAAAAkAAcAAAADAAEAAAAlAAcAAAACAAAAAAAmAAcAAAABAAEAAAAnAAcAAAAAAAAAAAAAAAgAAAADAAAAAAABAAgAAAAFAAEAAAACAAgAAAADAAIAAAADAAgAAAAAAAAAAAAEAAgAAAAAAAIAAAAFAAgAAAABAAIAAAAGAAgAAAABAAIAAAAHAAgAAAADAAAAAAAIAAgAAAAAAAIAAAAJAAgAAQAEAAIAAAAKAAgAAAAFAAEAAAALAAgAAAAAAAMAAAAMAAgAAAACAAMAAAANAAgAAAACAAAAAAAOAAgAAAADAAAAAAAPAAgAAAADAAAAAAAQAAgAAAACAAAAAAARAAgAAAACAAEAAAASAAgAAAADAAEAAAATAAgAAAAAAAMAAAAUAAgAAQAEAAMAAAAVAAgAAAAGAAMAAAAWAAgAAAAFAAAAAAAXAAgAAAAAAAMAAAAYAAgAAAABAAAAAAAZAAgAAAABAAEAAAAaAAgAAAACAAEAAAAbAAgAAAADAAIAAAAcAAgAAAAAAAMAAAAdAAgAAAADAAMAAAAeAAgAAQAEAAIAAAAfAAgAAAABAAIAAAAgAAgAAAACAAAAAAAhAAgAAAAFAAMAAAAiAAgAAAABAAAAAAAjAAgAAAADAAIAAAAkAAgAAAADAAAAAAAlAAgAAAACAAIAAAAmAAgAAAACAAMAAAAnAAgAAAABAAAAAAAAAAkAAAADAAEAAAABAAkAAAAAAAMAAAACAAkAAAABAAAAAAADAAkAAAACAAIAAAAEAAkAAAACAAMAAAAFAAkAAAABAAIAAAAGAAkAAAAAAAIAAAAHAAkAAAACAAEAAAAIAAkAAAAHAAMAAAAJAAkAAQAEAAEAAAAKAAkAAAABAAAAAAALAAkAAAABAAMAAAAMAAkAAAADAAIAAAANAAkAAAAAAAAAAAAOAAkAAAADAAIAAAAPAAkAAAADAAEAAAAQAAkAAAAAAAIAAAARAAkAAAABAAEAAAASAAkAAAACAAIAAAATAAkAAAABAAIAAAAUAAkAAQAEAAEAAAAVAAkAAAADAAEAAAAWAAkAAAABAAIAAAAXAAkAAAADAAAAAAAYAAkAAAACAAAAAAAZAAkAAAACAAAAAAAaAAkAAAAAAAEAAAAbAAkAAAADAAEAAAAcAAkAAAAAAAEAAAAdAAkAAAACAAIAAAAeAAkAAQAEAAIAAAAfAAkAAAAGAAEAAAAgAAkAAAACAAEAAAAhAAkAAAABAAAAAAAiAAkAAAACAAEAAAAjAAkAAAABAAIAAAAkAAkAAAAEAAEAAAAlAAkAAAABAAAAAAAmAAkAAAADAAAAAAAnAAkAAAACAAEAAAAAAAoAAAAAAAIAAAABAAoAAAACAAEAAAACAAoAAAACAAMAAAADAAoAAAAAAAAAAAAEAAoAAAAAAAAAAAAFAAoAAAADAAIAAAAGAAoAAAADAAIAAAAHAAoAAAADAAAAAAAIAAoAAAACAAIAAAAJAAoAAQAEAAAAAAAKAAoAAAAAAAIAAAALAAoAAAAEAAEAAAAMAAoAAAADAAAAAAANAAoAAAACAAMAAAAOAAoAAAAAAAEAAAAPAAoAAAACAAIAAAAQAAoAAAAAAAIAAAARAAoAAAADAAEAAAASAAoAAAAHAAAAAAATAAoAAAAAAAAAAAAUAAoAAQAEAAEAAAAVAAoAAAAAAAAAAAAWAAoAAAAAAAIAAAAXAAoAAAAEAAMAAAAYAAoAAAAAAAMAAAAZAAoAAAADAAEAAAAaAAoAAAAEAAAAAAAbAAoAAAACAAAAAAAcAAoAAAABAAIAAAAdAAoAAAAGAAIAAAAeAAoAAQAEAAIAAAAfAAoAAAACAAMAAAAgAAoAAAAAAAAAAAAhAAoAAAABAAMAAAAiAAoAAAACAAAAAAAjAAoAAAABAAIAAAAkAAoAAAABAAAAAAAlAAoAAAABAAMAAAAmAAoAAAACAAIAAAAnAAoAAAAHAAIAAAAAAAsAAQAEAAMAAAABAAsAAQAEAAAAAAACAAsAAQAEAAEAAAADAAsAAQAEAAAAAAAEAAsAAQAEAAIAAAAFAAsAAQAEAAAAAAAGAAsAAQAEAAEAAAAHAAsAAQAEAAAAAAAIAAsAAQAEAAAAAAAJAAsAAQAEAAAA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AAAjABAAAAACAAIAAAAkABAAAAACAAEAAAAlABAAAAAAAAMAAAAmABAAAAAAAAEAAAAnABAAAAAAAAAAAAAAABEAAAAAAAEAAAABABEAAAACAAEAAAACABEAAAAAAAIAAAADABEAAAADAAIAAAAEABEAAAAAAAMAAAAFABEAAAAAAAIAAAAGABEAAAAAAAMAAAAHABEAAAACAAEAAAAIABEAAAABAAMAAAAJABEAAAACAAAAAAAKABEAAAAAAAMAAAALABEAAAADAAMAAAAMABEAAAABAAIAAAANABEAAAACAAIAAAAOABEAAAACAAAAAAAPABEAAAADAAEAAAAQABEAAAACAAIAAAARABEAAAAEAAMAAAASABEAAAAAAAMAAAATABEAAAABAAIAAAAUABEAAAAAAAAAAAAVABEAAAACAAMAAAAWABEAAAACAAEAAAAXABEAAAAAAAAAAAAYABEAAAABAAMAAAAZABEAAAAHAAEAAAAaABEAAAAHAAIAAAAbABEAAAAAAAAAAAAcABEAAAABAAEAAAAdABEAAAAAAAEAAAAeABEAAAAHAAIAAAAfABEAAAADAAIAAAAgABEAAAACAAIAAAAhABEAAAACAAEAAAAiABEAAAACAAIAAAAjABEAAAAAAAIAAAAkABEAAAACAAEAAAAlABEAAAABAAEAAAAmABEAAAACAAAAAAAnABEAAAACAAIAAAAAABIAAAAAAAAAAAABABIAAAABAAIAAAACABIAAAAAAAIAAAADABIAAAAAAAMAAAAEABIAAAAAAAMAAAAFABIAAAABAAIAAAAGABIAAAAAAAAAAAAHABIAAAAAAAEAAAAIABIAAAADAAIAAAAJABIAAAAFAAIAAAAKABIAAAAAAAIAAAALABIAAAABAAAAAAAMABIAAAABAAMAAAANABIAAAACAAIAAAAOABIAAAAAAAAAAAAPABIAAAADAAAAAAAQABIAAAABAAAAAAARABIAAAAAAAMAAAASABIAAAAAAAMAAAATABIAAAAAAAAAAAAUABIAAAADAAMAAAAVABIAAAAAAAAAAAAWABIAAAAAAAMAAAAXABIAAAABAAEAAAAYABIAAAADAAEAAAAZABIAAAABAAAAAAAaABIAAAADAAEAAAAbABIAAAAAAAAAAAAcABIAAAAAAAAAAAAdABIAAAAAAAEAAAAeABIAAAABAAMAAAAfABIAAAABAAAAAAAgABIAAAAAAAMAAAAhABIAAAAAAAAAAAAiABIAAAACAAEAAAAjABIAAAAEAAMAAAAkABIAAAACAAIAAAAlABIAAAADAAAAAAAmABIAAAAAAAIAAAAnABIAAAAGAAMAAAAAABMAAAAAAAMAAAABABMAAAADAAIAAAACABMAAAACAAIAAAADABMAAAAEAAIAAAAEABMAAAACAAMAAAAFABMAAAABAAEAAAAGABMAAAAAAAAAAAAHABMAAAADAAAAAAAIABMAAAADAAIAAAAJABMAAAAAAAMAAAAKABMAAAABAAIAAAALABMAAAAGAAMAAAAMABMAAAACAAAAAAANABMAAAABAAMAAAAOABMAAAACAAMAAAAPABMAAAABAAEAAAAQABMAAAACAAEAAAARABMAAAABAAIAAAASABMAAAABAAEAAAATABMAAAAEAAAAAAAUABMAAAADAAEAAAAVABMAAAAFAAEAAAAWABMAAAADAAIAAAAXABMAAAADAAAAAAAYABMAAAABAAMAAAAZABMAAAACAAEAAAAaABMAAAAEAAMAAAAbABMAAAABAAIAAAAcABMAAAABAAEAAAAdABMAAAADAAAAAAAeABMAAAACAAMAAAAfABMAAAAEAAIAAAAgABMAAAAGAAAAAAAhABMAAAAAAAAAAAAiABMAAAADAAEAAAAjABMAAAADAAMAAAAkABMAAAACAAAAAAAlABMAAAACAAEAAAAmABMAAAAHAAIAAAAnABMAAAABAAEAAAAAABQAAAACAAIAAAABABQAAAAAAAIAAAACABQAAAABAAIAAAADABQAAAABAAEAAAAEABQAAAAAAAEAAAAFABQAAAADAAAAAAAGABQAAAABAAMAAAAHABQAAAADAAEAAAAIABQAAAAHAAAAAAAJABQAAAACAAEAAAAKABQAAAAAAAMAAAALABQAAAABAAEAAAAMABQAAAADAAMAAAANABQAAAACAAMAAAAOABQAAAACAAIAAAAPABQAAAADAAAAAAAQABQAAAACAAAAAAARABQAAAAAAAAAAAASABQAAAAGAAIAAAATABQAAAAEAAMAAAAUABQAAAADAAMAAAAVABQAAAABAAAAAAAWABQAAAADAAEAAAAXABQAAAADAAMAAAAYABQAAAAAAAIAAAAZABQAAAABAAEAAAAaABQAAAADAAIAAAAbABQAAAACAAEAAAAcABQAAAAHAAMAAAAdABQAAAABAAEAAAAeABQAAAAAAAMAAAAfABQAAAABAAEAAAAgABQAAAACAAMAAAAhABQAAAADAAIAAAAiABQAAAABAAMAAAAjABQAAAADAAIAAAAkABQAAAADAAMAAAAlABQAAAADAAAAAAAmABQAAAABAAEAAAAnABQAAAACAAAAAAAAABUAAAABAAMAAAABABUAAAADAAMAAAACABUAAAABAAIAAAADABUAAAADAAIAAAAEABUAAAAHAAAAAAAFABUAAAAGAAAAAAAGABUAAAADAAIAAAAHABUAAAAHAAEAAAAIABUAAAADAAMAAAAJABUAAAADAAAAAAAKABUAAAACAAEAAAALABUAAAAHAAMAAAAMABUAAAADAAAAAAANABUAAAAAAAIAAAAOABUAAAACAAMAAAAPABUAAAADAAEAAAAQABUAAAAFAAEAAAARABUAAAACAAMAAAASABUAAAABAAMAAAATABUAAAACAAIAAAAUABUAAAAHAAIAAAAVABUAAAADAAMAAAAWABUAAAABAAAAAAAXABUAAAAGAAIAAAAYABUAAAAFAAMAAAAZABUAAAADAAEAAAAaABUAAAABAAIAAAAbABUAAAADAAAAAAAcABUAAAACAAAAAAAdABUAAAAGAAEAAAAeABUAAAABAAAAAAAfABUAAAADAAIAAAAgABUAAAADAAAAAAAhABUAAAABAAIAAAAiABUAAAAAAAMAAAAjABUAAAAAAAAAAAAkABUAAAABAAAAAAAlABUAAAADAAMAAAAmABUAAAAHAAMAAAAnABUAAAADAAMAAAAAABYAAAADAAAAAAABABYAAAAGAAMAAAACABYAAAABAAAAAAADABYAAAAGAAEAAAAEABYAAAAGAAEAAAAFABYAAAACAAMAAAAGABYAAAACAAMAAAAHABYAAAACAAMAAAAIABYAAAAFAAMAAAAJABYAAAACAAIAAAAKABYAAAAAAAEAAAALABYAAAAAAAEAAAAMABYAAAABAAMAAAANABYAAAABAAMAAAAOABYAAAAAAAAAAAAPABYAAAAFAAIAAAAQABYAAAADAAAAAAARABYAAAAGAAIAAAASABYAAAADAAAAAAATABYAAAADAAMAAAAUABYAAAABAAIAAAAVABYAAAACAAAAAAAWABYAAAAHAAEAAAAXABYAAAACAAIAAAAYABYAAAABAAEAAAAZABYAAAAAAAIAAAAaABYAAAAAAAMAAAAbABYAAAABAAMAAAAcABYAAAACAAAAAAAdABYAAAABAAMAAAAeABYAAAADAAEAAAAfABYAAAABAAAAAAAgABYAAAACAAAAAAAhABYAAAABAAAAAAAiABYAAAAAAAMAAAAjABYAAAAHAAEAAAAkABYAAAAAAAAAAAAlABYAAAADAAEAAAAmABYAAAAAAAAAAAAnABYAAAACAAEAAAAAABcAAAAAAAMAAAABABcAAAADAAMAAAACABcAAAACAAAAAAADABcAAAADAAIAAAAEABcAAAABAAAAAAAFABcAAAAAAAEAAAAGABcAAAABAAAAAAAHABcAAAAAAAMAAAAIABcAAAADAAAAAAAJABcAAAABAAIAAAAKABcAAAACAAEAAAALABcAAAACAAEAAAAMABcAAAADAAEAAAANABcAAAACAAEAAAAOABcAAAAAAAAAAAAPABcAAAADAAEAAAAQABcAAAACAAAAAAARABcAAAAEAAAAAAASABcAAAACAAEAAAATABcAAAAAAAMAAAAUABcAAAAAAAMAAAAVABcAAAADAAEAAAAWABcAAAABAAAAAAAXABcAAAAFAAAAAAAYABcAAAABAAMAAAAZABcAAAACAAAAAAAaABcAAAADAAIAAAAbABcAAAAAAAEAAAAcABcAAAABAAMAAAAdABcAAAADAAMAAAAeABcAAAAAAAMAAAAfABcAAAAAAAEAAAAgABcAAAAAAAMAAAAhABcAAAAAAAAAAAAiABcAAAACAAAAAAAjABcAAAACAAIAAAAkABcAAAADAAIAAAAlABcAAAADAAEAAAAmABcAAAABAAAAAAAnABcAAAAAAAMAAAA=")
+tile_set = SubResource("TileSet_og1vs")
 
-[node name="Props" type="Node2D" parent="Areas/TreehouseDistrict"]
+[node name="Props" type="Node2D" parent="Areas/TreehouseDistrict" unique_id=1785045331]
 
-[node name="SpawnFromPlaza" type="Marker2D" parent="Areas/TreehouseDistrict"]
+[node name="@Sprite2D@135" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=19088498]
+position = Vector2(80, 70)
+texture = SubResource("AtlasTexture_4ue30")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@136" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=238471671]
+position = Vector2(80, 62)
+
+[node name="@CollisionShape2D@137" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@136" unique_id=1908539500]
+shape = SubResource("CircleShape2D_k42av")
+
+[node name="@Sprite2D@138" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=733168898]
+position = Vector2(80, 730)
+texture = SubResource("AtlasTexture_gr8w0")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@139" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=796073857]
+position = Vector2(80, 722)
+
+[node name="@CollisionShape2D@140" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@139" unique_id=121173821]
+shape = SubResource("CircleShape2D_673bd")
+
+[node name="@Sprite2D@141" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=972032664]
+position = Vector2(210, 70)
+texture = SubResource("AtlasTexture_akjxb")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@142" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=566331240]
+position = Vector2(210, 62)
+
+[node name="@CollisionShape2D@143" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@142" unique_id=1326873965]
+shape = SubResource("CircleShape2D_vrx01")
+
+[node name="@Sprite2D@144" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=480334846]
+position = Vector2(210, 730)
+texture = SubResource("AtlasTexture_1uevf")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@145" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=619237683]
+position = Vector2(210, 722)
+
+[node name="@CollisionShape2D@146" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@145" unique_id=2026145076]
+shape = SubResource("CircleShape2D_tc087")
+
+[node name="@Sprite2D@147" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1796180564]
+position = Vector2(340, 70)
+texture = SubResource("AtlasTexture_xmrkg")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@148" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1299916903]
+position = Vector2(340, 62)
+
+[node name="@CollisionShape2D@149" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@148" unique_id=1788180594]
+shape = SubResource("CircleShape2D_wvlrk")
+
+[node name="@Sprite2D@150" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1888171044]
+position = Vector2(340, 730)
+texture = SubResource("AtlasTexture_engxj")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@151" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=278470851]
+position = Vector2(340, 722)
+
+[node name="@CollisionShape2D@152" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@151" unique_id=1627738614]
+shape = SubResource("CircleShape2D_raiwf")
+
+[node name="@Sprite2D@153" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=598396862]
+position = Vector2(470, 70)
+texture = SubResource("AtlasTexture_roort")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@154" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=2068291867]
+position = Vector2(470, 62)
+
+[node name="@CollisionShape2D@155" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@154" unique_id=258214597]
+shape = SubResource("CircleShape2D_gm02q")
+
+[node name="@Sprite2D@156" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=228072014]
+position = Vector2(470, 730)
+texture = SubResource("AtlasTexture_07pt3")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@157" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1077360318]
+position = Vector2(470, 722)
+
+[node name="@CollisionShape2D@158" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@157" unique_id=1052462531]
+shape = SubResource("CircleShape2D_37xlc")
+
+[node name="@Sprite2D@159" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=290513343]
+position = Vector2(600, 70)
+texture = SubResource("AtlasTexture_83607")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@160" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1497449443]
+position = Vector2(600, 62)
+
+[node name="@CollisionShape2D@161" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@160" unique_id=841636300]
+shape = SubResource("CircleShape2D_vny5k")
+
+[node name="@Sprite2D@162" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=74780791]
+position = Vector2(600, 730)
+texture = SubResource("AtlasTexture_8lcmr")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@163" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1661875631]
+position = Vector2(600, 722)
+
+[node name="@CollisionShape2D@164" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@163" unique_id=856436622]
+shape = SubResource("CircleShape2D_ga3rw")
+
+[node name="@Sprite2D@165" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=379877600]
+position = Vector2(730, 70)
+texture = SubResource("AtlasTexture_f5chs")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@166" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1923088853]
+position = Vector2(730, 62)
+
+[node name="@CollisionShape2D@167" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@166" unique_id=893843166]
+shape = SubResource("CircleShape2D_eh25q")
+
+[node name="@Sprite2D@168" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=2139676327]
+position = Vector2(730, 730)
+texture = SubResource("AtlasTexture_joh2r")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@169" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1306663917]
+position = Vector2(730, 722)
+
+[node name="@CollisionShape2D@170" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@169" unique_id=1732289128]
+shape = SubResource("CircleShape2D_yton5")
+
+[node name="@Sprite2D@171" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=78422788]
+position = Vector2(860, 70)
+texture = SubResource("AtlasTexture_4ahvx")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@172" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=235511860]
+position = Vector2(860, 62)
+
+[node name="@CollisionShape2D@173" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@172" unique_id=1959963526]
+shape = SubResource("CircleShape2D_2cr71")
+
+[node name="@Sprite2D@174" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=531696081]
+position = Vector2(860, 730)
+texture = SubResource("AtlasTexture_1hbcg")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@175" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1511297493]
+position = Vector2(860, 722)
+
+[node name="@CollisionShape2D@176" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@175" unique_id=1960375273]
+shape = SubResource("CircleShape2D_m4o51")
+
+[node name="@Sprite2D@177" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=103124962]
+position = Vector2(990, 70)
+texture = SubResource("AtlasTexture_jp61a")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@178" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1754088425]
+position = Vector2(990, 62)
+
+[node name="@CollisionShape2D@179" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@178" unique_id=1027566101]
+shape = SubResource("CircleShape2D_esrwe")
+
+[node name="@Sprite2D@180" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=932577133]
+position = Vector2(990, 730)
+texture = SubResource("AtlasTexture_4b36k")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@181" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1420956132]
+position = Vector2(990, 722)
+
+[node name="@CollisionShape2D@182" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@181" unique_id=1082721805]
+shape = SubResource("CircleShape2D_1v8b0")
+
+[node name="@Sprite2D@183" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1429228565]
+position = Vector2(1120, 70)
+texture = SubResource("AtlasTexture_683hg")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@184" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1810409006]
+position = Vector2(1120, 62)
+
+[node name="@CollisionShape2D@185" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@184" unique_id=696620511]
+shape = SubResource("CircleShape2D_ow8of")
+
+[node name="@Sprite2D@186" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1510080672]
+position = Vector2(1120, 730)
+texture = SubResource("AtlasTexture_hj4tt")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@187" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=336653186]
+position = Vector2(1120, 722)
+
+[node name="@CollisionShape2D@188" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@187" unique_id=1075368812]
+shape = SubResource("CircleShape2D_kqx4a")
+
+[node name="@Sprite2D@189" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1342027904]
+position = Vector2(40, 160)
+texture = SubResource("AtlasTexture_pfcs8")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@190" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=2110647162]
+position = Vector2(40, 152)
+
+[node name="@CollisionShape2D@191" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@190" unique_id=118214872]
+shape = SubResource("CircleShape2D_50d7c")
+
+[node name="@Sprite2D@192" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=409594928]
+position = Vector2(1240, 160)
+texture = SubResource("AtlasTexture_ruytr")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@193" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=279753441]
+position = Vector2(1240, 152)
+
+[node name="@CollisionShape2D@194" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@193" unique_id=1147732398]
+shape = SubResource("CircleShape2D_la3dr")
+
+[node name="@Sprite2D@195" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1099702992]
+position = Vector2(40, 290)
+texture = SubResource("AtlasTexture_hcsi8")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@196" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1117943336]
+position = Vector2(40, 282)
+
+[node name="@CollisionShape2D@197" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@196" unique_id=1650897296]
+shape = SubResource("CircleShape2D_wi1le")
+
+[node name="@Sprite2D@198" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1331335132]
+position = Vector2(1240, 290)
+texture = SubResource("AtlasTexture_o7pr5")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@199" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=888829102]
+position = Vector2(1240, 282)
+
+[node name="@CollisionShape2D@200" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@199" unique_id=487959799]
+shape = SubResource("CircleShape2D_hyj2l")
+
+[node name="@Sprite2D@201" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1526263245]
+position = Vector2(1240, 420)
+texture = SubResource("AtlasTexture_vuqay")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@202" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=15847005]
+position = Vector2(1240, 412)
+
+[node name="@CollisionShape2D@203" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@202" unique_id=1270725395]
+shape = SubResource("CircleShape2D_wfmv0")
+
+[node name="@Sprite2D@204" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1973673615]
+position = Vector2(40, 550)
+texture = SubResource("AtlasTexture_wxrqn")
+offset = Vector2(0, -49)
+
+[node name="@StaticBody2D@205" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1514896676]
+position = Vector2(40, 542)
+
+[node name="@CollisionShape2D@206" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@205" unique_id=455091821]
+shape = SubResource("CircleShape2D_n756u")
+
+[node name="@Sprite2D@207" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=729937129]
+position = Vector2(1240, 550)
+texture = SubResource("AtlasTexture_k33j2")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@208" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=885788094]
+position = Vector2(1240, 542)
+
+[node name="@CollisionShape2D@209" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@208" unique_id=1166454270]
+shape = SubResource("CircleShape2D_2cjf7")
+
+[node name="@Sprite2D@210" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=547334199]
+position = Vector2(40, 680)
+texture = SubResource("AtlasTexture_4e8e3")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@211" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=867632489]
+position = Vector2(40, 672)
+
+[node name="@CollisionShape2D@212" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@211" unique_id=125620464]
+shape = SubResource("CircleShape2D_5gihh")
+
+[node name="@Sprite2D@213" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=548840074]
+position = Vector2(1240, 680)
+texture = SubResource("AtlasTexture_407df")
+offset = Vector2(0, -61.5)
+
+[node name="@StaticBody2D@214" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1121505566]
+position = Vector2(1240, 672)
+
+[node name="@CollisionShape2D@215" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@214" unique_id=916484162]
+shape = SubResource("CircleShape2D_4sqen")
+
+[node name="@Sprite2D@216" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=210634648]
+position = Vector2(780.9486, 251.13417)
+texture = SubResource("AtlasTexture_w6a6y")
+offset = Vector2(0, -17.5)
+
+[node name="@Sprite2D@217" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=639258742]
+position = Vector2(1086.6759, 390.53418)
+texture = SubResource("AtlasTexture_knlx5")
+offset = Vector2(0, -10)
+
+[node name="@Sprite2D@218" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1197317535]
+position = Vector2(739.121, 139.46815)
+texture = SubResource("AtlasTexture_pes4l")
+offset = Vector2(0, -11)
+
+[node name="@Sprite2D@219" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1611350518]
+position = Vector2(974.501, 167.99196)
+texture = SubResource("AtlasTexture_s5e0g")
+offset = Vector2(0, -11)
+
+[node name="@Sprite2D@220" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1230463641]
+position = Vector2(613.17786, 348.7732)
+texture = SubResource("AtlasTexture_uya8e")
+offset = Vector2(0, -17.5)
+
+[node name="@Sprite2D@221" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1465120272]
+position = Vector2(353.3089, 605.17114)
+texture = SubResource("AtlasTexture_2tiby")
+offset = Vector2(0, -11)
+
+[node name="@Sprite2D@222" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=2052545816]
+position = Vector2(721.0485, 318.68393)
+texture = SubResource("AtlasTexture_1m7le")
+offset = Vector2(0, -17.5)
+
+[node name="@Sprite2D@223" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1030984268]
+position = Vector2(859.74634, 166.25594)
+texture = SubResource("AtlasTexture_qqwal")
+offset = Vector2(0, -11)
+
+[node name="@Sprite2D@224" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=952317656]
+position = Vector2(300, 260)
+texture = SubResource("AtlasTexture_qr8e4")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@225" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1202955677]
+position = Vector2(300, 252)
+
+[node name="@CollisionShape2D@226" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@225" unique_id=1451185464]
+shape = SubResource("CircleShape2D_d7502")
+
+[node name="@Sprite2D@227" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1038603211]
+position = Vector2(300, 312)
+texture = SubResource("AtlasTexture_avynn")
+offset = Vector2(0, -25)
+
+[node name="@Sprite2D@228" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=237616405]
+position = Vector2(352, 316)
+texture = SubResource("AtlasTexture_eo1ke")
+offset = Vector2(0, -14.5)
+
+[node name="@Sprite2D@229" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=888319470]
+position = Vector2(640, 240)
+texture = SubResource("AtlasTexture_j5vj0")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@230" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=865368317]
+position = Vector2(640, 232)
+
+[node name="@CollisionShape2D@231" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@230" unique_id=1191753315]
+shape = SubResource("CircleShape2D_kec7f")
+
+[node name="@Sprite2D@232" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1447355976]
+position = Vector2(640, 292)
+texture = SubResource("AtlasTexture_jgau6")
+offset = Vector2(0, -25)
+
+[node name="@Sprite2D@233" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1905513761]
+position = Vector2(692, 296)
+texture = SubResource("AtlasTexture_6a1ct")
+offset = Vector2(0, -14.5)
+
+[node name="@Sprite2D@234" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=1027112252]
+position = Vector2(960, 260)
+texture = SubResource("AtlasTexture_xhrfq")
+offset = Vector2(0, -69)
+
+[node name="@StaticBody2D@235" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=1844454164]
+position = Vector2(960, 252)
+
+[node name="@CollisionShape2D@236" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@235" unique_id=247816595]
+shape = SubResource("CircleShape2D_2xesh")
+
+[node name="@Sprite2D@237" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=238441706]
+position = Vector2(960, 312)
+texture = SubResource("AtlasTexture_jexbj")
+offset = Vector2(0, -25)
+
+[node name="@Sprite2D@238" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=245334504]
+position = Vector2(1012, 316)
+texture = SubResource("AtlasTexture_0n3pv")
+offset = Vector2(0, -14.5)
+
+[node name="@Sprite2D@239" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=2009175294]
+position = Vector2(420, 350)
+texture = SubResource("AtlasTexture_lgnnt")
+offset = Vector2(0, -19)
+
+[node name="@StaticBody2D@240" type="StaticBody2D" parent="Areas/TreehouseDistrict/Props" unique_id=237061885]
+position = Vector2(420, 342)
+
+[node name="@CollisionShape2D@241" type="CollisionShape2D" parent="Areas/TreehouseDistrict/Props/@StaticBody2D@240" unique_id=1993731739]
+shape = SubResource("CircleShape2D_6r4by")
+
+[node name="@Sprite2D@242" type="Sprite2D" parent="Areas/TreehouseDistrict/Props" unique_id=265468094]
+position = Vector2(880, 350)
+texture = SubResource("AtlasTexture_0gito")
+offset = Vector2(0, -11)
+
+[node name="SpawnFromPlaza" type="Marker2D" parent="Areas/TreehouseDistrict" unique_id=387005388]
 position = Vector2(140, 416)
 
-[node name="DoorWest" type="Area2D" parent="Areas/TreehouseDistrict"]
+[node name="DoorWest" type="Area2D" parent="Areas/TreehouseDistrict" unique_id=1236111938]
 position = Vector2(20, 416)
 script = ExtResource("door_script")
 target_area = "plaza"
 target_spawn = "SpawnFromEast"
 
-[node name="Zone" type="CollisionShape2D" parent="Areas/TreehouseDistrict/DoorWest"]
+[node name="Zone" type="CollisionShape2D" parent="Areas/TreehouseDistrict/DoorWest" unique_id=228627385]
 shape = SubResource("door_zone")
 
-[node name="DoorOak" type="Area2D" parent="Areas/TreehouseDistrict"]
+[node name="DoorOak" type="Area2D" parent="Areas/TreehouseDistrict" unique_id=674799327]
 position = Vector2(300, 318)
 script = ExtResource("thdoor_script")
 house_id = "oak"
 
-[node name="Zone" type="CollisionShape2D" parent="Areas/TreehouseDistrict/DoorOak"]
+[node name="Zone" type="CollisionShape2D" parent="Areas/TreehouseDistrict/DoorOak" unique_id=980258727]
 shape = SubResource("door_zone")
 
-[node name="DoorCedar" type="Area2D" parent="Areas/TreehouseDistrict"]
+[node name="DoorCedar" type="Area2D" parent="Areas/TreehouseDistrict" unique_id=978716835]
 position = Vector2(640, 298)
 script = ExtResource("thdoor_script")
 house_id = "cedar"
 
-[node name="Zone" type="CollisionShape2D" parent="Areas/TreehouseDistrict/DoorCedar"]
+[node name="Zone" type="CollisionShape2D" parent="Areas/TreehouseDistrict/DoorCedar" unique_id=1549185106]
 shape = SubResource("door_zone")
 
-[node name="DoorWillow" type="Area2D" parent="Areas/TreehouseDistrict"]
+[node name="DoorWillow" type="Area2D" parent="Areas/TreehouseDistrict" unique_id=719730366]
 position = Vector2(960, 318)
 script = ExtResource("thdoor_script")
 house_id = "willow"
 
-[node name="Zone" type="CollisionShape2D" parent="Areas/TreehouseDistrict/DoorWillow"]
+[node name="Zone" type="CollisionShape2D" parent="Areas/TreehouseDistrict/DoorWillow" unique_id=1081836878]
 shape = SubResource("door_zone")
 
-[node name="Padwin" parent="Areas/TreehouseDistrict" instance=ExtResource("padwin_scene")]
+[node name="Padwin" parent="Areas/TreehouseDistrict" unique_id=457572635 instance=ExtResource("padwin_scene")]
 position = Vector2(500, 480)
+npc_id = "padwin"
+dialogue_file = "res://resources/dialogues/padwin.json"
 
-[node name="CactusBishop" parent="Areas/TreehouseDistrict" instance=ExtResource("cactus_scene")]
+[node name="CactusBishop" parent="Areas/TreehouseDistrict" unique_id=1553942891 instance=ExtResource("cactus_scene")]
 position = Vector2(820, 470)
 
-[node name="StoneNestTower" type="Node2D" parent="Areas"]
+[node name="StoneNestTower" type="Node2D" parent="Areas" unique_id=1379880746]
+visible = false
 modulate = Color(0.55, 0.55, 0.7, 1)
 
-[node name="Ground" type="TileMapLayer" parent="Areas/StoneNestTower"]
+[node name="Ground" type="TileMapLayer" parent="Areas/StoneNestTower" unique_id=365101950]
 z_index = -3
+tile_map_data = PackedByteArray("AAAAAAAAAQAEAAAAAAABAAAAAQAEAAMAAAACAAAAAQAEAAAAAAADAAAAAQAEAAAAAAAEAAAAAQAEAAEAAAAFAAAAAQAEAAMAAAAGAAAAAQAEAAMAAAAHAAAAAQAEAAMAAAAIAAAAAQAEAAMAAAAJAAAAAQAEAAIAAAAKAAAAAQAEAAAAAAALAAAAAQAEAAIAAAAMAAAAAQAEAAIAAAANAAAAAQAEAAIAAAAOAAAAAQAEAAEAAAAPAAAAAQAEAAIAAAAQAAAAAQAEAAIAAAARAAAAAQAEAAEAAAASAAAAAQAEAAAAAAATAAAAAQAEAAIAAAAUAAAAAQAEAAAAAAAVAAAAAQAEAAAAAAAWAAAAAQAEAAAAAAAXAAAAAQAEAAMAAAAYAAAAAQAEAAAAAAAZAAAAAQAEAAIAAAAaAAAAAQAEAAAAAAAbAAAAAQAEAAAAAAAcAAAAAQAEAAAAAAAdAAAAAQAEAAIAAAAeAAAAAQAEAAEAAAAfAAAAAQAEAAEAAAAgAAAAAQAEAAAAAAAhAAAAAQAEAAIAAAAiAAAAAQAEAAMAAAAjAAAAAQAEAAIAAAAkAAAAAQAEAAMAAAAlAAAAAQAEAAAAAAAmAAAAAQAEAAAAAAAnAAAAAQAEAAIAAAAAAAEAAQAEAAEAAAABAAEAAQAEAAIAAAACAAEAAQAEAAMAAAADAAEAAQAEAAAAAAAEAAEAAQAEAAEAAAAFAAEAAQAEAAEAAAAGAAEAAQAEAAIAAAAHAAEAAQAEAAIAAAAIAAEAAQAEAAEAAAAJAAEAAQAEAAIAAAAKAAEAAQAEAAIAAAALAAEAAQAEAAAAAAAMAAEAAQAEAAMAAAANAAEAAQAEAAIAAAAOAAEAAQAEAAMAAAAPAAEAAQAEAAEAAAAQAAEAAQAEAAIAAAARAAEAAQAEAAEAAAASAAEAAQAEAAIAAAATAAEAAQAEAAIAAAAUAAEAAQAEAAIAAAAVAAEAAQAEAAAAAAAWAAEAAQAEAAEAAAAXAAEAAQAEAAEAAAAYAAEAAQAEAAIAAAAZAAEAAQAEAAEAAAAaAAEAAQAEAAMAAAAbAAEAAQAEAAIAAAAcAAEAAQAEAAEAAAAdAAEAAQAEAAAAAAAeAAEAAQAEAAMAAAAfAAEAAQAEAAMAAAAgAAEAAQAEAAMAAAAhAAEAAQAEAAIAAAAiAAEAAQAEAAAAAAAjAAEAAQAEAAAAAAAkAAEAAQAEAAEAAAAlAAEAAQAEAAAAAAAmAAEAAQAEAAEAAAAnAAEAAQAEAAMAAAAAAAIAAQAEAAAAAAABAAIAAQAEAAMAAAACAAIAAQAEAAEAAAADAAIAAQAEAAEAAAAEAAIAAQAEAAAAAAAFAAIAAQAEAAAAAAAGAAIAAQAEAAMAAAAHAAIAAQAEAAEAAAAIAAIAAQAEAAMAAAAJAAIAAQAEAAEAAAAKAAIAAQAEAAEAAAALAAIAAQAEAAMAAAAMAAIAAQAEAAMAAAANAAIAAQAEAAEAAAAOAAIAAQAEAAEAAAAPAAIAAQAEAAIAAAAQAAIAAQAEAAEAAAARAAIAAQAEAAIAAAASAAIAAQAEAAEAAAATAAIAAQAEAAEAAAAUAAIAAQAEAAIAAAAVAAIAAQAEAAEAAAAWAAIAAQAEAAEAAAAXAAIAAQAEAAMAAAAYAAIAAQAEAAIAAAAZAAIAAQAEAAIAAAAaAAIAAQAEAAAAAAAbAAIAAQAEAAMAAAAcAAIAAQAEAAEAAAAdAAIAAQAEAAIAAAAeAAIAAQAEAAAAAAAfAAIAAQAEAAEAAAAgAAIAAQAEAAIAAAAhAAIAAQAEAAIAAAAiAAIAAQAEAAIAAAAjAAIAAQAEAAAAAAAkAAIAAQAEAAMAAAAlAAIAAQAEAAEAAAAmAAIAAQAEAAIAAAAnAAIAAQAEAAAAAAAAAAMAAQAEAAAAAAABAAMAAQAEAAEAAAACAAMAAQAEAAMAAAADAAMAAQAEAAEAAAAEAAMAAQAEAAAAAAAFAAMAAQAEAAAAAAAGAAMAAQAEAAIAAAAHAAMAAQAEAAIAAAAIAAMAAQAEAAIAAAAJAAMAAQAEAAEAAAAKAAMAAQAEAAMAAAALAAMAAQAEAAAAAAAMAAMAAQAEAAIAAAANAAMAAQAEAAIAAAAOAAMAAQAEAAEAAAAPAAMAAQAEAAAAAAAQAAMAAQAEAAMAAAARAAMAAQAEAAIAAAASAAMAAQAEAAIAAAATAAMAAQAEAAIAAAAUAAMAAQAEAAIAAAAVAAMAAQAEAAAAAAAWAAMAAQAEAAIAAAAXAAMAAQAEAAEAAAAYAAMAAQAEAAAAAAAZAAMAAQAEAAEAAAAaAAMAAQAEAAEAAAAbAAMAAQAEAAMAAAAcAAMAAQAEAAEAAAAdAAMAAQAEAAEAAAAeAAMAAQAEAAEAAAAfAAMAAQAEAAIAAAAgAAMAAQAEAAIAAAAhAAMAAQAEAAAAAAAiAAMAAQAEAAMAAAAjAAMAAQAEAAMAAAAkAAMAAQAEAAAAAAAlAAMAAQAEAAMAAAAmAAMAAQAEAAMAAAAnAAMAAQAEAAMAAAAAAAQAAQAEAAIAAAABAAQAAQAEAAMAAAACAAQAAQAEAAEAAAADAAQAAQAEAAIAAAAEAAQAAQAEAAEAAAAFAAQAAQAEAAMAAAAGAAQAAQAEAAMAAAAHAAQAAQAEAAIAAAAIAAQAAQAEAAAAAAAJAAQAAQAEAAAAAAAKAAQAAQAEAAAAAAALAAQAAQAEAAIAAAAMAAQAAQAEAAIAAAANAAQAAQAEAAEAAAAOAAQAAQAEAAEAAAAPAAQAAQAEAAIAAAAQAAQAAQAEAAEAAAARAAQAAQAEAAMAAAASAAQAAQAEAAEAAAATAAQAAQAEAAMAAAAUAAQAAQAEAAIAAAAVAAQAAQAEAAEAAAAWAAQAAQAEAAAAAAAXAAQAAQAEAAMAAAAYAAQAAQAEAAMAAAAZAAQAAQAEAAEAAAAaAAQAAQAEAAAAAAAbAAQAAQAEAAIAAAAcAAQAAQAEAAEAAAAdAAQAAQAEAAAAAAAeAAQAAQAEAAEAAAAfAAQAAQAEAAIAAAAgAAQAAQAEAAAAAAAhAAQAAQAEAAMAAAAiAAQAAQAEAAIAAAAjAAQAAQAEAAAAAAAkAAQAAQAEAAAAAAAlAAQAAQAEAAAAAAAmAAQAAQAEAAMAAAAnAAQAAQAEAAEAAAAAAAUAAQAEAAAAAAABAAUAAQAEAAEAAAACAAUAAQAEAAAAAAADAAUAAQAEAAMAAAAEAAUAAQAEAAIAAAAFAAUAAQAEAAIAAAAGAAUAAQAEAAMAAAAHAAUAAQAEAAEAAAAIAAUAAQAEAAAAAAAJAAUAAQAEAAMAAAAKAAUAAQAEAAMAAAALAAUAAQAEAAMAAAAMAAUAAQAEAAAAAAANAAUAAQAEAAIAAAAOAAUAAQAEAAAAAAAPAAUAAQAEAAIAAAAQAAUAAQAEAAEAAAARAAUAAQAEAAMAAAASAAUAAQAEAAAAAAATAAUAAQAEAAEAAAAUAAUAAQAEAAAAAAAVAAUAAQAEAAAAAAAWAAUAAQAEAAAAAAAXAAUAAQAEAAMAAAAYAAUAAQAEAAIAAAAZAAUAAQAEAAEAAAAaAAUAAQAEAAEAAAAbAAUAAQAEAAIAAAAcAAUAAQAEAAAAAAAdAAUAAQAEAAAAAAAeAAUAAQAEAAEAAAAfAAUAAQAEAAAAAAAgAAUAAQAEAAEAAAAhAAUAAQAEAAMAAAAiAAUAAQAEAAAAAAAjAAUAAQAEAAEAAAAkAAUAAQAEAAIAAAAlAAUAAQAEAAAAAAAmAAUAAQAEAAAAAAAnAAUAAQAEAAIAAAAAAAYAAQAEAAAAAAABAAYAAQAEAAAAAAACAAYAAQAEAAIAAAADAAYAAQAEAAIAAAAEAAYAAQAEAAIAAAAFAAYAAQAEAAMAAAAGAAYAAQAEAAEAAAAHAAYAAQAEAAEAAAAIAAYAAQAEAAEAAAAJAAYAAQAEAAEAAAAKAAYAAQAEAAAAAAALAAYAAQAEAAMAAAAMAAYAAQAEAAIAAAANAAYAAQAEAAEAAAAOAAYAAQAEAAEAAAAPAAYAAQAEAAEAAAAQAAYAAQAEAAIAAAARAAYAAQAEAAMAAAASAAYAAQAEAAAAAAATAAYAAQAEAAAAAAAUAAYAAQAEAAMAAAAVAAYAAQAEAAMAAAAWAAYAAQAEAAEAAAAXAAYAAQAEAAEAAAAYAAYAAQAEAAMAAAAZAAYAAQAEAAEAAAAaAAYAAQAEAAIAAAAbAAYAAQAEAAEAAAAcAAYAAQAEAAAAAAAdAAYAAQAEAAMAAAAeAAYAAQAEAAEAAAAfAAYAAQAEAAIAAAAgAAYAAQAEAAIAAAAhAAYAAQAEAAIAAAAiAAYAAQAEAAEAAAAjAAYAAQAEAAAAAAAkAAYAAQAEAAAAAAAlAAYAAQAEAAEAAAAmAAYAAQAEAAMAAAAnAAYAAQAEAAIAAAAAAAcAAQAEAAIAAAABAAcAAQAEAAAAAAACAAcAAQAEAAAAAAADAAcAAQAEAAIAAAAEAAcAAQAEAAEAAAAFAAcAAQAEAAIAAAAGAAcAAQAEAAIAAAAHAAcAAQAEAAEAAAAIAAcAAQAEAAIAAAAJAAcAAQAEAAMAAAAKAAcAAQAEAAMAAAALAAcAAQAEAAEAAAAMAAcAAQAEAAIAAAANAAcAAQAEAAIAAAAOAAcAAQAEAAIAAAAPAAcAAQAEAAIAAAAQAAcAAQAEAAEAAAARAAcAAQAEAAEAAAASAAcAAQAEAAEAAAATAAcAAQAEAAEAAAAUAAcAAQAEAAMAAAAVAAcAAQAEAAIAAAAWAAcAAQAEAAAAAAAXAAcAAQAEAAIAAAAYAAcAAQAEAAIAAAAZAAcAAQAEAAMAAAAaAAcAAQAEAAAAAAAbAAcAAQAEAAEAAAAcAAcAAQAEAAEAAAAdAAcAAQAEAAEAAAAeAAcAAQAEAAIAAAAfAAcAAQAEAAAAAAAgAAcAAQAEAAMAAAAhAAcAAQAEAAEAAAAiAAcAAQAEAAEAAAAjAAcAAQAEAAIAAAAkAAcAAQAEAAIAAAAlAAcAAQAEAAMAAAAmAAcAAQAEAAAAAAAnAAcAAQAEAAEAAAAAAAgAAQAEAAMAAAABAAgAAQAEAAAAAAACAAgAAQAEAAAAAAADAAgAAQAEAAAAAAAEAAgAAQAEAAEAAAAFAAgAAQAEAAEAAAAGAAgAAQAEAAMAAAAHAAgAAQAEAAEAAAAIAAgAAQAEAAAAAAAJAAgAAQAEAAAAAAAKAAgAAQAEAAMAAAALAAgAAQAEAAMAAAAMAAgAAQAEAAMAAAANAAgAAQAEAAIAAAAOAAgAAQAEAAEAAAAPAAgAAQAEAAMAAAAQAAgAAQAEAAMAAAARAAgAAQAEAAMAAAASAAgAAQAEAAAAAAATAAgAAQAEAAMAAAAUAAgAAQAEAAEAAAAVAAgAAQAEAAAAAAAWAAgAAQAEAAIAAAAXAAgAAQAEAAAAAAAYAAgAAQAEAAEAAAAZAAgAAQAEAAMAAAAaAAgAAQAEAAAAAAAbAAgAAQAEAAAAAAAcAAgAAQAEAAAAAAAdAAgAAQAEAAEAAAAeAAgAAQAEAAMAAAAfAAgAAQAEAAEAAAAgAAgAAQAEAAAAAAAhAAgAAQAEAAAAAAAiAAgAAQAEAAEAAAAjAAgAAQAEAAIAAAAkAAgAAQAEAAAAAAAlAAgAAQAEAAMAAAAmAAgAAQAEAAIAAAAnAAgAAQAEAAIAAAAAAAkAAQAEAAMAAAABAAkAAQAEAAEAAAACAAkAAQAEAAIAAAADAAkAAQAEAAAAAAAEAAkAAQAEAAAAAAAFAAkAAQAEAAAAAAAGAAkAAQAEAAMAAAAHAAkAAQAEAAIAAAAIAAkAAQAEAAEAAAAJAAkAAQAEAAMAAAAKAAkAAQAEAAEAAAALAAkAAQAEAAMAAAAMAAkAAQAEAAEAAAANAAkAAQAEAAIAAAAOAAkAAQAEAAMAAAAPAAkAAQAEAAIAAAAQAAkAAQAEAAAAAAARAAkAAQAEAAMAAAASAAkAAQAEAAEAAAATAAkAAQAEAAIAAAAUAAkAAQAEAAEAAAAVAAkAAQAEAAAAAAAWAAkAAQAEAAMAAAAXAAkAAQAEAAMAAAAYAAkAAQAEAAIAAAAZAAkAAQAEAAAAAAAaAAkAAQAEAAAAAAAbAAkAAQAEAAMAAAAcAAkAAQAEAAEAAAAdAAkAAQAEAAAAAAAeAAkAAQAEAAAAAAAfAAkAAQAEAAMAAAAgAAkAAQAEAAIAAAAhAAkAAQAEAAEAAAAiAAkAAQAEAAEAAAAjAAkAAQAEAAAAAAAkAAkAAQAEAAIAAAAlAAkAAQAEAAMAAAAmAAkAAQAEAAMAAAAnAAkAAQAEAAAAAAAAAAoAAQAEAAMAAAABAAoAAQAEAAEAAAACAAoAAQAEAAEAAAADAAoAAQAEAAIAAAAEAAoAAQAEAAAAAAAFAAoAAQAEAAEAAAAGAAoAAQAEAAMAAAAHAAoAAQAEAAAAAAAIAAoAAQAEAAAAAAAJAAoAAQAEAAEAAAAKAAoAAQAEAAAAAAALAAoAAQAEAAMAAAAMAAoAAQAEAAAAAAANAAoAAQAEAAMAAAAOAAoAAQAEAAEAAAAPAAoAAQAEAAAAAAAQAAoAAQAEAAEAAAARAAoAAQAEAAEAAAASAAoAAQAEAAAAAAATAAoAAQAEAAEAAAAUAAoAAQAEAAAAAAAVAAoAAQAEAAIAAAAWAAoAAQAEAAAAAAAXAAoAAQAEAAAAAAAYAAoAAQAEAAAAAAAZAAoAAQAEAAAAAAAaAAoAAQAEAAMAAAAbAAoAAQAEAAAAAAAcAAoAAQAEAAMAAAAdAAoAAQAEAAIAAAAeAAoAAQAEAAIAAAAfAAoAAQAEAAIAAAAgAAoAAQAEAAMAAAAhAAoAAQAEAAIAAAAiAAoAAQAEAAAAAAAjAAoAAQAEAAEAAAAkAAoAAQAEAAAAAAAlAAoAAQAEAAEAAAAmAAoAAQAEAAAAAAAnAAoAAQAEAAAAAAAAAAsAAQAEAAMAAAABAAsAAQAEAAAAAAACAAsAAQAEAAMAAAADAAsAAQAEAAAAAAAEAAsAAQAEAAIAAAAFAAsAAQAEAAAAAAAGAAsAAQAEAAMAAAAHAAsAAQAEAAIAAAAIAAsAAQAEAAMAAAAJAAsAAQAEAAAA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AAAjABAAAQAEAAEAAAAkABAAAQAEAAMAAAAlABAAAQAEAAEAAAAmABAAAQAEAAAAAAAnABAAAQAEAAIAAAAAABEAAQAEAAEAAAABABEAAQAEAAEAAAACABEAAQAEAAIAAAADABEAAQAEAAIAAAAEABEAAQAEAAAAAAAFABEAAQAEAAAAAAAGABEAAQAEAAEAAAAHABEAAQAEAAAAAAAIABEAAQAEAAEAAAAJABEAAQAEAAAAAAAKABEAAQAEAAIAAAALABEAAQAEAAMAAAAMABEAAQAEAAEAAAANABEAAQAEAAAAAAAOABEAAQAEAAMAAAAPABEAAQAEAAMAAAAQABEAAQAEAAAAAAARABEAAQAEAAEAAAASABEAAQAEAAIAAAATABEAAQAEAAMAAAAUABEAAQAEAAEAAAAVABEAAQAEAAIAAAAWABEAAQAEAAEAAAAXABEAAQAEAAIAAAAYABEAAQAEAAIAAAAZABEAAQAEAAMAAAAaABEAAQAEAAAAAAAbABEAAQAEAAEAAAAcABEAAQAEAAAAAAAdABEAAQAEAAMAAAAeABEAAQAEAAEAAAAfABEAAQAEAAMAAAAgABEAAQAEAAEAAAAhABEAAQAEAAEAAAAiABEAAQAEAAIAAAAjABEAAQAEAAAAAAAkABEAAQAEAAIAAAAlABEAAQAEAAEAAAAmABEAAQAEAAEAAAAnABEAAQAEAAIAAAAAABIAAQAEAAAAAAABABIAAQAEAAAAAAACABIAAQAEAAEAAAADABIAAQAEAAAAAAAEABIAAQAEAAMAAAAFABIAAQAEAAMAAAAGABIAAQAEAAAAAAAHABIAAQAEAAEAAAAIABIAAQAEAAIAAAAJABIAAQAEAAEAAAAKABIAAQAEAAIAAAALABIAAQAEAAMAAAAMABIAAQAEAAMAAAANABIAAQAEAAAAAAAOABIAAQAEAAMAAAAPABIAAQAEAAAAAAAQABIAAQAEAAAAAAARABIAAQAEAAMAAAASABIAAQAEAAIAAAATABIAAQAEAAIAAAAUABIAAQAEAAEAAAAVABIAAQAEAAEAAAAWABIAAQAEAAAAAAAXABIAAQAEAAIAAAAYABIAAQAEAAMAAAAZABIAAQAEAAEAAAAaABIAAQAEAAIAAAAbABIAAQAEAAIAAAAcABIAAQAEAAIAAAAdABIAAQAEAAMAAAAeABIAAQAEAAMAAAAfABIAAQAEAAMAAAAgABIAAQAEAAMAAAAhABIAAQAEAAAAAAAiABIAAQAEAAIAAAAjABIAAQAEAAAAAAAkABIAAQAEAAAAAAAlABIAAQAEAAMAAAAmABIAAQAEAAIAAAAnABIAAQAEAAMAAAAAABMAAQAEAAEAAAABABMAAQAEAAEAAAACABMAAQAEAAAAAAADABMAAQAEAAIAAAAEABMAAQAEAAAAAAAFABMAAQAEAAEAAAAGABMAAQAEAAAAAAAHABMAAQAEAAAAAAAIABMAAQAEAAIAAAAJABMAAQAEAAEAAAAKABMAAQAEAAAAAAALABMAAQAEAAMAAAAMABMAAQAEAAEAAAANABMAAQAEAAAAAAAOABMAAQAEAAIAAAAPABMAAQAEAAIAAAAQABMAAQAEAAEAAAARABMAAQAEAAAAAAASABMAAQAEAAAAAAATABMAAQAEAAIAAAAUABMAAQAEAAIAAAAVABMAAQAEAAIAAAAWABMAAQAEAAIAAAAXABMAAQAEAAEAAAAYABMAAQAEAAMAAAAZABMAAQAEAAEAAAAaABMAAQAEAAEAAAAbABMAAQAEAAIAAAAcABMAAQAEAAMAAAAdABMAAQAEAAEAAAAeABMAAQAEAAEAAAAfABMAAQAEAAEAAAAgABMAAQAEAAMAAAAhABMAAQAEAAIAAAAiABMAAQAEAAMAAAAjABMAAQAEAAEAAAAkABMAAQAEAAMAAAAlABMAAQAEAAAAAAAmABMAAQAEAAAAAAAnABMAAQAEAAEAAAAAABQAAQAEAAMAAAABABQAAQAEAAMAAAACABQAAQAEAAIAAAADABQAAQAEAAEAAAAEABQAAQAEAAAAAAAFABQAAQAEAAAAAAAGABQAAQAEAAAAAAAHABQAAQAEAAEAAAAIABQAAQAEAAAAAAAJABQAAQAEAAIAAAAKABQAAQAEAAAAAAALABQAAQAEAAEAAAAMABQAAQAEAAMAAAANABQAAQAEAAEAAAAOABQAAQAEAAAAAAAPABQAAQAEAAAAAAAQABQAAQAEAAAAAAARABQAAQAEAAIAAAASABQAAQAEAAMAAAATABQAAQAEAAMAAAAUABQAAQAEAAMAAAAVABQAAQAEAAIAAAAWABQAAQAEAAEAAAAXABQAAQAEAAEAAAAYABQAAQAEAAMAAAAZABQAAQAEAAEAAAAaABQAAQAEAAIAAAAbABQAAQAEAAAAAAAcABQAAQAEAAAAAAAdABQAAQAEAAEAAAAeABQAAQAEAAIAAAAfABQAAQAEAAAAAAAgABQAAQAEAAIAAAAhABQAAQAEAAIAAAAiABQAAQAEAAAAAAAjABQAAQAEAAEAAAAkABQAAQAEAAIAAAAlABQAAQAEAAMAAAAmABQAAQAEAAAAAAAnABQAAQAEAAMAAAAAABUAAQAEAAIAAAABABUAAQAEAAMAAAACABUAAQAEAAMAAAADABUAAQAEAAEAAAAEABUAAQAEAAEAAAAFABUAAQAEAAMAAAAGABUAAQAEAAAAAAAHABUAAQAEAAMAAAAIABUAAQAEAAIAAAAJABUAAQAEAAMAAAAKABUAAQAEAAMAAAALABUAAQAEAAAAAAAMABUAAQAEAAMAAAANABUAAQAEAAIAAAAOABUAAQAEAAAAAAAPABUAAQAEAAMAAAAQABUAAQAEAAEAAAARABUAAQAEAAMAAAASABUAAQAEAAMAAAATABUAAQAEAAIAAAAUABUAAQAEAAMAAAAVABUAAQAEAAMAAAAWABUAAQAEAAEAAAAXABUAAQAEAAIAAAAYABUAAQAEAAMAAAAZABUAAQAEAAIAAAAaABUAAQAEAAMAAAAbABUAAQAEAAEAAAAcABUAAQAEAAAAAAAdABUAAQAEAAIAAAAeABUAAQAEAAEAAAAfABUAAQAEAAEAAAAgABUAAQAEAAMAAAAhABUAAQAEAAEAAAAiABUAAQAEAAEAAAAjABUAAQAEAAEAAAAkABUAAQAEAAAAAAAlABUAAQAEAAMAAAAmABUAAQAEAAEAAAAnABUAAQAEAAMAAAAAABYAAQAEAAEAAAABABYAAQAEAAEAAAACABYAAQAEAAEAAAADABYAAQAEAAIAAAAEABYAAQAEAAIAAAAFABYAAQAEAAAAAAAGABYAAQAEAAEAAAAHABYAAQAEAAMAAAAIABYAAQAEAAAAAAAJABYAAQAEAAAAAAAKABYAAQAEAAEAAAALABYAAQAEAAMAAAAMABYAAQAEAAAAAAANABYAAQAEAAIAAAAOABYAAQAEAAEAAAAPABYAAQAEAAIAAAAQABYAAQAEAAAAAAARABYAAQAEAAMAAAASABYAAQAEAAIAAAATABYAAQAEAAAAAAAUABYAAQAEAAEAAAAVABYAAQAEAAEAAAAWABYAAQAEAAAAAAAXABYAAQAEAAMAAAAYABYAAQAEAAIAAAAZABYAAQAEAAEAAAAaABYAAQAEAAEAAAAbABYAAQAEAAAAAAAcABYAAQAEAAEAAAAdABYAAQAEAAEAAAAeABYAAQAEAAAAAAAfABYAAQAEAAIAAAAgABYAAQAEAAEAAAAhABYAAQAEAAAAAAAiABYAAQAEAAAAAAAjABYAAQAEAAEAAAAkABYAAQAEAAEAAAAlABYAAQAEAAAAAAAmABYAAQAEAAEAAAAnABYAAQAEAAIAAAAAABcAAQAEAAEAAAABABcAAQAEAAMAAAACABcAAQAEAAEAAAADABcAAQAEAAMAAAAEABcAAQAEAAIAAAAFABcAAQAEAAEAAAAGABcAAQAEAAIAAAAHABcAAQAEAAEAAAAIABcAAQAEAAIAAAAJABcAAQAEAAIAAAAKABcAAQAEAAMAAAALABcAAQAEAAMAAAAMABcAAQAEAAAAAAANABcAAQAEAAAAAAAOABcAAQAEAAIAAAAPABcAAQAEAAEAAAAQABcAAQAEAAIAAAARABcAAQAEAAAAAAASABcAAQAEAAEAAAATABcAAQAEAAAAAAAUABcAAQAEAAMAAAAVABcAAQAEAAEAAAAWABcAAQAEAAEAAAAXABcAAQAEAAEAAAAYABcAAQAEAAEAAAAZABcAAQAEAAEAAAAaABcAAQAEAAIAAAAbABcAAQAEAAEAAAAcABcAAQAEAAAAAAAdABcAAQAEAAIAAAAeABcAAQAEAAEAAAAfABcAAQAEAAEAAAAgABcAAQAEAAIAAAAhABcAAQAEAAIAAAAiABcAAQAEAAMAAAAjABcAAQAEAAEAAAAkABcAAQAEAAIAAAAlABcAAQAEAAAAAAAmABcAAQAEAAIAAAAnABcAAQAEAAAAAAA=")
+tile_set = SubResource("TileSet_og1vs")
 
-[node name="Props" type="Node2D" parent="Areas/StoneNestTower"]
+[node name="Props" type="Node2D" parent="Areas/StoneNestTower" unique_id=2010185063]
 
-[node name="SpawnFromPlaza" type="Marker2D" parent="Areas/StoneNestTower"]
+[node name="@Sprite2D@243" type="Sprite2D" parent="Areas/StoneNestTower/Props" unique_id=686450029]
+position = Vector2(300, 210)
+texture = SubResource("AtlasTexture_oh722")
+offset = Vector2(0, -47.5)
+
+[node name="@StaticBody2D@244" type="StaticBody2D" parent="Areas/StoneNestTower/Props" unique_id=693992807]
+position = Vector2(300, 202)
+
+[node name="@CollisionShape2D@245" type="CollisionShape2D" parent="Areas/StoneNestTower/Props/@StaticBody2D@244" unique_id=1781091422]
+shape = SubResource("CircleShape2D_m4lup")
+
+[node name="@Sprite2D@246" type="Sprite2D" parent="Areas/StoneNestTower/Props" unique_id=2091950705]
+position = Vector2(980, 210)
+texture = SubResource("AtlasTexture_redio")
+offset = Vector2(0, -47.5)
+
+[node name="@StaticBody2D@247" type="StaticBody2D" parent="Areas/StoneNestTower/Props" unique_id=289893921]
+position = Vector2(980, 202)
+
+[node name="@CollisionShape2D@248" type="CollisionShape2D" parent="Areas/StoneNestTower/Props/@StaticBody2D@247" unique_id=1885188781]
+shape = SubResource("CircleShape2D_aiee3")
+
+[node name="@Sprite2D@249" type="Sprite2D" parent="Areas/StoneNestTower/Props" unique_id=1541973076]
+position = Vector2(300, 520)
+texture = SubResource("AtlasTexture_8ojta")
+offset = Vector2(0, -47.5)
+
+[node name="@StaticBody2D@250" type="StaticBody2D" parent="Areas/StoneNestTower/Props" unique_id=1697744028]
+position = Vector2(300, 512)
+
+[node name="@CollisionShape2D@251" type="CollisionShape2D" parent="Areas/StoneNestTower/Props/@StaticBody2D@250" unique_id=1297449524]
+shape = SubResource("CircleShape2D_kmcm6")
+
+[node name="@Sprite2D@252" type="Sprite2D" parent="Areas/StoneNestTower/Props" unique_id=785674353]
+position = Vector2(980, 520)
+texture = SubResource("AtlasTexture_8jwmc")
+offset = Vector2(0, -47.5)
+
+[node name="@StaticBody2D@253" type="StaticBody2D" parent="Areas/StoneNestTower/Props" unique_id=1217400193]
+position = Vector2(980, 512)
+
+[node name="@CollisionShape2D@254" type="CollisionShape2D" parent="Areas/StoneNestTower/Props/@StaticBody2D@253" unique_id=470434366]
+shape = SubResource("CircleShape2D_ybi5g")
+
+[node name="@Sprite2D@255" type="Sprite2D" parent="Areas/StoneNestTower/Props" unique_id=1828354631]
+position = Vector2(640, 700)
+texture = SubResource("AtlasTexture_f4wrh")
+offset = Vector2(0, -32.5)
+
+[node name="@Sprite2D@256" type="Sprite2D" parent="Areas/StoneNestTower/Props" unique_id=971165443]
+position = Vector2(420, 400)
+texture = SubResource("AtlasTexture_smy15")
+offset = Vector2(0, -17.5)
+
+[node name="@StaticBody2D@257" type="StaticBody2D" parent="Areas/StoneNestTower/Props" unique_id=370487702]
+position = Vector2(420, 392)
+
+[node name="@CollisionShape2D@258" type="CollisionShape2D" parent="Areas/StoneNestTower/Props/@StaticBody2D@257" unique_id=194794240]
+shape = SubResource("CircleShape2D_d51im")
+
+[node name="@Sprite2D@259" type="Sprite2D" parent="Areas/StoneNestTower/Props" unique_id=272905083]
+position = Vector2(860, 380)
+texture = SubResource("AtlasTexture_og54j")
+offset = Vector2(0, -11)
+
+[node name="@Sprite2D@260" type="Sprite2D" parent="Areas/StoneNestTower/Props" unique_id=1253610900]
+position = Vector2(500, 560)
+texture = SubResource("AtlasTexture_404go")
+offset = Vector2(0, -11)
+
+[node name="SpawnFromPlaza" type="Marker2D" parent="Areas/StoneNestTower" unique_id=1815520248]
 position = Vector2(640, 620)
 
-[node name="DoorSouth" type="Area2D" parent="Areas/StoneNestTower"]
+[node name="DoorSouth" type="Area2D" parent="Areas/StoneNestTower" unique_id=1545128831]
 position = Vector2(640, 730)
 script = ExtResource("door_script")
 target_area = "plaza"
 target_spawn = "SpawnFromWest"
 
-[node name="Zone" type="CollisionShape2D" parent="Areas/StoneNestTower/DoorSouth"]
+[node name="Zone" type="CollisionShape2D" parent="Areas/StoneNestTower/DoorSouth" unique_id=329490066]
 shape = SubResource("door_zone")
 
-[node name="TianAltar" parent="Areas/StoneNestTower" instance=ExtResource("tian_scene")]
+[node name="TianAltar" parent="Areas/StoneNestTower" unique_id=364276716 instance=ExtResource("tian_scene")]
 position = Vector2(640, 240)
 
-[node name="Player" parent="." instance=ExtResource("player_scene")]
+[node name="Player" parent="." unique_id=1344765881 instance=ExtResource("player_scene")]
 position = Vector2(640, 480)
 
-[node name="DialogueUI" type="CanvasLayer" parent="."]
+[node name="DialogueUI" type="CanvasLayer" parent="." unique_id=796514301]
+layer = 10
 script = ExtResource("dialogue_ui_script")
 
-[node name="TarotUI" type="CanvasLayer" parent="."]
+[node name="TarotUI" type="CanvasLayer" parent="." unique_id=2032032647]
+layer = 20
 script = ExtResource("tarot_ui_script")
 
-[node name="RentalUI" type="CanvasLayer" parent="."]
+[node name="RentalUI" type="CanvasLayer" parent="." unique_id=233447321]
+layer = 20
 script = ExtResource("rental_ui_script")
 
-[node name="EndingUI" type="CanvasLayer" parent="."]
+[node name="EndingUI" type="CanvasLayer" parent="." unique_id=1932373252]
+layer = 30
 script = ExtResource("ending_ui_script")
 
-[node name="HUD" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1445058220]
 script = ExtResource("hud_script")
 
-[node name="MarginContainer" type="MarginContainer" parent="HUD"]
+[node name="MarginContainer" type="MarginContainer" parent="HUD" unique_id=1734856863]
 offset_left = 16.0
 offset_top = 11.0
 offset_right = 320.0
 offset_bottom = 34.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HUD/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD/MarginContainer" unique_id=7336592]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="TimeLabel" type="Label" parent="HUD/MarginContainer/HBoxContainer"]
+[node name="TimeLabel" type="Label" parent="HUD/MarginContainer/HBoxContainer" unique_id=767632031]
 layout_mode = 2
 text = "Morning"
 
-[node name="GoldLabel" type="Label" parent="HUD/MarginContainer/HBoxContainer"]
+[node name="GoldLabel" type="Label" parent="HUD/MarginContainer/HBoxContainer" unique_id=479297566]
 layout_mode = 2
 text = "Gold: 100"
 
-[node name="DayLabel" type="Label" parent="HUD/MarginContainer/HBoxContainer"]
+[node name="DayLabel" type="Label" parent="HUD/MarginContainer/HBoxContainer" unique_id=1012268017]
 layout_mode = 2
 text = "Day 1"

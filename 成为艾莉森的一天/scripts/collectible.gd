@@ -4,6 +4,9 @@ class_name Collectible
 ## 可采集物品 — 玩家靠近自动拾取，加金币后消失。
 ## 循环重置时通过 game.gd 的 _refresh_collectibles() 重新出现。
 
+## preload 而非全局类名：避免依赖全局脚本类缓存（headless/编辑器刷新前不注册）
+const SceneLayout := preload("res://scripts/systems/scene_layout.gd")
+
 @export var gold_value: int = 10
 @export var item_name: String = "蘑菇"
 
@@ -20,7 +23,7 @@ func _ready() -> void:
 		if tex:
 			var at := AtlasTexture.new()
 			at.atlas = tex
-			at.region = Rect2(33, 190, 38, 34)
+			at.region = SceneLayout.MUSHROOM_ICON_REGION
 			icon.texture = at
 			return
 		var rect = ColorRect.new()
