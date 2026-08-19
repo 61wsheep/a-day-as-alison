@@ -23,6 +23,12 @@ var _pending_end: bool = false
 var _pending_end_effects: Dictionary = {}
 var _player_in_range: bool = false
 
+# -- AI 对话状态（S1 会话 + S2 旁路） --
+var _ai_mode := false
+var _ai_thinking := false
+var _ai_free_input_enabled := false
+var _ai_session: AIDialogueSession = null
+
 
 func _ready() -> void:
 	var zone = get_node_or_null("InteractZone")
@@ -30,7 +36,10 @@ func _ready() -> void:
 		zone.body_entered.connect(_on_body_entered)
 		zone.body_exited.connect(_on_body_exited)
 	_load_dialogue_data()
-	get_node("/root/EventBus").dialogue_choice_made.connect(_on_choice_made)
+	var bus = get_node("/root/EventBus")
+	bus.dialogue_choice_made.connect(_on_choice_made)
+	bus.dialogue_free_input.connect(_on_free_input)
+	bus.dialogue_exit_requested.connect(_request_exit)
 
 
 func _load_dialogue_data() -> void:
@@ -45,12 +54,24 @@ func _load_dialogue_data() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if _ai_mode and _is_text_focus_owner():
+		return                     # 自由输入框聚焦时，E/Esc 不旁路给对话
+	if _ai_mode and event.is_action_pressed("ui_cancel"):
+		if _ai_thinking:
+			var bridge = get_node_or_null("/root/AIBridge")
+			if bridge:
+				bridge.cancel_current()   # await 会立刻恢复走回落
+		else:
+			_end_dialogue()
+		return
 	if _dialogue_active and event.is_action_pressed("ui_cancel"):
 		_end_dialogue()
 		return
 	if not _player_in_range:
 		return
 	if event.is_action_pressed("ui_accept"):
+		if _ai_mode:               # S1 里 E 无推进作用，忽略
+			return
 		if _waiting_for_choice:
 			return
 		if _dialogue_active:
@@ -90,19 +111,57 @@ func _start_dialogue() -> void:
 	var dlg := _select_dialogue()
 	if dlg.is_empty():
 		return
+	var bus = get_node("/root/EventBus")
+	_dialogue_active = true
+	_ai_mode = false
+	_ai_session = null
+
+	# S1：入口标记 ai:true 且 AI 可用 → 整段进入 AI 会话
+	if bool(dlg.get("ai", false)) and _ai_supported():
+		_begin_ai_session(dlg)
+		return
+
+	# —— 以下为原有 JSON 路径 ——
 	_lines = dlg.get("lines", [])
 	_end_effects = dlg.get("end_effects", {})
 	if _lines.is_empty():
 		return
-	_dialogue_active = true
+	# S2：JSON 对话里允许自由输入暗门（有角色卡且 AI 可用）
+	_ai_free_input_enabled = _ai_supported()
+	bus.dialogue_ai_meta.emit(npc_id, false, _ai_free_input_enabled)
 	_waiting_for_choice = false
 	_showing_reply = false
 	_pending_end = false
 	_pending_end_effects = {}
 	_line_idx = 0
-	get_node("/root/EventBus").interaction_hint_hide.emit()
-	get_node("/root/EventBus").dialogue_started.emit()
+	bus.interaction_hint_hide.emit()
+	bus.dialogue_started.emit()
 	_advance()
+
+
+func _ai_supported() -> bool:
+	var bridge = get_node_or_null("/root/AIBridge")
+	if bridge == null:
+		return false
+	return bridge.is_available() and bridge.has_role_card(npc_id)
+
+
+func _begin_ai_session(dlg: Dictionary) -> void:
+	_ai_mode = true
+	_ai_free_input_enabled = true
+	_end_effects = dlg.get("end_effects", {})
+	var bus = get_node("/root/EventBus")
+	bus.dialogue_ai_meta.emit(npc_id, true, true)
+	bus.interaction_hint_hide.emit()
+	bus.dialogue_started.emit()
+	_ai_session = AIDialogueSession.new()
+	_ai_session.setup(self, npc_id)
+	_ai_session.thinking_changed.connect(_on_ai_thinking)
+	_ai_session.line_ready.connect(_on_ai_line)
+	_ai_session.choices_ready.connect(_on_ai_choices)
+	_ai_session.sideline_done.connect(_on_ai_sideline_done)
+	_ai_session.session_finished.connect(_end_dialogue)
+	_ai_session.begin()
 
 
 func _select_dialogue() -> Dictionary:
@@ -164,7 +223,13 @@ func _display_name(speaker: String) -> String:
 
 
 func _on_choice_made(choice_index: int) -> void:
-	if not _dialogue_active or not _waiting_for_choice:
+	if not _dialogue_active:
+		return
+	if _ai_mode:
+		if _ai_session:
+			_ai_session.submit_topic(choice_index)   # 话题按钮 → 当作玩家输入推进
+		return
+	if not _waiting_for_choice:
 		return
 	_waiting_for_choice = false
 	var gm = get_node("/root/GameManager")
@@ -205,6 +270,10 @@ func _end_dialogue() -> void:
 	if not _dialogue_active:
 		return
 	_dialogue_active = false
+	if _ai_session:
+		_ai_session.end_session()   # 内部 flush 记忆 + cancel 在途请求
+		_ai_session = null
+	_ai_mode = false
 	_waiting_for_choice = false
 	_showing_reply = false
 	var gm = get_node("/root/GameManager")
@@ -212,3 +281,70 @@ func _end_dialogue() -> void:
 	gm.apply_effects(_end_effects)
 	_pending_end_effects = {}
 	get_node("/root/EventBus").dialogue_ended.emit()
+
+
+# ---------------------------------------------------------------------------
+# AI 对话相关（S1 会话 / S2 旁路）
+# ---------------------------------------------------------------------------
+func _on_free_input(text: String) -> void:
+	if not _dialogue_active:
+		return
+	if _ai_mode:
+		if _ai_session:
+			_ai_session.submit_free_text(text)
+		return
+	if not _waiting_for_choice:
+		return
+	# S2：懒创建会话做一次旁路回复
+	if _ai_session == null:
+		_ai_session = AIDialogueSession.new()
+		_ai_session.setup(self, npc_id)
+		_ai_session.line_ready.connect(_on_ai_line)
+		_ai_session.sideline_done.connect(_on_ai_sideline_done)
+		_ai_session.thinking_changed.connect(_on_ai_thinking)
+	_ai_session.free_input_turn(text)
+
+
+func _request_exit() -> void:
+	if _ai_mode:
+		_end_dialogue()
+
+
+func _on_ai_thinking(active: bool) -> void:
+	_ai_thinking = active
+	get_node("/root/EventBus").ai_thinking.emit(active)
+
+
+func _on_ai_line(speaker: String, text: String, emotion: String) -> void:
+	_emit_line({"speaker": speaker, "text": text, "emotion": emotion})
+
+
+func _on_ai_choices(topics: Array) -> void:
+	if _ai_mode:
+		get_node("/root/EventBus").dialogue_choices.emit(topics)
+
+
+func _on_ai_sideline_done() -> void:
+	# S2：AI 旁路回复结束，重发当前 JSON 选项让面板复原
+	_emit_current_choices()
+
+
+func _emit_current_choices() -> void:
+	if _lines.is_empty() or _line_idx >= _lines.size():
+		return
+	var line: Dictionary = _lines[_line_idx]
+	if not line.has("choices"):
+		return
+	var labels: Array = []
+	var gm = get_node("/root/GameManager")
+	for c in line["choices"]:
+		if gm.conditions_met(c.get("conditions", {})):
+			labels.append(str(c.get("text", "……")))
+	if labels.is_empty():
+		return
+	get_node("/root/EventBus").dialogue_choices.emit(labels)
+
+
+func _is_text_focus_owner() -> bool:
+	var c := get_viewport().gui_get_focus_owner()
+	return c is LineEdit

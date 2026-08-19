@@ -16,6 +16,10 @@ func _ready() -> void:
 	_bus = get_node("/root/EventBus")
 	_gm = get_node("/root/GameManager")
 	_player = get_tree().get_first_node_in_group("player")
+	# 回归测试禁用 AI，走 JSON 兜底路径（不真实联网）
+	var bridge = get_node_or_null("/root/AIBridge")
+	if bridge:
+		bridge.set_enabled(false)
 	await get_tree().create_timer(1.5).timeout
 	_run()
 

@@ -61,6 +61,14 @@ var _interact_hint: Label
 var _toast_label: Label
 var _toast_timer: Timer
 var _portrait_cache: Dictionary = {}
+var _thinking_label: Label
+var _input_row: HBoxContainer
+var _input_edit: LineEdit
+
+# -- AI 对话状态 --
+var _ai_mode := false
+var _ai_free_input_enabled := false
+var _thinking_npc := ""
 
 
 func _ready() -> void:
@@ -73,6 +81,8 @@ func _ready() -> void:
 	bus.dialogue_choices.connect(_on_choices)
 	bus.dialogue_ended.connect(_on_dialogue_ended)
 	bus.toast.connect(_show_toast)
+	bus.dialogue_ai_meta.connect(_on_dialogue_ai_meta)
+	bus.ai_thinking.connect(_on_ai_thinking)
 
 
 func _build_ui() -> void:
@@ -160,6 +170,47 @@ func _build_ui() -> void:
 	_toast_timer.timeout.connect(func(): _toast_label.hide())
 	add_child(_toast_timer)
 
+	# -- AI 思考加载态（对话框中央） --
+	_thinking_label = Label.new()
+	_thinking_label.set_anchors_preset(Control.PRESET_CENTER)
+	_thinking_label.offset_left = -260
+	_thinking_label.offset_right = 260
+	_thinking_label.offset_top = -24
+	_thinking_label.offset_bottom = 24
+	_thinking_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_thinking_label.add_theme_font_size_override("font_size", 18)
+	_thinking_label.hide()
+	add_child(_thinking_label)
+
+	# -- 自由输入行（LineEdit + 发送），初始隐藏 --
+	_input_row = HBoxContainer.new()
+	_input_row.add_theme_constant_override("separation", 8)
+	_input_row.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	_input_row.offset_left = 80
+	_input_row.offset_right = -80
+	_input_row.offset_top = -64
+	_input_row.offset_bottom = -40
+	_input_row.hide()
+	add_child(_input_row)
+
+	_input_edit = LineEdit.new()
+	_input_edit.placeholder_text = "说点什么……"
+	_input_edit.max_length = 100
+	_input_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_input_row.add_child(_input_edit)
+
+	var send := Button.new()
+	send.text = "发送"
+	send.pressed.connect(_on_free_input_submit)
+	_input_row.add_child(send)
+
+	# Esc 在输入框内先被消费，不误触对话退出
+	_input_edit.gui_input.connect(func(ev: InputEvent) -> void:
+		if ev is InputEventKey and ev.keycode == KEY_ESCAPE and ev.pressed:
+			_input_row.hide()
+			_input_edit.clear()
+			get_viewport().set_input_as_handled())
+
 
 func _on_dialogue_line(speaker_id: String, display_name: String, text: String, emotion: String) -> void:
 	_choice_panel.hide()
@@ -194,6 +245,7 @@ func _update_portrait(speaker_id: String, emotion: String) -> void:
 
 func _on_choices(choices: Array) -> void:
 	_hint_label.text = ""
+	_input_row.hide()
 	for child in _choice_box.get_children():
 		child.queue_free()
 	for i in choices.size():
@@ -203,6 +255,12 @@ func _on_choices(choices: Array) -> void:
 		btn.add_theme_font_size_override("font_size", 15)
 		btn.pressed.connect(_on_choice_pressed.bind(i))
 		_choice_box.add_child(btn)
+	# —— AI 附加按钮 ——
+	if _ai_mode:
+		_append_ai_button("自由输入…", _open_free_input)
+		_append_ai_button("结束对话", _request_exit)
+	elif _ai_free_input_enabled:
+		_append_ai_button("自由输入…", _open_free_input)
 	_choice_panel.show()
 	if _choice_box.get_child_count() > 0:
 		(_choice_box.get_child(0) as Button).grab_focus()
@@ -223,3 +281,52 @@ func _show_toast(message: String) -> void:
 	_toast_label.show()
 	_toast_timer.wait_time = 3.0
 	_toast_timer.start()
+
+
+# ---------------------------------------------------------------------------
+# AI 对话相关
+# ---------------------------------------------------------------------------
+func _on_dialogue_ai_meta(npc_id: String, ai_mode: bool, free_input_enabled: bool) -> void:
+	_ai_mode = ai_mode
+	_ai_free_input_enabled = free_input_enabled
+	_thinking_npc = npc_id
+
+
+func _on_ai_thinking(active: bool) -> void:
+	_choice_panel.hide()
+	if active:
+		_thinking_label.text = "（%s 在想着什么……）" % _display_name_or_id(_thinking_npc)
+		_thinking_label.show()
+	else:
+		_thinking_label.hide()
+
+
+func _display_name_or_id(npc_id: String) -> String:
+	return {"padwin": "帕德温", "soraya": "索拉雅", "cactus_bishop": "卡克特斯主教"}.get(npc_id, npc_id)
+
+
+func _append_ai_button(text: String, cb: Callable) -> void:
+	var btn := Button.new()
+	btn.text = text
+	btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	btn.add_theme_font_size_override("font_size", 14)
+	btn.pressed.connect(cb)
+	_choice_box.add_child(btn)
+
+
+func _open_free_input() -> void:
+	_input_row.show()
+	_input_edit.grab_focus()
+
+
+func _on_free_input_submit() -> void:
+	var text := _input_edit.text.strip_edges()
+	if text.is_empty():
+		return
+	_input_row.hide()
+	_input_edit.clear()
+	get_node("/root/EventBus").dialogue_free_input.emit(text)
+
+
+func _request_exit() -> void:
+	get_node("/root/EventBus").dialogue_exit_requested.emit()

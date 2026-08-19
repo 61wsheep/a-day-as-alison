@@ -24,6 +24,7 @@
       "id": "daily",
       "priority": 10,
       "conditions": {"flag": ["met_padwin"]},
+      "ai": true,
       "lines": [
         {"speaker": "padwin", "emotion": "idle", "text": "又是你。租金攒够了？树屋区还有空房。"},
         {"speaker": "padwin", "emotion": "talk", "text": "提醒你一句：广场西边的石巢塔楼，别靠近。触犯「天」的规矩的人，都被带去了那里——没有一个回来讲过里面的事。"},

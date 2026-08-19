@@ -20,6 +20,12 @@ signal dialogue_choices(choices: Array)
 signal dialogue_choice_made(choice_index: int)
 signal dialogue_ended()
 
+# -- AI 对话相关 --
+signal dialogue_ai_meta(npc_id: String, ai_mode: bool, free_input_enabled: bool)
+signal dialogue_free_input(text: String)
+signal dialogue_exit_requested()
+signal ai_thinking(active: bool)
+
 # -- 探索相关 --
 signal clue_found(clue_id: String)
 signal area_changed(area_id: String)
