@@ -1,11 +1,11 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dfnbgvvysrkoe"]
 
-[ext_resource type="Texture2D" path="res://assets/tilesets/soraya_tileset.png" id="tex_soraya"]
-[ext_resource type="Script" path="res://scripts/npc/npc_base.gd" id="npc_base"]
-[ext_resource type="Shape2D" path="res://resources/interact_zone.tres" id="zone_shape"]
+[ext_resource type="Script" uid="uid://bcxl6yjd4hcqm" path="res://scripts/npc/npc_base.gd" id="npc_base"]
+[ext_resource type="Texture2D" uid="uid://bhbski7og7m7i" path="res://assets/tilesets/soraya_tileset.png" id="tex_soraya"]
+[ext_resource type="Shape2D" uid="uid://jmd1rs6tu4th" path="res://resources/interact_zone.tres" id="zone_shape"]
 
 [sub_resource type="CircleShape2D" id="body_col"]
-radius = 20.0
+radius = 31.016125
 
 [sub_resource type="AtlasTexture" id="d0"]
 atlas = ExtResource("tex_soraya")
@@ -126,19 +126,19 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Soraya" type="CharacterBody2D"]
+[node name="Soraya" type="CharacterBody2D" unique_id=1519667139]
 script = ExtResource("npc_base")
 npc_id = "soraya"
 dialogue_file = "res://resources/dialogues/soraya.json"
 
-[node name="Collision" type="CollisionShape2D" parent="."]
+[node name="Collision" type="CollisionShape2D" parent="." unique_id=2051569547]
 shape = SubResource("body_col")
 
-[node name="InteractZone" type="Area2D" parent="."]
+[node name="InteractZone" type="Area2D" parent="." unique_id=354126996]
 
-[node name="ZoneShape" type="CollisionShape2D" parent="InteractZone"]
+[node name="ZoneShape" type="CollisionShape2D" parent="InteractZone" unique_id=19368812]
 shape = ExtResource("zone_shape")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=574703743]
 sprite_frames = SubResource("frames")
 animation = &"walk_down"

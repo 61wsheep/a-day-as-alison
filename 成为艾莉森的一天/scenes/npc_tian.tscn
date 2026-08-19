@@ -1,30 +1,32 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://wsdltld05wsh"]
 
-[ext_resource type="Texture2D" path="res://assets/tilesets/cainos/props.png" id="tex_props"]
-[ext_resource type="Script" path="res://scripts/npc/npc_base.gd" id="npc_base"]
-[ext_resource type="Shape2D" path="res://resources/interact_zone.tres" id="zone_shape"]
+[ext_resource type="Script" uid="uid://bcxl6yjd4hcqm" path="res://scripts/npc/npc_base.gd" id="npc_base"]
+[ext_resource type="Texture2D" uid="uid://8l88rppgrxx3" path="res://assets/tilesets/cainos/props.png" id="tex_props"]
+[ext_resource type="Shape2D" uid="uid://jmd1rs6tu4th" path="res://resources/interact_zone.tres" id="zone_shape"]
 
-[sub_resource type="CircleShape2D" id="body_col"]
-radius = 36.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u0m6m"]
+size = Vector2(101, 76)
 
 [sub_resource type="AtlasTexture" id="altar_tex"]
 atlas = ExtResource("tex_props")
 region = Rect2(345, 265, 110, 80)
 
-[node name="TianAltar" type="CharacterBody2D"]
+[node name="TianAltar" type="CharacterBody2D" unique_id=1355015305]
 script = ExtResource("npc_base")
 npc_id = "tian"
 dialogue_file = "res://resources/dialogues/tower_voice.json"
 
-[node name="Collision" type="CollisionShape2D" parent="."]
-position = Vector2(0, 10)
-shape = SubResource("body_col")
+[node name="Collision" type="CollisionShape2D" parent="." unique_id=479208615]
+position = Vector2(-0.5, 1)
+shape = SubResource("RectangleShape2D_u0m6m")
 
-[node name="InteractZone" type="Area2D" parent="."]
+[node name="InteractZone" type="Area2D" parent="." unique_id=334047840]
 
-[node name="ZoneShape" type="CollisionShape2D" parent="InteractZone"]
+[node name="ZoneShape" type="CollisionShape2D" parent="InteractZone" unique_id=1887506957]
+position = Vector2(1, -1)
 shape = ExtResource("zone_shape")
 
-[node name="AltarSprite" type="Sprite2D" parent="."]
+[node name="AltarSprite" type="Sprite2D" parent="." unique_id=528682203]
+position = Vector2(0, 32)
 texture = SubResource("altar_tex")
 offset = Vector2(0, -30)

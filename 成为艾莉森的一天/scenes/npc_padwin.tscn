@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://b0l85ba1pcv2g" path="res://assets/tilesets/padwin_tileset.png" id="3_rekb7"]
 [ext_resource type="Script" uid="uid://bfkr5bwcqfs4q" path="res://scripts/npc/padwin.gd" id="padwin_script"]
-[ext_resource type="Shape2D" path="res://resources/interact_zone.tres" id="zone_shape"]
+[ext_resource type="Shape2D" uid="uid://jmd1rs6tu4th" path="res://resources/interact_zone.tres" id="zone_shape"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_rekb7"]
 radius = 33.955853
@@ -139,4 +139,4 @@ shape = ExtResource("zone_shape")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=427535180]
 sprite_frames = SubResource("SpriteFrames_r4lds")
-animation = &"walk_right"
+animation = &"walk_down"
