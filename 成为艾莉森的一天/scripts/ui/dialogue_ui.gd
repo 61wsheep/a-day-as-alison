@@ -225,7 +225,7 @@ func _on_dialogue_line(speaker_id: String, display_name: String, text: String, e
 	_choice_panel.hide()
 	_name_label.text = display_name
 	_text_label.text = text
-	_hint_label.text = "[E] 继续"
+	_hint_label.text = "[E] 继续    [Esc] 退出"
 	_update_portrait(speaker_id, emotion)
 	_panel.show()
 
