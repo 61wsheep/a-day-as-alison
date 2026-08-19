@@ -22,6 +22,7 @@
       "id": "daily",
       "priority": 10,
       "conditions": {"flag": ["met_cactus"]},
+      "ai": true,
       "lines": [
         {"speaker": "cactus", "emotion": "idle", "text": "今天也要谨言慎行。"},
         {"speaker": "cactus", "emotion": "think", "text": "猎巫的季节早已过去。如今的森林里，不需要火焰——「天」自会审判。"},

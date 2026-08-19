@@ -61,6 +61,7 @@
       "id": "daily",
       "priority": 10,
       "conditions": {"flag": ["met_soraya"]},
+      "ai": true,
       "lines": [
         {"speaker": "soraya", "emotion": "smile_01", "text": "今天也顺利吗？蘑菇在广场上刷新得很快，攒够租金就去树屋区看看吧。"},
         {"speaker": "player", "emotion": "talk_01", "text": "你每天都站在这里吗？"},

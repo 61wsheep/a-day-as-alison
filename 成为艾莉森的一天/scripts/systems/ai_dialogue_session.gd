@@ -267,12 +267,22 @@ func _apply_turn(parsed: Dictionary) -> void:
 
 func _handle_failure(reason: String) -> void:
 	print("[AIDialogueSession] %s" % reason)
+	_toast("AI 暂时无法回复，已切回固定对话")
 	if _sideline:
 		sideline_done.emit()
 		_ended = true
 		_flush_memory()
 	else:
 		session_finished.emit()  # npc_base 收到后回落该入口 JSON lines
+
+
+## 游戏内提示（借 NPC 节点拿 EventBus，避免重复 get_node("/root/EventBus")）。
+func _toast(message: String) -> void:
+	if _npc_base == null:
+		return
+	var bus: Node = _npc_base.get_node_or_null("/root/EventBus")
+	if bus != null and bus.has_signal("toast"):
+		bus.emit_signal("toast", message)
 
 
 func _flush_memory() -> void:

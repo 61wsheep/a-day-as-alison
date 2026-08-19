@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-## 对话 UI — 立绘 + 对话面板 + 动态选项按钮 + 提示气泡。
+## 对话 UI — 左右大立绘 + 底部对话面板（ui_dialogue_box 素材）+ 三选项（固定/不回答/自由输入）+ 提示气泡。
 ## 全部节点由代码构建，监听 EventBus 信号驱动。
 
 const PORTRAIT_DIR := {
@@ -50,11 +50,17 @@ const PORTRAIT_ALIAS := {
 	"cactus_bishop": "cactus",
 }
 
+const PANEL_TEXTURE := "res://assets/ui/ui_dialogue_box.png"
+const PORTRAIT_W := 480.0   # 立绘宽（1.36:1 → 高约 353）
+const PORTRAIT_H := 353.0
+
 var _panel: PanelContainer
-var _portrait: TextureRect
+var _npc_portrait: TextureRect
+var _player_portrait: TextureRect
 var _name_label: Label
 var _text_label: Label
 var _hint_label: Label
+var _ai_badge: Label
 var _choice_panel: PanelContainer
 var _choice_box: VBoxContainer
 var _interact_hint: Label
@@ -99,58 +105,107 @@ func _build_ui() -> void:
 	_interact_hint.hide()
 	add_child(_interact_hint)
 
-	# -- 对话面板（底部） --
+	# -- 左右大立绘（NPC 左 / 玩家右），先加 → 面板盖其上 --
+	_npc_portrait = _make_portrait(Control.PRESET_BOTTOM_LEFT, 0, -PORTRAIT_H, PORTRAIT_W, 0)
+	add_child(_npc_portrait)
+
+	_player_portrait = _make_portrait(Control.PRESET_BOTTOM_RIGHT, -PORTRAIT_W, -PORTRAIT_H, 0, 0)
+	add_child(_player_portrait)
+
+	# -- 底部对话面板（ui_dialogue_box 素材九宫格） --
+	var sb := StyleBoxTexture.new()
+	sb.texture = load(PANEL_TEXTURE)
+	sb.texture_margin_left = 80
+	sb.texture_margin_top = 40
+	sb.texture_margin_right = 80
+	sb.texture_margin_bottom = 40
 	_panel = PanelContainer.new()
+	_panel.add_theme_stylebox_override("panel", sb)
 	_panel.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-	_panel.offset_left = 24
-	_panel.offset_right = -24
-	_panel.offset_top = -150
+	_panel.offset_left = 166
+	_panel.offset_right = -166
+	_panel.offset_top = -192
 	_panel.offset_bottom = -12
 	_panel.hide()
 	add_child(_panel)
 
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 12)
-	_panel.add_child(hbox)
-
-	_portrait = TextureRect.new()
-	_portrait.custom_minimum_size = Vector2(120, 120)
-	_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	hbox.add_child(_portrait)
-
 	var vbox := VBoxContainer.new()
-	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hbox.add_child(vbox)
+	vbox.add_theme_constant_override("separation", 6)
+	_panel.add_child(vbox)
+
+	var name_row := HBoxContainer.new()
+	name_row.add_theme_constant_override("separation", 10)
+	vbox.add_child(name_row)
 
 	_name_label = Label.new()
-	_name_label.add_theme_font_size_override("font_size", 18)
-	vbox.add_child(_name_label)
+	_name_label.add_theme_font_size_override("font_size", 20)
+	_name_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.55))
+	name_row.add_child(_name_label)
+
+	# AI 对话标记（绿字小标，有 AI 能力时显示）
+	_ai_badge = Label.new()
+	_ai_badge.text = "AI 对话中"
+	_ai_badge.add_theme_font_size_override("font_size", 13)
+	_ai_badge.add_theme_color_override("font_color", Color(0.45, 0.9, 0.55))
+	_ai_badge.hide()
+	name_row.add_child(_ai_badge)
 
 	_text_label = Label.new()
 	_text_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_text_label.add_theme_font_size_override("font_size", 16)
+	_text_label.add_theme_font_size_override("font_size", 17)
+	_text_label.add_theme_color_override("font_color", Color(0.92, 0.92, 0.95))
 	vbox.add_child(_text_label)
 
 	_hint_label = Label.new()
 	_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_hint_label.add_theme_font_size_override("font_size", 12)
+	_hint_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
 	vbox.add_child(_hint_label)
 
-	# -- 选项面板（对话面板上方） --
+	# -- 选项面板（对话面板上方，从底部基准线向上生长，内容多不裁剪） --
 	_choice_panel = PanelContainer.new()
 	_choice_panel.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-	_choice_panel.offset_left = 60
-	_choice_panel.offset_right = -60
-	_choice_panel.offset_top = -290
-	_choice_panel.offset_bottom = -160
+	_choice_panel.offset_left = 216
+	_choice_panel.offset_right = -216
+	_choice_panel.offset_top = -204
+	_choice_panel.offset_bottom = -204
+	_choice_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	_choice_panel.hide()
 	add_child(_choice_panel)
 
 	_choice_box = VBoxContainer.new()
-	_choice_box.add_theme_constant_override("separation", 6)
+	_choice_box.add_theme_constant_override("separation", 5)
 	_choice_panel.add_child(_choice_box)
+
+	# -- 自由输入行（LineEdit + 发送），初始隐藏；置于选项与面板之间 --
+	_input_row = HBoxContainer.new()
+	_input_row.add_theme_constant_override("separation", 8)
+	_input_row.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	_input_row.offset_left = 216
+	_input_row.offset_right = -216
+	_input_row.offset_top = -248
+	_input_row.offset_bottom = -222
+	_input_row.hide()
+	add_child(_input_row)
+
+	_input_edit = LineEdit.new()
+	_input_edit.placeholder_text = "说点什么……（100 字以内）"
+	_input_edit.max_length = 100
+	_input_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_input_row.add_child(_input_edit)
+
+	var send := Button.new()
+	send.text = "发送"
+	send.pressed.connect(_on_free_input_submit)
+	_input_row.add_child(send)
+
+	# Esc 在输入框内先被消费，不误触对话退出
+	_input_edit.gui_input.connect(func(ev: InputEvent) -> void:
+		if ev is InputEventKey and ev.keycode == KEY_ESCAPE and ev.pressed:
+			_input_row.hide()
+			_input_edit.clear()
+			get_viewport().set_input_as_handled())
 
 	# -- 提示气泡（顶部中央） --
 	_toast_label = Label.new()
@@ -182,34 +237,18 @@ func _build_ui() -> void:
 	_thinking_label.hide()
 	add_child(_thinking_label)
 
-	# -- 自由输入行（LineEdit + 发送），初始隐藏 --
-	_input_row = HBoxContainer.new()
-	_input_row.add_theme_constant_override("separation", 8)
-	_input_row.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-	_input_row.offset_left = 80
-	_input_row.offset_right = -80
-	_input_row.offset_top = -64
-	_input_row.offset_bottom = -40
-	_input_row.hide()
-	add_child(_input_row)
 
-	_input_edit = LineEdit.new()
-	_input_edit.placeholder_text = "说点什么……"
-	_input_edit.max_length = 100
-	_input_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_input_row.add_child(_input_edit)
-
-	var send := Button.new()
-	send.text = "发送"
-	send.pressed.connect(_on_free_input_submit)
-	_input_row.add_child(send)
-
-	# Esc 在输入框内先被消费，不误触对话退出
-	_input_edit.gui_input.connect(func(ev: InputEvent) -> void:
-		if ev is InputEventKey and ev.keycode == KEY_ESCAPE and ev.pressed:
-			_input_row.hide()
-			_input_edit.clear()
-			get_viewport().set_input_as_handled())
+func _make_portrait(preset: int, left: float, top: float, right: float, bottom: float) -> TextureRect:
+	var p := TextureRect.new()
+	p.set_anchors_preset(preset)
+	p.offset_left = left
+	p.offset_top = top
+	p.offset_right = right
+	p.offset_bottom = bottom
+	p.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	p.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	p.hide()
+	return p
 
 
 func _on_dialogue_line(speaker_id: String, display_name: String, text: String, emotion: String) -> void:
@@ -222,25 +261,37 @@ func _on_dialogue_line(speaker_id: String, display_name: String, text: String, e
 
 
 func _update_portrait(speaker_id: String, emotion: String) -> void:
-	var key: String = PORTRAIT_ALIAS.get(speaker_id, speaker_id)
-	if key == "narrator" or not PORTRAIT_FILE.has(key):
-		_portrait.texture = null
-		_portrait.hide()
+	if speaker_id == "player":
+		_set_portrait(_player_portrait, "player", emotion)
+		_npc_portrait.hide()
+	elif speaker_id == "narrator":
+		_npc_portrait.hide()
+		_player_portrait.hide()
+	else:
+		_set_portrait(_npc_portrait, speaker_id, emotion)
+		_player_portrait.hide()
+
+
+func _set_portrait(target: TextureRect, key: String, emotion: String) -> void:
+	var dir_key: String = PORTRAIT_ALIAS.get(key, key)
+	if dir_key == "narrator" or not PORTRAIT_FILE.has(dir_key):
+		target.texture = null
+		target.hide()
 		return
-	_portrait.show()
+	target.show()
 	var emo := emotion
-	if emo == "" or not PORTRAIT_FILE[key].has(emo):
-		emo = PORTRAIT_DEFAULT.get(key, "")
-	var path: String = PORTRAIT_DIR[key] + PORTRAIT_FILE[key].get(emo, "")
+	if emo == "" or not PORTRAIT_FILE[dir_key].has(emo):
+		emo = PORTRAIT_DEFAULT.get(dir_key, "")
+	var path: String = PORTRAIT_DIR[dir_key] + PORTRAIT_FILE[dir_key].get(emo, "")
 	if path == "":
-		_portrait.texture = null
+		target.texture = null
 		return
 	if not _portrait_cache.has(path):
 		if ResourceLoader.exists(path):
 			_portrait_cache[path] = load(path)
 		else:
 			_portrait_cache[path] = null
-	_portrait.texture = _portrait_cache[path]
+	target.texture = _portrait_cache[path]
 
 
 func _on_choices(choices: Array) -> void:
@@ -248,6 +299,8 @@ func _on_choices(choices: Array) -> void:
 	_input_row.hide()
 	for child in _choice_box.get_children():
 		child.queue_free()
+
+	# 三类恒定选项：固定回答 / 不回答 / 自由输入（≤100字）
 	for i in choices.size():
 		var btn := Button.new()
 		btn.text = str(choices[i])
@@ -255,15 +308,20 @@ func _on_choices(choices: Array) -> void:
 		btn.add_theme_font_size_override("font_size", 15)
 		btn.pressed.connect(_on_choice_pressed.bind(i))
 		_choice_box.add_child(btn)
-	# —— AI 附加按钮 ——
-	if _ai_mode:
-		_append_ai_button("自由输入…", _open_free_input)
-		_append_ai_button("结束对话", _request_exit)
-	elif _ai_free_input_enabled:
-		_append_ai_button("自由输入…", _open_free_input)
+
+	_choice_box.add_child(_make_choice_sep())
+	_append_ai_button("不回答", _on_silence)
+	_append_ai_button("自由输入（100字内）…", _open_free_input)
+
 	_choice_panel.show()
 	if _choice_box.get_child_count() > 0:
 		(_choice_box.get_child(0) as Button).grab_focus()
+
+
+func _make_choice_sep() -> Control:
+	var sep := HSeparator.new()
+	sep.modulate = Color(1, 1, 1, 0.25)
+	return sep
 
 
 func _on_choice_pressed(index: int) -> void:
@@ -271,9 +329,19 @@ func _on_choice_pressed(index: int) -> void:
 	get_node("/root/EventBus").dialogue_choice_made.emit(index)
 
 
+## 不回答 → 结束当前对话（JSON 模式也生效，见 npc_base._request_exit）。
+func _on_silence() -> void:
+	_choice_panel.hide()
+	get_node("/root/EventBus").dialogue_exit_requested.emit()
+
+
 func _on_dialogue_ended() -> void:
 	_panel.hide()
 	_choice_panel.hide()
+	_input_row.hide()
+	_npc_portrait.hide()
+	_player_portrait.hide()
+	_ai_badge.hide()
 
 
 func _show_toast(message: String) -> void:
@@ -290,6 +358,10 @@ func _on_dialogue_ai_meta(npc_id: String, ai_mode: bool, free_input_enabled: boo
 	_ai_mode = ai_mode
 	_ai_free_input_enabled = free_input_enabled
 	_thinking_npc = npc_id
+	if ai_mode or free_input_enabled:
+		_ai_badge.show()
+	else:
+		_ai_badge.hide()
 
 
 func _on_ai_thinking(active: bool) -> void:
@@ -315,6 +387,7 @@ func _append_ai_button(text: String, cb: Callable) -> void:
 
 
 func _open_free_input() -> void:
+	_choice_panel.hide()
 	_input_row.show()
 	_input_edit.grab_focus()
 
@@ -324,9 +397,10 @@ func _on_free_input_submit() -> void:
 	if text.is_empty():
 		return
 	_input_row.hide()
-	_input_edit.clear()
+	# 无 AI 支持（无 key / 无角色卡）→ 对方没有回应，恢复选项面板
+	var bridge = get_node_or_null("/root/AIBridge")
+	if bridge == null or not bridge.is_available() or not bridge.has_role_card(_thinking_npc):
+		_show_toast("（对方没有回应……）")
+		_choice_panel.show()
+		return
 	get_node("/root/EventBus").dialogue_free_input.emit(text)
-
-
-func _request_exit() -> void:
-	get_node("/root/EventBus").dialogue_exit_requested.emit()

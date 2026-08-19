@@ -281,6 +281,8 @@ func _end_dialogue() -> void:
 	gm.apply_effects(_end_effects)
 	_pending_end_effects = {}
 	get_node("/root/EventBus").dialogue_ended.emit()
+	# 清除 UI 的「AI 对话中」标记
+	get_node("/root/EventBus").dialogue_ai_meta.emit(npc_id, false, false)
 
 
 # ---------------------------------------------------------------------------
@@ -306,7 +308,7 @@ func _on_free_input(text: String) -> void:
 
 
 func _request_exit() -> void:
-	if _ai_mode:
+	if _dialogue_active:
 		_end_dialogue()
 
 
