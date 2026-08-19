@@ -27,68 +27,64 @@ func _build_ui() -> void:
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(dim)
 
-	# 背景装饰：森林概念图，半透明铺底
+	# 背景装饰：森林概念图，全屏铺满（保持宽高比裁剪），半透明
 	var bg := TextureRect.new()
-	bg.set_anchors_preset(Control.PRESET_CENTER)
-	bg.custom_minimum_size = Vector2(816, 624)  # 408x312 的两倍
-	bg.offset_left = -408
-	bg.offset_top = -312
-	bg.offset_right = 408
-	bg.offset_bottom = 312
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.texture = load("res://assets/sprites/forest_draft.png")
 	bg.modulate = Color(1, 1, 1, 0.5)
-	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	add_child(bg)
 
 	var panel := PanelContainer.new()
 	panel.set_anchors_preset(Control.PRESET_CENTER)
-	panel.custom_minimum_size = Vector2(460, 260)
-	panel.offset_left = -230
-	panel.offset_top = -130
-	panel.offset_right = 230
-	panel.offset_bottom = 130
+	panel.custom_minimum_size = Vector2(600, 400)
+	panel.offset_left = -300
+	panel.offset_top = -200
+	panel.offset_right = 300
+	panel.offset_bottom = 200
 	add_child(panel)
 
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 12)
+	vbox.add_theme_constant_override("separation", 14)
 	panel.add_child(vbox)
 
 	var title := Label.new()
 	title.text = "成为艾莉森的一天"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 30)
+	title.add_theme_font_size_override("font_size", 38)
 	title.add_theme_color_override("font_color", Color(1.0, 0.9, 0.5))
 	vbox.add_child(title)
 
 	var subtitle := Label.new()
 	subtitle.text = "—— 探秘森林，揭示「天」的面目 ——"
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitle.add_theme_font_size_override("font_size", 14)
+	subtitle.add_theme_font_size_override("font_size", 16)
 	vbox.add_child(subtitle)
 
 	# 密钥输入
 	var key_label := Label.new()
 	key_label.text = "SiliconFlow API Key（可选，不填则 AI 对话回落 JSON）"
-	key_label.add_theme_font_size_override("font_size", 12)
+	key_label.add_theme_font_size_override("font_size", 14)
 	vbox.add_child(key_label)
 
 	_key_edit = LineEdit.new()
 	_key_edit.placeholder_text = "sk-..."
 	_key_edit.secret = true
 	_key_edit.secret_character = "•"
-	_key_edit.add_theme_font_size_override("font_size", 15)
+	_key_edit.add_theme_font_size_override("font_size", 16)
 	_key_edit.text_submitted.connect(func(_t): _on_start())
 	vbox.add_child(_key_edit)
 
 	# 状态
 	_status_label = Label.new()
 	_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_status_label.add_theme_font_size_override("font_size", 13)
+	_status_label.add_theme_font_size_override("font_size", 14)
 	vbox.add_child(_status_label)
 
 	_start_btn = Button.new()
 	_start_btn.text = "开始游戏"
-	_start_btn.add_theme_font_size_override("font_size", 18)
+	_start_btn.add_theme_font_size_override("font_size", 22)
 	_start_btn.pressed.connect(_on_start)
 	vbox.add_child(_start_btn)
 
