@@ -15,19 +15,16 @@ run/main_scene="res://scenes/ui/start_menu.tscn"
 config/features=PackedStringArray("4.6")
 config/icon="res://icon.svg"
 
-[display]
-
-window/size/viewport_width=1152
-window/size/viewport_height=648
-window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
-
 [autoload]
 
 EventBus="res://scripts/autoload/event_bus.gd"
 GameManager="res://scripts/autoload/game_manager.gd"
 TimeManager="res://scripts/autoload/time_manager.gd"
 AIBridge="res://scripts/autoload/ai_bridge.gd"
+
+[display]
+
+window/stretch/mode="canvas_items"
 
 [input]
 

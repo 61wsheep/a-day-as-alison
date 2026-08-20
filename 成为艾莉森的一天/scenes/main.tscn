@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://co2op5dljwuy7" path="res://assets/tilesets/cainos/plant.png" id="4_og1vs"]
 [ext_resource type="Texture2D" uid="uid://8l88rppgrxx3" path="res://assets/tilesets/cainos/props.png" id="5_2wyq8"]
 [ext_resource type="Texture2D" uid="uid://d3hb16lr0ox5k" path="res://assets/tilesets/cainos/struct.png" id="15_yq6so"]
-[ext_resource type="PackedScene" path="res://scenes/npc_cactus_bishop.tscn" id="cactus_scene"]
+[ext_resource type="PackedScene" uid="uid://b5l27rsuniof2" path="res://scenes/npc_cactus_bishop.tscn" id="cactus_scene"]
 [ext_resource type="Script" uid="uid://b07le8jfojm0" path="res://scripts/collectible.gd" id="collectible_script"]
 [ext_resource type="Script" uid="uid://cty0kby1vtln0" path="res://scripts/ui/dialogue_ui.gd" id="dialogue_ui_script"]
 [ext_resource type="Script" uid="uid://cnh8sw8p00fdk" path="res://scripts/systems/door.gd" id="door_script"]
@@ -16,10 +16,10 @@
 [ext_resource type="PackedScene" uid="uid://dkg68xdhp5h2b" path="res://scenes/npc_padwin.tscn" id="padwin_scene"]
 [ext_resource type="PackedScene" uid="uid://cn2d7ukn283u5" path="res://scenes/player.tscn" id="player_scene"]
 [ext_resource type="Script" uid="uid://bn86qwpgdvhgg" path="res://scripts/ui/rental_ui.gd" id="rental_ui_script"]
-[ext_resource type="PackedScene" path="res://scenes/npc_soraya.tscn" id="soraya_scene"]
+[ext_resource type="PackedScene" uid="uid://dfnbgvvysrkoe" path="res://scenes/npc_soraya.tscn" id="soraya_scene"]
 [ext_resource type="Script" uid="uid://bpcv48fa8d7fa" path="res://scripts/ui/tarot_ui.gd" id="tarot_ui_script"]
 [ext_resource type="Script" uid="uid://b5268vlc2q1jl" path="res://scripts/systems/treehouse_door.gd" id="thdoor_script"]
-[ext_resource type="PackedScene" path="res://scenes/npc_tian.tscn" id="tian_scene"]
+[ext_resource type="PackedScene" uid="uid://wsdltld05wsh" path="res://scenes/npc_tian.tscn" id="tian_scene"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pm3ni"]
 texture = ExtResource("2_pm3ni")
