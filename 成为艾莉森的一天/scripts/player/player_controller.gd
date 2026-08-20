@@ -30,7 +30,7 @@ func _physics_process(_delta: float) -> void:
 		_anim.frame = 0
 		return
 
-	var direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	var direction := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = direction * speed
 
 	if direction.length() > 0.01:

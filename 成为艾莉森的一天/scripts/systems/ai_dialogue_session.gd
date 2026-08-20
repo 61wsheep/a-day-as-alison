@@ -16,7 +16,8 @@ signal thinking_changed(active: bool)
 signal line_ready(speaker: String, text: String, emotion: String)
 signal choices_ready(topics: Array)
 signal sideline_done()
-signal session_finished()
+signal session_finished()   # 自然判停（AI 决定结束）→ npc_base 显示告别提示后退出
+signal session_aborted()    # 失败/异常中断 → 立即退出，不显示告别
 
 const MAX_TURNS := 8            # 单次会话轮数上限（对齐 Python MAX_TURNS，收敛到游戏内）
 const MIN_TURNS := 2            # 前 N 轮 AI 不能主动结束
@@ -235,6 +236,7 @@ func _handle_response(raw: String) -> void:
 	if should_end and _turn <= MIN_TURNS:
 		should_end = false
 	if should_end or _turn >= MAX_TURNS:
+		_ended = true   # 先置位：告别停留期间忽略玩家后续提交
 		session_finished.emit()
 
 
@@ -276,7 +278,8 @@ func _handle_failure(reason: String) -> void:
 		_ended = true
 		_flush_memory()
 	else:
-		session_finished.emit()  # npc_base 收到后回落该入口 JSON lines
+		_ended = true
+		session_aborted.emit()  # npc_base 收到后回落该入口 JSON lines（不显示告别）
 
 
 ## 游戏内提示（借 NPC 节点拿 EventBus，避免重复 get_node("/root/EventBus")）。

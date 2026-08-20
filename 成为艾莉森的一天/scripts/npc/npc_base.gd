@@ -160,7 +160,8 @@ func _begin_ai_session(dlg: Dictionary) -> void:
 	_ai_session.line_ready.connect(_on_ai_line)
 	_ai_session.choices_ready.connect(_on_ai_choices)
 	_ai_session.sideline_done.connect(_on_ai_sideline_done)
-	_ai_session.session_finished.connect(_end_dialogue)
+	_ai_session.session_finished.connect(_on_ai_session_finished)
+	_ai_session.session_aborted.connect(_end_dialogue)
 	_ai_session.begin()
 
 
@@ -318,6 +319,21 @@ func _request_exit() -> void:
 func _on_ai_thinking(active: bool) -> void:
 	_ai_thinking = active
 	get_node("/root/EventBus").ai_thinking.emit(active)
+
+
+## AI 自然判停（should_end_conversation）：先给出告别提示，停留片刻再退出，
+## 避免 AI 最后一句一闪而过、对话"无声无息地消失"。
+func _on_ai_session_finished() -> void:
+	if not _dialogue_active:
+		return
+	_emit_line({
+		"speaker": npc_id,
+		"text": "[%s 似乎不想再聊下去了。]" % _display_name(npc_id),
+		"emotion": "",
+	})
+	await get_tree().create_timer(2.5).timeout
+	if _dialogue_active:
+		_end_dialogue()
 
 
 func _on_ai_line(speaker: String, text: String, emotion: String) -> void:
