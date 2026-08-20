@@ -74,6 +74,8 @@ var _free_input: LineEdit
 var _ai_mode := false
 var _ai_free_input_enabled := false
 var _thinking_npc := ""
+## 兜底路径：对话是否激活（供 _unhandled_input 在 npc_base._input 未命中时仍能退出）
+var _dlg_active := false
 
 
 func _ready() -> void:
@@ -88,6 +90,7 @@ func _ready() -> void:
 	bus.toast.connect(_show_toast)
 	bus.dialogue_ai_meta.connect(_on_dialogue_ai_meta)
 	bus.ai_thinking.connect(_on_ai_thinking)
+	bus.dialogue_started.connect(func(): _dlg_active = true)   # 兜底路径用：跟踪对话是否激活
 
 
 func _build_ui() -> void:
@@ -333,7 +336,18 @@ func _on_silence() -> void:
 	get_node("/root/EventBus").dialogue_free_input.emit("（沉默不语）")
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	# 兜底路径：若 npc_base._input 因脚本缓存异常等未命中 Esc（ui_cancel 未被处理），
+	# 这里通过 dialogue_exit_requested → npc_base._request_exit → _end_dialogue 结束对话。
+	# 正常路径下 npc_base._input 已同步结束对话，_dlg_active 已为 false，本函数不动作（幂等）。
+	if _dlg_active and event.is_action_pressed("ui_cancel"):
+		print("[DialogueUI] 兜底退出：ui_cancel 未在 npc_base 命中，改发 dialogue_exit_requested")
+		get_node("/root/EventBus").dialogue_exit_requested.emit()
+		get_viewport().set_input_as_handled()
+
+
 func _on_dialogue_ended() -> void:
+	_dlg_active = false
 	_panel.hide()
 	_choice_panel.hide()
 	_thinking_label.hide()

@@ -56,6 +56,7 @@ func _load_dialogue_data() -> void:
 func _input(event: InputEvent) -> void:
 	# Esc 退出对话 —— 无论是否在自由输入框聚焦、无论 AI/JSON 模式，都生效
 	if _ai_mode and event.is_action_pressed("ui_cancel"):
+		print("[NPC:%s] Esc 到达 _input（AI 模式），强制结束对话" % npc_id)
 		var bridge = get_node_or_null("/root/AIBridge")
 		if bridge:
 			bridge.cancel_current()   # 取消在途请求（可能立刻恢复，也可能不）
