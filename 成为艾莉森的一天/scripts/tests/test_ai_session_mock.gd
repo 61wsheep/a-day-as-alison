@@ -1,17 +1,21 @@
 extends SceneTree
 
 ## AIDialogueSession 的 mock 集成测试（零网络）。
-## 运行：godot --headless -s res://scripts/tests/test_ai_session_mock.gd --quit
+## 运行：godot --headless -s res://scripts/tests/test_ai_session_mock.gd
 ## 注入脚本化 LLM 响应，验证：
 ##   - S1 会话循环（开场→话题→回复→结束）
 ##   - emotional_shift 结算（负向×0.8、clamp、进 GameManager）
 ##   - hints 命中白名单 → discover_clue
 ##   - S2 旁路 + 失败回落
+## 注意：闭包不按引用捕获局部变量，信号状态必须存成员变量。
 
 const AIDialogueSession := preload("res://scripts/systems/ai_dialogue_session.gd")
 
 var _failures := 0
 var _passes := 0
+var _ended := false
+var _done := false
+var _topics_seen: Array = []
 
 
 func _init() -> void:
@@ -74,16 +78,16 @@ func _mock_llm(payload: Dictionary) -> String:
 func _run_s1_session(base: Node, gm: Node) -> void:
 	var session := AIDialogueSession.new()
 	session.setup(base, "padwin")
-	var ended := false
-	session.session_finished.connect(func(): ended = true)
-	var topics_seen: Array = []
-	session.choices_ready.connect(func(topics): topics_seen = topics)
+	_ended = false
+	session.session_finished.connect(func(): _ended = true)
+	_topics_seen = []
+	session.choices_ready.connect(func(topics): _topics_seen = topics)
 	_turn_counter = 0
 
 	# 开场
 	session.begin()
 	await _wait_frames(3)
-	_check("S1 开场给出话题建议", topics_seen.size() == 3)
+	_check("S1 开场给出话题建议", _topics_seen.size() == 3)
 
 	# 点话题推进第 2 轮
 	session.submit_topic(0)
@@ -93,7 +97,7 @@ func _run_s1_session(base: Node, gm: Node) -> void:
 	session.submit_free_text("那你呢？")
 	await _wait_frames(3)
 
-	_check("S1 会话结束（3 轮后 should_end）", ended == true)
+	_check("S1 会话结束（3 轮后 should_end）", _ended == true)
 	if gm:
 		# 3 轮：+3, -4×0.8=-3, +3 → 50+3-3+3=53
 		_check("S1 好感度结算（负向×0.8）", gm.npc_affection["padwin"] == 53)
@@ -103,14 +107,14 @@ func _run_s1_session(base: Node, gm: Node) -> void:
 func _run_s2_sideline(base: Node) -> void:
 	var session := AIDialogueSession.new()
 	session.setup(base, "padwin")
-	var done := false
-	session.sideline_done.connect(func(): done = true)
+	_done = false
+	session.sideline_done.connect(func(): _done = true)
 	_turn_counter = 0
 
 	session.free_input_turn("你相信命运吗？")
 	await _wait_frames(3)
 
-	_check("S2 旁路完成", done == true)
+	_check("S2 旁路完成", _done == true)
 
 
 func _run_failure_fallback(base: Node) -> void:
@@ -118,14 +122,14 @@ func _run_failure_fallback(base: Node) -> void:
 	bridge.set_mock_responder(func(payload): return "[API_ERROR] 测试超时")
 	var session := AIDialogueSession.new()
 	session.setup(base, "padwin")
-	var ended := false
-	session.session_finished.connect(func(): ended = true)
+	_done = false
+	session.sideline_done.connect(func(): _done = true)
 	_turn_counter = 0
 
 	session.free_input_turn("测试失败回落")
 	await _wait_frames(3)
 
-	_check("失败回落触发 session_finished", ended == true)
+	_check("S2 失败回落触发 sideline_done", _done == true)
 	bridge.set_mock_responder(_mock_llm)
 
 

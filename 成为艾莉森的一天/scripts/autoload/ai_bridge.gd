@@ -37,6 +37,7 @@ func _ready() -> void:
 		print("[AIBridge] 检测到 --ai-off / AI_DISABLED，AI 对话关闭。")
 	_http = HTTPRequest.new()
 	_http.timeout = TIMEOUT_SEC
+	_http.use_threads = true   # 后台线程请求，否则慢速 LLM 会冻结主循环（全键失灵）
 	_http.body_size_limit = 2 * 1024 * 1024
 	add_child(_http)
 
@@ -86,6 +87,7 @@ func set_api_key(key: String) -> bool:
 	if _http == null:
 		_http = HTTPRequest.new()
 		_http.timeout = TIMEOUT_SEC
+		_http.use_threads = true
 		_http.body_size_limit = 2 * 1024 * 1024
 		add_child(_http)
 	# 持久化到 user://（res:// 导出只读；user:// 天然 gitignore）
@@ -159,8 +161,12 @@ func request_llm(payload: Dictionary) -> String:
 	return bytes.get_string_from_utf8()
 
 
-## 带硬超时兜底的请求（Timer 兜底：超时 cancel → await 恢复 → 走失败）。
+## 带硬超时兜底的请求。
+## threaded 模式下 HTTPRequest.timeout 会可靠发出 request_completed(RESULT_TIMEOUT)，
+## 用它在等待侧真正超时；Timer 取消作双保险（cancel 可能不恢复 await，但不影响内部超时）。
 func request_llm_with_guard(payload: Dictionary, hard_timeout: float) -> String:
+	var old_timeout := _http.timeout
+	_http.timeout = hard_timeout
 	var t := Timer.new()
 	t.one_shot = true
 	t.wait_time = hard_timeout
@@ -169,6 +175,7 @@ func request_llm_with_guard(payload: Dictionary, hard_timeout: float) -> String:
 	t.start()
 	var raw := await request_llm(payload)
 	t.queue_free()
+	_http.timeout = old_timeout
 	return raw
 
 
