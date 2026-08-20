@@ -158,7 +158,26 @@ func request_llm(payload: Dictionary) -> String:
 		return "[API_ERROR] result=%d http=%d" % [result, code]
 	if code != 200:
 		return "[API_ERROR] HTTP %d: %s" % [code, bytes.get_string_from_utf8()]
-	return bytes.get_string_from_utf8()
+	# OpenAI chat.completions 信封 → 解包 assistant content（LLM 的真实 JSON 在 content 里）
+	var content := _extract_content(bytes.get_string_from_utf8())
+	if content.is_empty():
+		return "[API_ERROR] 响应缺少 assistant content"
+	return content
+
+
+## 从 OpenAI chat.completions 响应信封中解包 assistant content。
+## 非流式响应形如 {"choices":[{"message":{"role":"assistant","content":"..."}}]}，
+## LLM 生成的 JSON 就在 content 字符串里。缺失/无法解析返回空串。
+func _extract_content(response_text: String) -> String:
+	var parsed: Variant = JSON.parse_string(response_text)
+	if parsed is Dictionary:
+		var choices: Array = parsed.get("choices", [])
+		if choices.size() > 0 and choices[0] is Dictionary:
+			var msg: Dictionary = choices[0].get("message", {})
+			var content := str(msg.get("content", ""))
+			if not content.is_empty():
+				return content
+	return ""
 
 
 ## 带硬超时兜底的请求。
