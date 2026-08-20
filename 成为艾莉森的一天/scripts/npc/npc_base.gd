@@ -56,12 +56,10 @@ func _load_dialogue_data() -> void:
 func _input(event: InputEvent) -> void:
 	# Esc 退出对话 —— 无论是否在自由输入框聚焦、无论 AI/JSON 模式，都生效
 	if _ai_mode and event.is_action_pressed("ui_cancel"):
-		if _ai_thinking:
-			var bridge = get_node_or_null("/root/AIBridge")
-			if bridge:
-				bridge.cancel_current()   # await 会立刻恢复走回落
-		else:
-			_end_dialogue()
+		var bridge = get_node_or_null("/root/AIBridge")
+		if bridge:
+			bridge.cancel_current()   # 取消在途请求（可能立刻恢复，也可能不）
+		_end_dialogue()               # 无论如何立即结束对话，不依赖 await 恢复
 		return
 	if _dialogue_active and event.is_action_pressed("ui_cancel"):
 		_end_dialogue()
@@ -277,6 +275,9 @@ func _end_dialogue() -> void:
 	_ai_mode = false
 	_waiting_for_choice = false
 	_showing_reply = false
+	if _ai_thinking:
+		_ai_thinking = false
+		get_node("/root/EventBus").ai_thinking.emit(false)   # 收起「在思考」标签
 	var gm = get_node("/root/GameManager")
 	gm.apply_effects(_pending_end_effects)
 	gm.apply_effects(_end_effects)
@@ -319,6 +320,8 @@ func _on_ai_thinking(active: bool) -> void:
 
 
 func _on_ai_line(speaker: String, text: String, emotion: String) -> void:
+	if not _dialogue_active:
+		return   # 对话已结束（如 Esc 退出），丢弃迟到的 AI 回复
 	_emit_line({"speaker": speaker, "text": text, "emotion": emotion})
 
 

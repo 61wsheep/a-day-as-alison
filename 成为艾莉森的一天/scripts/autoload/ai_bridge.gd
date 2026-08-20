@@ -150,6 +150,7 @@ func request_llm(payload: Dictionary) -> String:
 	var result: int = resp[0]
 	var code: int = resp[1]
 	var bytes: PackedByteArray = resp[3]
+	print("[AIBridge] HTTP 完成 result=%d code=%d" % [result, code])
 
 	if result != HTTPRequest.RESULT_SUCCESS:
 		return "[API_ERROR] result=%d http=%d" % [result, code]

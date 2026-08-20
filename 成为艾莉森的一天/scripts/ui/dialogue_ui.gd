@@ -336,6 +336,7 @@ func _on_silence() -> void:
 func _on_dialogue_ended() -> void:
 	_panel.hide()
 	_choice_panel.hide()
+	_thinking_label.hide()
 	_npc_portrait.hide()
 	_player_portrait.hide()
 	_ai_badge.hide()
@@ -364,7 +365,7 @@ func _on_dialogue_ai_meta(npc_id: String, ai_mode: bool, free_input_enabled: boo
 func _on_ai_thinking(active: bool) -> void:
 	_choice_panel.hide()
 	if active:
-		_thinking_label.text = "（%s 在想着什么……）" % _display_name_or_id(_thinking_npc)
+		_thinking_label.text = "（%s 在想着什么……  Esc 退出）" % _display_name_or_id(_thinking_npc)
 		_thinking_label.show()
 	else:
 		_thinking_label.hide()

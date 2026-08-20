@@ -124,9 +124,12 @@ func _build_and_request(is_opening: bool, player_input: String = "") -> void:
 	var bridge := _autoload("AIBridge")
 	var raw := ""
 	if bridge:
-		raw = await bridge.request_llm_with_guard(payload, 60.0)
+		print("[AIDialogueSession] 请求 AI（%s 第 %d 轮）…" % [_npc_id, _turn])
+		raw = await bridge.request_llm_with_guard(payload, 30.0)
 	_in_flight = false
 	thinking_changed.emit(false)
+	if _ended:
+		return   # 会话已被玩家结束（Esc 退出），丢弃迟到的结果
 
 	if raw.begins_with("[API_ERROR]") or raw.begins_with("[BUSY]") or raw.begins_with("[DISABLED]"):
 		_handle_failure(raw)
