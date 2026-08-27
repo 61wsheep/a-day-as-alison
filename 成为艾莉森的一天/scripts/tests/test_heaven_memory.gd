@@ -12,6 +12,11 @@ var _passes := 0
 
 
 func _init() -> void:
+	# 防"假绿"守卫：被测脚本编译失败时 preload 可能返回 null，
+	# 此时所有调用变 Nonexistent function，_check 全不执行而 quit(0) 假通过。
+	if HeavenMemory == null or MemoryQuery == null:
+		printerr("[TEST] 预加载失败，测试未运行")
+		quit(1)
 	_setup()
 	_test_event_record_and_reload()
 	_test_importance_rules()
