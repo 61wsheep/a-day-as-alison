@@ -57,6 +57,14 @@ func discover_clue(clue_id: String) -> void:
 		get_node("/root/EventBus").clue_found.emit(clue_id)
 		var display: String = CLUE_NAMES.get(clue_id, clue_id)
 		get_node("/root/EventBus").toast.emit("获得线索：%s" % display)
+		record_heaven_event("clue", "玩家发现线索：%s" % display, [clue_id, current_area])
+
+
+## 天记忆事件打点（记忆系统第一步地基）。
+## owner 默认 "heaven"（天全知可见）；NPC 私密事件传具体 npc_id。
+## fact 必须是程序生成的客观描述，不接受 AI 文本。
+func record_heaven_event(type: String, fact: String, tags: Array = [], owner: String = "heaven") -> void:
+	HeavenMemoryStore.record_event(type, owner, tags, fact, current_day)
 
 
 func set_flag(flag_id: String) -> void:
