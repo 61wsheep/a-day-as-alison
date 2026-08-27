@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "day_summary": {
+      "type": "string",
+      "description": "200-400 字回顾叙事。天对今天的裁定与态度定格；第三人称为主，可隐约带第一人称情绪；是玩家稳定读到天态度的窗口"
+    },
+    "tomorrow_seed": {
+      "type": "string",
+      "description": "明日伏笔/走向种子，1-2 句；注入明日 oracle prompt 与明日 NPC 对话"
+    },
+    "should_end_loop": {
+      "type": "boolean",
+      "default": false,
+      "description": "天提议终结（仅当真觉得该终结时 true）。Godot 只在天数窗口内批准，永不越权"
+    },
+    "internal_note": {
+      "type": "string",
+      "description": "天对今日的真实评价（玩家不可见），进观测窗口"
+    },
+    "memory_summary": {
+      "type": "string",
+      "description": "压缩后的今日记忆摘要（≤150 字），写入天的中期记忆，供日后检索呼应"
+    },
+    "key_event_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "从今日事件清单中挑出最关键的事件 id。只能选清单里存在的 id，编造会被丢弃"
+    },
+    "attitude_profile_update": {
+      "type": ["string", "null"],
+      "description": "重写后的天对玩家态度画像（≤150 字），跨天保持记仇/奖励一致性的根。态度无实质变化时给 null"
+    },
+    "resolve_foreshadow_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "今日应验的伏笔 id。只能选注入清单里 open 状态的伏笔，编造会被丢弃"
+    },
+    "mood_shift": {
+      "type": "string",
+      "description": "今日基调迁移标签，如 watching→testing；无变化给空串"
+    }
+  },
+  "required": ["day_summary", "tomorrow_seed", "should_end_loop", "internal_note"]
+}

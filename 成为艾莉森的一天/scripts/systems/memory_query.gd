@@ -83,9 +83,9 @@ static func _assemble_judgment(current_day: int, compliance: String) -> String:
 	var lines: PackedStringArray = []
 	var today := HeavenMemory.events_for_day(current_day)
 	if today.size() > 0:
-		lines.append("今日发生：")
+		lines.append("今日发生（[id] 供 key_event_ids 挑选）：")
 		for evt in today:
-			lines.append("  %s" % str(evt.get("fact", "")))
+			lines.append("  [%s] %s" % [str(evt.get("id", "")), str(evt.get("fact", ""))])
 	else:
 		lines.append("今日无有效观测。")
 
@@ -99,7 +99,8 @@ static func _assemble_judgment(current_day: int, compliance: String) -> String:
 
 	var open_fs := HeavenMemory.open_foreshadows()
 	if open_fs.size() > 0:
-		lines.append("尚未应验的伏笔：%s" % "；".join(open_fs.map(func(fs): return str(fs["text"]))))
+		lines.append("尚未应验的伏笔（(id) 供 resolve_foreshadow_ids 挑选）：%s" % "；".join(
+			open_fs.map(func(fs): return "(%s) %s" % [str(fs.get("id", "")), str(fs.get("text", ""))])))
 	var expired := HeavenMemory.expire_foreshadows(current_day)
 	if expired.size() > 0:
 		lines.append("⚠ 你有 %d 条伏笔烂尾了，今夜须圆场或放弃。" % expired.size())

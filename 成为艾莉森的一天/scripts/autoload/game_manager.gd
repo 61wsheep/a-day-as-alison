@@ -21,6 +21,21 @@ var daily_luck: int = 0
 var treehouse: String = ""
 var treehouse_rented: bool = false
 
+## 天的状态层（记忆系统第二步）。
+## 持久字段（跨天）：benevolence/engagement/truth_proximity/prophecy_resistance。
+## 单日字段（reset_loop 重置）：daily_prophecy/daily_compliance。
+## v0.1 只存内存；user:// 持久化随存档系统排期。
+var heaven: Dictionary = {
+	"benevolence": 0.0,
+	"engagement": 0.3,
+	"truth_proximity": 0.0,
+	"prophecy_resistance": 0,
+	"daily_prophecy": null,
+	"daily_compliance": "",
+	"tomorrow_seed": "",
+	"last_judgment": {},
+}
+
 ## 线索显示名（用于提示）
 const CLUE_NAMES := {
 	"clue_padwin_no_memory": "帕德温没有前世的记忆",
@@ -137,8 +152,74 @@ func reset_loop() -> void:
 	tarot_drawn_today = false
 	daily_tarot_card = ""
 	daily_luck = 0
+	# 天的单日字段随循环重置（tomorrow_seed 跨天保留，供次日天命面具注入）
+	heaven["daily_prophecy"] = null
+	heaven["daily_compliance"] = ""
 	get_node("/root/EventBus").loop_reset.emit()
 	get_node("/root/EventBus").day_started.emit(current_day)
+
+
+## 顺从/反抗三态判定（切片设计 §3.5，Godot 裁判，不交 AI 自评）。
+## 事实来源：天记忆事件流（HeavenMemoryStore.events_for_day）。
+## 返回 "obey" / "defy" / "neutral"；当天未设局返回 ""。
+func compute_compliance() -> String:
+	var prophecy: Variant = heaven.get("daily_prophecy")
+	if not (prophecy is Dictionary):
+		return ""
+	var directive: Variant = prophecy.get("directive")
+	if not (directive is Dictionary):
+		return ""
+	var dtype := str(directive.get("type", ""))
+	var target := str(directive.get("target", ""))
+	if target.is_empty():
+		return ""
+	var events: Array = HeavenMemoryStore.events_for_day(current_day)
+
+	if dtype == "visit":
+		# obey：day_log 记录了访问 A
+		# defy：访问了另一地点 B，且在 B 有 ≥1 次有效交互（对话/线索）
+		var visited_target := false
+		var other_places: Array = []
+		for evt in events:
+			if str(evt.get("type", "")) != "visit":
+				continue
+			var tags: Array = evt.get("tags", [])
+			if target in tags:
+				visited_target = true
+			else:
+				for t in tags:
+					if t not in other_places:
+						other_places.append(t)
+		if visited_target:
+			return "obey"
+		for evt in events:
+			var etype := str(evt.get("type", ""))
+			if etype != "talk" and etype != "clue":
+				continue
+			for t in evt.get("tags", []):
+				if t in other_places:
+					return "defy"
+		return "neutral"
+
+	if dtype == "talk":
+		# obey：与 N 有过对话
+		# defy：与 N 之外的其他 NPC 合计对话 ≥2 次，且与 N 对话 0 次
+		var talked_target := false
+		var other_talks := 0
+		for evt in events:
+			if str(evt.get("type", "")) != "talk":
+				continue
+			if target in evt.get("tags", []):
+				talked_target = true
+			else:
+				other_talks += 1
+		if talked_target:
+			return "obey"
+		if other_talks >= 2:
+			return "defy"
+		return "neutral"
+
+	return ""
 
 
 func set_time(time_id: String) -> void:

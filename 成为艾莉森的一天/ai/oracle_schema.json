@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "card_name": {
+      "type": "string",
+      "description": "从 Godot 提供的 22 张大阿尔卡那中选一张，必须与清单文字完全一致"
+    },
+    "prophecy": {
+      "type": "string",
+      "description": "2-4 句预言诗。必须是诗，不是任务指令；模糊、可多种应验、可被违背"
+    },
+    "directive": {
+      "type": ["object", "null"],
+      "description": "今日设局的机械方向（可空；空=今天天只观察不下局）。玩家永远看不到这个字段",
+      "properties": {
+        "type": {"type": "string", "enum": ["visit", "talk"]},
+        "target": {"type": "string", "description": "visit→地点；talk→NPC。必须是 Godot 提供枚举清单的成员"}
+      },
+      "required": ["type", "target"]
+    },
+    "tone": {
+      "type": "string",
+      "enum": ["gentle", "curious", "watching", "testing", "cold"],
+      "description": "今日天的态度基调标签，注入 NPC 对话语气"
+    },
+    "internal_note": {
+      "type": "string",
+      "description": "天对今日设局的内部意图（玩家不可见），进观测窗口"
+    },
+    "plant_foreshadow": {
+      "type": ["object", "null"],
+      "description": "今日要埋下的伏笔（可空，每天最多一条；只埋你真打算应验的）",
+      "properties": {
+        "text": {"type": "string", "description": "伏笔内容，一句话"},
+        "due_in_days": {"type": "integer", "description": "期望多少天内应验，>=1"}
+      },
+      "required": ["text", "due_in_days"]
+    }
+  },
+  "required": ["card_name", "prophecy", "tone", "internal_note"]
+}
