@@ -5,6 +5,7 @@ extends Node2D
 
 ## preload 而非全局类名：避免依赖全局脚本类缓存（headless/编辑器刷新前不注册）
 const SceneLayout := preload("res://scripts/systems/scene_layout.gd")
+const HeavenSession := preload("res://scripts/systems/ai_heaven_session.gd")
 
 @onready var player: CharacterBody2D = $Player
 @onready var daylight: CanvasModulate = $DaylightModulate
@@ -15,7 +16,12 @@ var _mushroom_timer: Timer
 var _auto_advance_timer: Timer
 var _pending_action: String = ""
 var _midnight_panel: CanvasLayer
+var _midnight_label: Label
+var _midnight_btn: Button
 var _door_cooldown: bool = false
+## 午夜两阶段：false=待审判（点入睡先跑天复盘），true=已展示回顾（再点才真的睡）
+var _judgment_shown: bool = false
+var _judgment_running: bool = false
 
 
 func _ready() -> void:
@@ -35,7 +41,7 @@ func _ready() -> void:
 	var bus = get_node("/root/EventBus")
 	bus.time_changed.connect(_on_time_changed)
 	bus.loop_reset.connect(_on_loop_reset)
-	bus.door_entered.connect(switch_area)
+	bus.door_entered.connect(func(area_id: String, spawn: String) -> void: switch_area(area_id, spawn, true))
 	bus.game_action.connect(_on_game_action)
 	bus.dialogue_ended.connect(_on_dialogue_ended)
 	bus.day_started.connect(_on_day_started)
@@ -69,7 +75,7 @@ func _ready() -> void:
 # ---------------------------------------------------------------------------
 # 区域切换
 # ---------------------------------------------------------------------------
-func switch_area(area_id: String, spawn_name: String = "") -> void:
+func switch_area(area_id: String, spawn_name: String = "", from_door: bool = false) -> void:
 	# 切换瞬间玩家坐标可能同时落在两扇门的感应圈内，加冷却防止连锁触发
 	if _door_cooldown:
 		return
@@ -92,7 +98,11 @@ func switch_area(area_id: String, spawn_name: String = "") -> void:
 			player.velocity = Vector2.ZERO
 			player.global_position = spawn.global_position
 
-	get_node("/root/GameManager").current_area = area_id
+	var gm = get_node("/root/GameManager")
+	# visit 打点：只记玩家主动穿门（循环重置/开局传送不算"访问"，否则 visit 型预言会被白送顺从）
+	if from_door and gm.current_area != area_id:
+		gm.record_heaven_event("visit", "玩家穿过门，来到了 %s" % area_id, [area_id])
+	gm.current_area = area_id
 	get_node("/root/EventBus").area_changed.emit(area_id)
 
 
@@ -178,6 +188,12 @@ func _on_time_changed(time_id: String) -> void:
 
 
 func _on_midnight() -> void:
+	# 重置两阶段状态：先审判复盘，再入睡
+	_judgment_shown = false
+	_judgment_running = false
+	_midnight_label.text = "—— 午夜已至 ——\n石巢塔楼的方向传来钟声……"
+	_midnight_btn.text = "入睡（结束今天）"
+	_midnight_btn.disabled = false
 	_midnight_panel.show()
 
 
@@ -198,23 +214,59 @@ func _build_midnight_panel() -> void:
 	vbox.add_theme_constant_override("separation", 6)
 	panel.add_child(vbox)
 
-	var label := Label.new()
-	label.text = "—— 午夜已至 ——\n石巢塔楼的方向传来钟声……"
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", 15)
-	vbox.add_child(label)
+	_midnight_label = Label.new()
+	_midnight_label.text = "—— 午夜已至 ——\n石巢塔楼的方向传来钟声……"
+	_midnight_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_midnight_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_midnight_label.custom_minimum_size = Vector2(400, 0)
+	_midnight_label.add_theme_font_size_override("font_size", 15)
+	vbox.add_child(_midnight_label)
 
-	var btn := Button.new()
-	btn.text = "入睡（结束今天）"
-	btn.focus_mode = Control.FOCUS_NONE
-	btn.pressed.connect(_do_sleep)
-	vbox.add_child(btn)
+	_midnight_btn = Button.new()
+	_midnight_btn.text = "入睡（结束今天）"
+	_midnight_btn.focus_mode = Control.FOCUS_NONE
+	_midnight_btn.pressed.connect(_do_sleep)
+	vbox.add_child(_midnight_btn)
 
 	_midnight_panel.hide()
 
 
+## 入睡按钮：两阶段。第一次点击 → 审判面具复盘（加载态→展示天的回顾）；
+## 第二次点击 → 真正结束今天。AI 不可用时 judgment 内部回落固定文案。
 func _do_sleep() -> void:
+	if _judgment_running:
+		return
+	if not _judgment_shown:
+		_run_judgment()
+	else:
+		_finish_sleep()
+
+
+func _run_judgment() -> void:
+	_judgment_running = true
+	_midnight_panel.show()   # 对话内 pass_night 路径也会走到这里，确保面板可见
+	_midnight_label.text = "—— 天在审视这一天…… ——"
+	_midnight_btn.disabled = true
+	var gm = get_node("/root/GameManager")
+	var session := HeavenSession.new()
+	session.setup(self)
+	var result: Dictionary = await session.judgment()
+	_judgment_running = false
+	_judgment_shown = true
+	var text := str(result.get("day_summary", ""))
+	# 终结提示（终局裁决切片将接管真正的结局流程，当前仅提示）
+	if bool(result.get("should_end_approved", false)):
+		text += "\n\n—— 天低语：这场循环，该迎来终章了。"
+	elif int(gm.current_day) >= gm.HARD_DAY_CAP:
+		text += "\n\n—— 第 20 天的钟声格外沉重。循环已抵达它的尽头。"
+	_midnight_label.text = text
+	_midnight_btn.text = "入睡（结束今天）"
+	_midnight_btn.disabled = false
+
+
+func _finish_sleep() -> void:
 	_midnight_panel.hide()
+	_judgment_shown = false
 	get_node("/root/GameManager").reset_loop()
 
 

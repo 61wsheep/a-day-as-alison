@@ -46,6 +46,7 @@ func _run() -> void:
 	await _test_oracle_illegal(base, gm)
 	await _test_oracle_fallback(base, gm)
 	await _test_judgment_full(base, gm)
+	_test_last_compliance_preserved(gm)
 	await _test_end_gate(base, gm)
 	await _test_judgment_fallback(base, gm)
 	_test_compliance_defy_and_unset(gm)
@@ -215,6 +216,17 @@ func _test_judgment_full(base: Node, gm: Node) -> void:
 
 	# 第 5 天 < 软限 12：AI 提议终结应被拒绝
 	_check("第 5 天终结提议被拒绝", bool(r.get("should_end_proposed", false)) and not bool(r.get("should_end_approved", true)))
+
+
+## 跨天衔接：reset_loop 后昨日顺从应归档到 last_compliance，单日字段清空。
+func _test_last_compliance_preserved(gm: Node) -> void:
+	var day_before := int(gm.current_day)
+	gm.reset_loop()
+	_check("reset_loop 天数 +1", int(gm.current_day) == day_before + 1)
+	_check("昨日顺从已归档 last_compliance", str(gm.heaven.get("last_compliance", "")) == "obey")
+	_check("daily_prophecy 已清空", gm.heaven.get("daily_prophecy") == null)
+	_check("daily_compliance 已清空", str(gm.heaven.get("daily_compliance", "x")) == "")
+	gm.current_day = 5
 
 
 func _test_end_gate(base: Node, gm: Node) -> void:

@@ -32,9 +32,14 @@ var heaven: Dictionary = {
 	"prophecy_resistance": 0,
 	"daily_prophecy": null,
 	"daily_compliance": "",
+	"last_compliance": "",
 	"tomorrow_seed": "",
 	"last_judgment": {},
+	"loop_hard_cap": false,
 }
+
+## 循环硬上限（切片设计 §5.3）：第 20 天后无论如何强制终结。
+const HARD_DAY_CAP := 20
 
 ## 线索显示名（用于提示）
 const CLUE_NAMES := {
@@ -147,14 +152,23 @@ func conditions_met(cond: Dictionary) -> bool:
 
 
 func reset_loop() -> void:
-	current_day += 1
+	# 归档昨日顺从判定（供次日天命面具/化身面具注入"呼应昨天"）
+	heaven["last_compliance"] = str(heaven.get("daily_compliance", ""))
+	# 天的单日字段随循环重置（tomorrow_seed 跨天保留，供次日天命面具注入）
+	heaven["daily_prophecy"] = null
+	heaven["daily_compliance"] = ""
+	if current_day >= HARD_DAY_CAP:
+		# 硬上限闸（切片设计 §5.3）：第 20 天后循环必须终结。
+		# TODO(终局裁决切片)：此处应进入「世界」结局流程；当前夹住天数、其余重置照常，
+		# 玩家可继续行动但时间永远停在第 20 天。
+		heaven["loop_hard_cap"] = true
+		get_node("/root/EventBus").toast.emit("第 20 天。天不再允许时间前进。")
+	else:
+		current_day += 1
 	current_time = "morning"
 	tarot_drawn_today = false
 	daily_tarot_card = ""
 	daily_luck = 0
-	# 天的单日字段随循环重置（tomorrow_seed 跨天保留，供次日天命面具注入）
-	heaven["daily_prophecy"] = null
-	heaven["daily_compliance"] = ""
 	get_node("/root/EventBus").loop_reset.emit()
 	get_node("/root/EventBus").day_started.emit(current_day)
 

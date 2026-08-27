@@ -59,13 +59,24 @@ func setup(npc_base: Node, npc_id: String) -> void:
 ## S1 入口：整段 AI 会话。
 func begin() -> void:
 	_turn = 1   # 开场即第 1 轮
+	_record_talk_event()
 	_build_and_request(true)
 
 
 ## S2 入口：JSON 对话里的一次自由输入旁路。
 func free_input_turn(text: String) -> void:
 	_sideline = true
+	_record_talk_event()
 	_submit(text)
+
+
+## talk 事件打点（切片设计：顺从判定与 NPC 记忆的事实来源）。
+## owner = 该 NPC（私密记忆：别的 NPC 检索不到这次对话内容）。
+func _record_talk_event() -> void:
+	var gm := _autoload("GameManager")
+	if gm and gm.has_method("record_heaven_event"):
+		gm.record_heaven_event("talk", "玩家与 %s 交谈" % _npc_id,
+			[_npc_id, str(gm.current_area)], _npc_id)
 
 
 ## 玩家点击话题建议按钮。
@@ -189,6 +200,7 @@ func _build_payload(is_opening: bool, player_input: String) -> Dictionary:
 		user += "今日塔罗: %s\n\n" % (today_reading if today_reading != "" else "（今日未抽牌）")
 		user += "玩家已知线索: %s\n\n" % (", ".join(clue_names) if not clue_names.is_empty() else "（尚未获得线索）")
 		user += "跨天记忆（之前几天的对话摘要 —— NPC 可能隐隐约约有印象，但不一定主动提起）:\n%s\n\n" % cross_day
+		user += _heaven_injection(gm, day)
 		user += "这是 %s 今天与艾莉森的第一次见面。请以他的身份开口问候，并给出 3 个话题建议（topic_suggestions）。\n\n" % _npc_id
 	else:
 		user += "第 %d 天 %s。%s 对玩家的好感度: %d/100。\n\n" % [day, time_id, _npc_id, affection]
@@ -303,6 +315,11 @@ func _flush_memory() -> void:
 		recent.append({"player": h.get("player", ""), "npc": h.get("npc", "")})
 	_total_turns += _history.size()
 	AIMemoryStore.save(_npc_id, _memory_updates, _total_turns, recent, affection, day)
+	# 关系卡程序字段同步（好感度/见面次数快照；叙述字段由审判面具 AI 侧更新）
+	if gm:
+		var prev_card: Dictionary = HeavenMemoryStore.get_relation_card(_npc_id)
+		HeavenMemoryStore.update_relation_card_stats(_npc_id, affection,
+			int(prev_card.get("met_count", 0)) + 1)
 
 
 var _last_player_input := ""
@@ -312,3 +329,39 @@ func _read_file(path: String) -> String:
 	if FileAccess.file_exists(path):
 		return FileAccess.get_file_as_string(path).strip_edges()
 	return ""
+
+
+## 天的注视注入（切片设计 §6.2）：昨日顺从 + 今日基调 + 明日种子 + 该 NPC 的关系卡与记忆。
+## 这是"被注视的回应感"在白天的主体通道。无可用信息时返回空串。
+func _heaven_injection(gm: Node, day: int) -> String:
+	if gm == null:
+		return ""
+	var heaven: Dictionary = gm.heaven
+	var parts: Array = []
+
+	var compliance := str(heaven.get("last_compliance", ""))
+	if not compliance.is_empty():
+		var label := str({"obey": "顺从", "defy": "反抗", "neutral": "未理会"}.get(compliance, compliance))
+		parts.append("昨天：玩家%s了天的预言" % label)
+
+	var prophecy: Variant = heaven.get("daily_prophecy")
+	if prophecy is Dictionary:
+		var tone := str(prophecy.get("tone", ""))
+		if not tone.is_empty():
+			parts.append("天今日基调：%s" % tone)
+
+	var seed := str(heaven.get("tomorrow_seed", ""))
+	if not seed.is_empty():
+		parts.append("近日伏笔：%s" % seed)
+
+	# 该 NPC 的关系卡 + 记忆检索（owner 隔离：看不到别的 NPC 的私密事件）
+	var mem_block := MemoryQuery.assemble(MemoryQuery.MASK_NPC, {
+		"current_day": day,
+		"npc_id": _npc_id,
+	})
+	if not mem_block.is_empty():
+		parts.append(mem_block)
+
+	if parts.is_empty():
+		return ""
+	return "天的注视（自然流露，不要生硬复述）：\n%s\n\n" % "\n".join(parts)

@@ -1,6 +1,10 @@
 extends CanvasLayer
 
 ## 塔罗占卜 UI — 每天清晨抽一张大阿尔卡那，影响当日蘑菇售价。
+## AI 可用时走天命面具（AI 选牌 + 预言诗）；不可用/失败回落数据牌（原有随机逻辑）。
+
+## preload 而非全局类名：避免依赖全局脚本类缓存（headless/编辑器刷新前不注册）
+const HeavenSession := preload("res://scripts/systems/ai_heaven_session.gd")
 
 var _cards: Array = []
 var _panel: PanelContainer
@@ -103,20 +107,57 @@ func _draw_card() -> void:
 	if _cards.is_empty():
 		_close()
 		return
-	var gm = get_node("/root/GameManager")
+	var bridge: Node = get_node_or_null("/root/AIBridge")
+	if bridge != null and bridge.is_available():
+		_draw_card_ai()
+	else:
+		_draw_card_fallback()
+
+
+## 天命面具路径：AI 选牌 + 预言诗（带加载态；session 内部已含校验与回落）。
+func _draw_card_ai() -> void:
+	_card_name.text = "？？？"
+	_reading.text = "天正凝视牌面……"
+	_action_btn.disabled = true
+	var session := HeavenSession.new()
+	session.setup(self)
+	var result: Dictionary = await session.oracle()
+	_action_btn.disabled = false
+	_present_result(result)
+
+
+## 数据牌路径：AI 关闭时的完整回落（原有随机抽牌逻辑）。
+func _draw_card_fallback() -> void:
 	var card: Dictionary = _cards[randi() % _cards.size()]
+	_present_result({
+		"card_name": str(card.get("name", "")),
+		"prophecy": str(card.get("reading", "")),
+	})
+
+
+## 统一展示：写入 GameManager 当日牌面 + 运气（蘑菇售价机制不变），发 tarot_drawn 信号。
+func _present_result(result: Dictionary) -> void:
+	var gm = get_node("/root/GameManager")
 	gm.tarot_drawn_today = true
-	gm.daily_tarot_card = str(card.get("name", ""))
-	gm.daily_luck = int(card.get("luck", 0))
+	gm.daily_tarot_card = str(result.get("card_name", ""))
+	gm.daily_luck = _luck_for(gm.daily_tarot_card)
 	_drawn = true
 	_card_name.text = gm.daily_tarot_card
 	var luck_text := ""
 	match gm.daily_luck:
 		1: luck_text = "\n\n（吉兆：今日蘑菇售价 ×1.5）"
 		-1: luck_text = "\n\n（凶兆：今日蘑菇售价 ×0.5）"
-	_reading.text = str(card.get("reading", "")) + luck_text
+	_reading.text = str(result.get("prophecy", "")) + luck_text
 	_action_btn.text = "开始今天"
-	get_node("/root/EventBus").tarot_drawn.emit(card)
+	get_node("/root/EventBus").tarot_drawn.emit({"name": gm.daily_tarot_card, "luck": gm.daily_luck})
+
+
+## 按牌名从数据牌查 luck 值（AI 选的牌也要保住售价机制）；查不到按 0。
+func _luck_for(card_name: String) -> int:
+	for card in _cards:
+		if str(card.get("name", "")) == card_name:
+			return int(card.get("luck", 0))
+	return 0
 
 
 func _close() -> void:

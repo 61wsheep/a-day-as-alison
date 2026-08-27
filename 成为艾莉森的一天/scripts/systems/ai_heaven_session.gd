@@ -11,7 +11,7 @@ extends RefCounted
 ##     should_end_loop 仅在 current_day >= SOFT_END_DAY 才批准（硬上限 20 天的闸在 reset_loop 处，切片范围）
 ##   - AI 挂 / 超时 / 解析失败 → 回落路径，游戏照常可玩
 
-const PLACES: Array = ["plaza", "tree_village", "tower"]
+const PLACES: Array = ["plaza", "treehouse_district", "stone_nest_tower"]   # 与 main.tscn 实际 area id 对齐
 const NPCS: Array = ["soraya", "padwin", "cactus_bishop"]
 const TONES: Array = ["gentle", "curious", "watching", "testing", "cold"]
 const SOFT_END_DAY := 12
@@ -72,10 +72,8 @@ func _build_oracle_payload(gm: Node, day: int) -> Dictionary:
 	if not seed.is_empty():
 		user += "你昨夜埋下的明日种子：%s\n\n" % seed
 
-	var last_compliance := ""
-	var last_prophecy: Variant = heaven.get("daily_prophecy")
-	if last_prophecy is Dictionary:
-		last_compliance = str(heaven.get("daily_compliance", ""))
+	# 昨日顺从在 reset_loop 时已归档到 last_compliance（daily_* 是当天的，勿混用）
+	var last_compliance := str(heaven.get("last_compliance", ""))
 	var memory_block := MemoryQuery.assemble(MemoryQuery.MASK_ORACLE, {
 		"current_day": day,
 		"last_compliance": last_compliance,
