@@ -302,8 +302,8 @@ def generate_topic_suggestions(
 今日主题：{json.dumps(todays_theme, ensure_ascii=False)}
 最近对话摘要：{json.dumps(conversation_history[-3:] if conversation_history else [], ensure_ascii=False)}
 
-请以 {npc_id} 的语气生成 {count} 个话题建议，每个建议 15-30 字。
-话题应该：反映当前情绪、呼应今日主题、暗示 NPC 的秘密、推动叙事前进。
+请以玩家艾莉森的第一人称口吻生成 {count} 条她接下来可能说的话，每条 15-30 字。
+这些是「玩家视角的回复选项」，不是 {npc_id} 的话。应该：反映当前情绪、呼应今日主题、试探 NPC 的秘密、推动叙事前进。
 
 以 JSON 格式返回。"""
 

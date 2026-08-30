@@ -201,7 +201,7 @@ func _build_payload(is_opening: bool, player_input: String) -> Dictionary:
 		user += "玩家已知线索: %s\n\n" % (", ".join(clue_names) if not clue_names.is_empty() else "（尚未获得线索）")
 		user += "跨天记忆（之前几天的对话摘要 —— NPC 可能隐隐约约有印象，但不一定主动提起）:\n%s\n\n" % cross_day
 		user += _heaven_injection(gm, day)
-		user += "这是 %s 今天与艾莉森的第一次见面。请以他的身份开口问候，并给出 3 个话题建议（topic_suggestions）。\n\n" % _npc_id
+		user += "这是 %s 今天与艾莉森的第一次见面。请以他的身份开口问候，并以玩家艾莉森的第一人称口吻给出 3 条她可能接的话（topic_suggestions——是玩家视角的回复选项，不是你自己的话）。\n\n" % _npc_id
 	else:
 		user += "第 %d 天 %s。%s 对玩家的好感度: %d/100。\n\n" % [day, time_id, _npc_id, affection]
 		user += "跨天记忆:\n%s\n\n" % cross_day
@@ -212,7 +212,7 @@ func _build_payload(is_opening: bool, player_input: String) -> Dictionary:
 		user += "- 无论玩家用什么风格输入，你都要保持 %s 自己的口吻和动作尺度，不要模仿玩家的文风\n" % _npc_id
 		user += "- 这是今天第 %d 轮对话，如果感觉对话该结束了，设 should_end_conversation=true\n" % _turn
 		if not is_opening:
-			user += "- 请同时给出 3 个下一步话题建议（topic_suggestions），让对话能继续下去\n"
+			user += "- 请同时以玩家艾莉森的第一人称口吻给出 3 条她下一步可能说的话（topic_suggestions——玩家视角的回复选项，让对话能继续下去）\n"
 
 	# ---- schema 注入（非 Claude 路径，与 Python call_llm_structured 一致）----
 	user += "\n\n【重要：你必须严格按照以下 JSON Schema 返回合法 JSON，不要输出任何 JSON 之外的文字】\n"
