@@ -191,10 +191,22 @@ func _on_midnight() -> void:
 	# 重置两阶段状态：先审判复盘，再入睡
 	_judgment_shown = false
 	_judgment_running = false
-	_midnight_label.text = "—— 午夜已至 ——\n石巢塔楼的方向传来钟声……"
-	_midnight_btn.text = "入睡（结束今天）"
-	_midnight_btn.disabled = false
+	_refresh_midnight_panel()
 	_midnight_panel.show()
+
+
+## 午夜面板状态（设计门控：必须租了树屋才能入睡结束今天）。
+## 未租房：提示 + 禁用按钮；午夜仍可去树屋区现场租房，租后对话结束面板自动刷新解锁。
+func _refresh_midnight_panel() -> void:
+	var gm = get_node("/root/GameManager")
+	if gm.treehouse_rented:
+		_midnight_label.text = "—— 午夜已至 ——\n石巢塔楼的方向传来钟声……"
+		_midnight_btn.text = "入睡（结束今天）"
+		_midnight_btn.disabled = false
+	else:
+		_midnight_label.text = "—— 午夜已至 ——\n你没有可归的住处，无法入睡。\n（去树屋区租一间树屋吧。）"
+		_midnight_btn.text = "入睡（需要一间树屋）"
+		_midnight_btn.disabled = true
 
 
 func _build_midnight_panel() -> void:
@@ -236,6 +248,8 @@ func _build_midnight_panel() -> void:
 func _do_sleep() -> void:
 	if _judgment_running:
 		return
+	if not get_node("/root/GameManager").treehouse_rented:
+		return   # 设计门控：未租房不能入睡（按钮已禁用，此处兜底）
 	if not _judgment_shown:
 		_run_judgment()
 	else:
@@ -267,7 +281,10 @@ func _run_judgment() -> void:
 func _finish_sleep() -> void:
 	_midnight_panel.hide()
 	_judgment_shown = false
-	get_node("/root/GameManager").reset_loop()
+	var gm = get_node("/root/GameManager")
+	# 午夜结算：态度平移规则表（§3.4，纯 Godot 计算，AI 已离场）
+	gm.apply_heaven_rules()
+	gm.reset_loop()
 
 
 # ---------------------------------------------------------------------------
@@ -282,14 +299,23 @@ func _on_game_action(action_id: String) -> void:
 
 
 func _on_dialogue_ended() -> void:
-	if _pending_action == "":
-		return
-	var action := _pending_action
-	_pending_action = ""
-	if action.begins_with("ending:"):
-		get_node("EndingUI").show_ending(action.trim_prefix("ending:"))
-	elif action == "pass_night":
-		_do_sleep()
+	if _pending_action != "":
+		var action := _pending_action
+		_pending_action = ""
+		if action.begins_with("ending:"):
+			get_node("EndingUI").show_ending(action.trim_prefix("ending:"))
+			return
+		elif action == "pass_night":
+			_do_sleep()
+			return
+	# 午夜入睡面板会被 dialogue_started 顶掉（任何对话/界面打开都触发），
+	# 对话结束后若仍是午夜则补回——否则玩家卡死在午夜（T 键无效、自动推进已停）。
+	# 补回时刷新面板状态：午夜现场租房后，入睡按钮应即时解锁。
+	var gm = get_node("/root/GameManager")
+	if gm.current_time == "midnight" and not _judgment_running and _midnight_panel:
+		if not _judgment_shown:
+			_refresh_midnight_panel()
+		_midnight_panel.show()
 
 
 # ---------------------------------------------------------------------------

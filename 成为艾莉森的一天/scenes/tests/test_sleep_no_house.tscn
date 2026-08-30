@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/tests/test_sleep_no_house.gd" id="1_sleep"]
+
+[node name="TestSleepNoHouse" type="Node"]
+script = ExtResource("1_sleep")
