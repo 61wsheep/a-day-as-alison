@@ -16,6 +16,9 @@ const MODEL := "deepseek-ai/DeepSeek-V3"
 const TIMEOUT_SEC := 60.0
 const MAX_TOKENS := 1024
 const TEMPERATURE := 0.8
+## 断联兜底：首次请求若快速失败（连接被拒/重置等），自动重试 1 次。
+## 超过该耗时阈值的失败不重试（说明是慢超时，重试只会让玩家等更久）。
+const RETRY_MAX_ELAPSED_MS := 10000
 
 var _http: HTTPRequest
 var _in_flight := false
@@ -128,10 +131,25 @@ func request_llm(payload: Dictionary) -> String:
 		return r
 
 	_in_flight = true
+	var t0 := Time.get_ticks_msec()
+	var raw := await _send_once(payload)
+	# 断联重试：仅当失败很快返回（连接层错误）时重试一次；慢超时直接交回落路径
+	if raw.begins_with("[API_ERROR]") and Time.get_ticks_msec() - t0 < RETRY_MAX_ELAPSED_MS:
+		print("[AIBridge] 请求快速失败（%s），重试一次…" % raw.left(48))
+		raw = await _send_once(payload)
+	_in_flight = false
+	return raw
+
+
+## 单次请求（无重试）。返回 raw 响应文本；失败以 [API_ERROR] 开头。
+func _send_once(payload: Dictionary) -> String:
+	var t0 := Time.get_ticks_msec()
 	var body := JSON.stringify({
 		"model": MODEL,
 		"max_tokens": MAX_TOKENS,
 		"temperature": TEMPERATURE,
+		# 强制 JSON 模式：避免模型输出 JSON 之外的文字导致整轮解析失败
+		"response_format": {"type": "json_object"},
 		"messages": [
 			{"role": "system", "content": str(payload.get("system", ""))},
 			{"role": "user", "content": str(payload.get("user", ""))},
@@ -144,15 +162,13 @@ func request_llm(payload: Dictionary) -> String:
 	])
 	var err := _http.request(BASE_URL, headers, HTTPClient.METHOD_POST, body)
 	if err != OK:
-		_in_flight = false
 		return "[API_ERROR] " + error_string(err)
 
 	var resp: Array = await _http.request_completed
-	_in_flight = false
 	var result: int = resp[0]
 	var code: int = resp[1]
 	var bytes: PackedByteArray = resp[3]
-	print("[AIBridge] HTTP 完成 result=%d code=%d" % [result, code])
+	print("[AIBridge] HTTP 完成 result=%d code=%d 耗时=%.1fs" % [result, code, (Time.get_ticks_msec() - t0) / 1000.0])
 
 	if result != HTTPRequest.RESULT_SUCCESS:
 		return "[API_ERROR] result=%d http=%d" % [result, code]
