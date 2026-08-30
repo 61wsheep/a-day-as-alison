@@ -20,6 +20,16 @@
       ]
     },
     {
+      "id": "whisper",
+      "priority": 20,
+      "conditions": {},
+      "ai": true,
+      "lines": [
+        {"speaker": "narrator", "text": "塔内寂静得能听见自己的心跳。石壁上刻满了看不懂的符号。"},
+        {"speaker": "narrator", "text": "——只有午夜，这里才会有声音。先去别处看看，午夜再来吧。"}
+      ]
+    },
+    {
       "id": "too_early",
       "priority": 10,
       "conditions": {},

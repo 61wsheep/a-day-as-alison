@@ -386,7 +386,7 @@ func _on_ai_thinking(active: bool) -> void:
 
 
 func _display_name_or_id(npc_id: String) -> String:
-	return {"padwin": "帕德温", "soraya": "索拉雅", "cactus_bishop": "卡克特斯主教"}.get(npc_id, npc_id)
+	return {"padwin": "帕德温", "soraya": "索拉雅", "cactus_bishop": "卡克特斯主教", "tian": "？？？"}.get(npc_id, npc_id)
 
 
 func _on_free_input_submit() -> void:
