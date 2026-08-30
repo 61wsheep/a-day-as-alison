@@ -18,6 +18,7 @@
 [ext_resource type="Script" uid="uid://bn86qwpgdvhgg" path="res://scripts/ui/rental_ui.gd" id="rental_ui_script"]
 [ext_resource type="PackedScene" uid="uid://dfnbgvvysrkoe" path="res://scenes/npc_soraya.tscn" id="soraya_scene"]
 [ext_resource type="Script" uid="uid://bpcv48fa8d7fa" path="res://scripts/ui/tarot_ui.gd" id="tarot_ui_script"]
+[ext_resource type="Script" path="res://scripts/ui/status_panel.gd" id="status_panel_script"]
 [ext_resource type="Script" uid="uid://b5268vlc2q1jl" path="res://scripts/systems/treehouse_door.gd" id="thdoor_script"]
 [ext_resource type="PackedScene" uid="uid://wsdltld05wsh" path="res://scenes/npc_tian.tscn" id="tian_scene"]
 
@@ -1719,6 +1720,10 @@ script = ExtResource("rental_ui_script")
 [node name="EndingUI" type="CanvasLayer" parent="." unique_id=1932373252]
 layer = 30
 script = ExtResource("ending_ui_script")
+
+[node name="StatusPanel" type="CanvasLayer" parent="."]
+layer = 12
+script = ExtResource("status_panel_script")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1445058220]
 script = ExtResource("hud_script")
