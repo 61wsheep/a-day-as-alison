@@ -50,6 +50,7 @@ func _run() -> void:
 	await _test_end_gate(base, gm)
 	await _test_judgment_fallback(base, gm)
 	_test_compliance_defy_and_unset(gm)
+	_test_heaven_rules(gm)
 
 	print("[TEST] HeavenSession: %d 通过, %d 失败" % [_passes, _failures])
 	quit(1 if _failures > 0 else 0)
@@ -247,6 +248,44 @@ func _test_judgment_fallback(base: Node, gm: Node) -> void:
 	_check("回落用固定模板", str(r.get("day_summary", "")) == AIHeavenSession.JUDGMENT_FALLBACK)
 	_check("回落无明日种子", str(r.get("tomorrow_seed", "x")) == "")
 	_mode = "legal"
+
+
+## 态度平移规则表（§3.4）：defy + 1 线索 + 2 NPC 对话 + 好感跨档上升的完整结算。
+func _test_heaven_rules(gm: Node) -> void:
+	_reset_heaven(gm)
+	gm.current_day = 8
+	gm.reset_loop()   # → 第 9 天，快照好感度基线
+	var day := int(gm.current_day)
+
+	gm.heaven["daily_compliance"] = "defy"
+	HeavenMemory.record_event("clue", "heaven", ["stone_nest_tower"], "玩家发现线索：塔楼中的森林起源之书", day)
+	HeavenMemory.record_event("talk", "padwin", ["padwin"], "玩家与 padwin 交谈", day)
+	HeavenMemory.record_event("talk", "cactus_bishop", ["cactus_bishop"], "玩家与 cactus_bishop 交谈", day)
+	gm.change_affection("soraya", 5)   # 55 → 60，neutral→friendly 跨档
+
+	gm.apply_heaven_rules()
+
+	# benevolence：-0.04(defy) +0.02(好感净升) = -0.02
+	# engagement：0.3 +0.08(defy) +0.03(线索) +0.02(≥2 NPC) = 0.43
+	_check("规则表：benevolence = -0.02", absf(float(gm.heaven["benevolence"]) - (-0.02)) < 0.001)
+	_check("规则表：engagement ≈ 0.43", absf(float(gm.heaven["engagement"]) - 0.43) < 0.001)
+	_check("规则表：truth_proximity = 0.06", absf(float(gm.heaven["truth_proximity"]) - 0.06) < 0.001)
+	_check("规则表：prophecy_resistance = 1", int(gm.heaven["prophecy_resistance"]) == 1)
+
+	var todays := HeavenMemory.events_for_day(day)
+	var has_defy := false
+	var has_tier := false
+	for evt in todays:
+		var t := str(evt.get("type", ""))
+		if t == "defy":
+			has_defy = true
+		if t == "affection_tier_up":
+			has_tier = true
+	_check("规则表：defy 记入事件流", has_defy)
+	_check("规则表：好感跨档记入事件流", has_tier)
+
+	gm.current_day = 5
+	_reset_heaven(gm)
 
 
 func _test_compliance_defy_and_unset(gm: Node) -> void:

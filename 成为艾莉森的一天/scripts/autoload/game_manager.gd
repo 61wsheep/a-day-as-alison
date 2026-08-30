@@ -41,6 +41,9 @@ var heaven: Dictionary = {
 ## 循环硬上限（切片设计 §5.3）：第 20 天后无论如何强制终结。
 const HARD_DAY_CAP := 20
 
+## 当天开始时的好感度基线（reset_loop 时快照），供 apply_heaven_rules 算日差分。
+var _affection_day_start: Dictionary = {}
+
 ## 线索显示名（用于提示）
 const CLUE_NAMES := {
 	"clue_padwin_no_memory": "帕德温没有前世的记忆",
@@ -165,6 +168,8 @@ func reset_loop() -> void:
 		get_node("/root/EventBus").toast.emit("第 20 天。天不再允许时间前进。")
 	else:
 		current_day += 1
+	# 新的一天开始：快照好感度基线（供午夜规则表算日差分）
+	_affection_day_start = npc_affection.duplicate()
 	current_time = "morning"
 	tarot_drawn_today = false
 	daily_tarot_card = ""
@@ -236,6 +241,83 @@ func compute_compliance() -> String:
 	return ""
 
 
+## 天的态度平移规则表（切片设计 §3.4）。午夜入睡结算时由 game.gd 调用。
+## 输入为当天客观观测（记忆事件流 + 好感度日差分），AI 不参与数值计算。
+## ⚠ 表中数值为 v0.1 初值，待测试迭代校准。
+func apply_heaven_rules() -> void:
+	var events: Array = HeavenMemoryStore.events_for_day(current_day)
+
+	# -- 顺从/反抗 --
+	var compliance := str(heaven.get("daily_compliance", ""))
+	match compliance:
+		"obey":
+			_shift("benevolence", 0.04)
+			_shift("engagement", -0.02)
+			record_heaven_event("obey", "玩家顺从了今日的预言")
+		"defy":
+			_shift("benevolence", -0.04)
+			_shift("engagement", 0.08)
+			heaven["prophecy_resistance"] = int(heaven.get("prophecy_resistance", 0)) + 1
+			record_heaven_event("defy", "玩家反抗了今日的预言")
+		_:
+			_shift("engagement", 0.01)   # 中性/未设局：天仍在看
+
+	# -- 发现新线索（每条）+ 真相理解跨档记入事件流 --
+	var clue_count := 0
+	var talked_npcs: Array = []
+	for evt in events:
+		var etype := str(evt.get("type", ""))
+		if etype == "clue":
+			clue_count += 1
+		elif etype == "talk":
+			var owner := str(evt.get("owner", ""))
+			if owner != HeavenMemoryStore.OWNER_HEAVEN and owner not in talked_npcs:
+				talked_npcs.append(owner)
+	if clue_count > 0:
+		var truth_before := float(heaven.get("truth_proximity", 0.0))
+		_shift("engagement", 0.03 * clue_count)
+		_shift("truth_proximity", 0.06 * clue_count)
+		if int(truth_before / 0.3) < int(float(heaven.get("truth_proximity", 0.0)) / 0.3):
+			record_heaven_event("truth_tier_up", "玩家对循环真相的理解加深了一档")
+
+	# -- NPC 好感日差分（相对当天早晨基线）+ 跨档记入事件流 --
+	var total_delta := 0
+	for npc_id in npc_affection:
+		var start_val := int(_affection_day_start.get(npc_id, npc_affection[npc_id]))
+		var now_val := int(npc_affection[npc_id])
+		total_delta += now_val - start_val
+		var tier_before := _tier_of(start_val)
+		var tier_after := _tier_of(now_val)
+		if tier_before != tier_after:
+			var evt_type := "affection_tier_up" if now_val > start_val else "affection_tier_down"
+			record_heaven_event(evt_type, "玩家与 %s 的关系从 %s 变为 %s" % [npc_id, tier_before, tier_after], [npc_id], npc_id)
+	if total_delta > 0:
+		_shift("benevolence", 0.02)
+	elif total_delta < 0:
+		_shift("benevolence", -0.02)
+		_shift("engagement", 0.02)
+
+	# -- 当天与 ≥2 个 NPC 对话 --
+	if talked_npcs.size() >= 2:
+		_shift("engagement", 0.02)
+
+
+## 态度字段平移 + clamp 到定义域（benevolence [-1,1]，其余 [0,1]）。
+func _shift(field: String, delta: float) -> void:
+	var lo := -1.0 if field == "benevolence" else 0.0
+	heaven[field] = clampf(float(heaven.get(field, 0.0)) + delta, lo, 1.0)
+
+
+## 好感度档位（与 get_affection_tier 同阈值，但接受任意数值参数）。
+func _tier_of(val: int) -> String:
+	if val < 20: return "hostile"
+	elif val < 40: return "cold"
+	elif val < 60: return "neutral"
+	elif val < 80: return "friendly"
+	else: return "intimate"
+
+
+## 设置时段并广播（时间推进由 TimeManager 调用）。
 func set_time(time_id: String) -> void:
 	current_time = time_id
 	get_node("/root/EventBus").time_changed.emit(time_id)
