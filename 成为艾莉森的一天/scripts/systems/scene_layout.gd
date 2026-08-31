@@ -39,21 +39,27 @@ const _ALL_BITS: Array[TileSet.CellNeighbor] = [
 ]
 
 ## 道具贴图区域（AtlasTexture region）
-const R_TREES := [
-	Rect2(22, 12, 96, 138),
-	Rect2(150, 22, 95, 123),
-	Rect2(265, 37, 105, 98),
+## —— 森林广场瓦片集（GROUND_SHEET）道具区（y>=384，程序检测的精确包围盒）——
+const N_TREES := [
+	Rect2(10, 482, 100, 126),   # 圆冠大树（浅绿）
+	Rect2(10, 610, 100, 130),   # 圆冠大树（深绿）
+	Rect2(10, 740, 100, 124),   # 针叶树
 ]
-const R_BUSHES := [
-	Rect2(37, 197, 25, 20),
-	Rect2(95, 195, 30, 22),
-	Rect2(152, 187, 42, 35),
-	Rect2(210, 180, 50, 45),
-	Rect2(277, 187, 42, 37),
-	Rect2(345, 190, 50, 35),
+const N_BUSHES := [
+	Rect2(1, 385, 30, 30), Rect2(33, 385, 30, 30),
+	Rect2(65, 385, 30, 30), Rect2(97, 385, 30, 30),
 ]
+const N_FLOWERS := [
+	Rect2(5, 421, 20, 23), Rect2(38, 421, 20, 23), Rect2(70, 421, 20, 23),
+]
+const N_STUMP := Rect2(2, 868, 29, 27)
+const N_LOG := Rect2(34, 868, 28, 27)
+const N_BENCH := Rect2(7, 899, 50, 27)
+const N_LAMP := Rect2(8, 930, 16, 61)
+const N_SIGN := Rect2(0, 993, 32, 46)
+
+## —— Cainos 包（新瓦片集无对应物：门/石柱/拱门/岩石/木桶/花瓶保留）——
 const R_DOOR := Rect2(28, 103, 39, 50)
-const R_SIGN := Rect2(98, 163, 29, 29)
 const R_PILLAR := Rect2(30, 30, 65, 95)
 const R_PILLAR_MOSSY := Rect2(30, 160, 65, 95)
 const R_ARCH := Rect2(410, 25, 80, 65)
@@ -263,10 +269,10 @@ static func build_all_props(areas: Node2D) -> void:
 	_build_tower_props(areas.get_node_or_null("StoneNestTower/Props"))
 
 
-static func _make_prop(parent: Node, tex_name: String, region: Rect2, pos: Vector2,
+static func _make_prop(parent: Node, tex_path: String, region: Rect2, pos: Vector2,
 		collider_r: float = 0.0) -> Sprite2D:
 	var at := AtlasTexture.new()
-	at.atlas = load(TEX_DIR + tex_name)
+	at.atlas = load(tex_path)
 	at.region = region
 	var spr := Sprite2D.new()
 	spr.texture = at
@@ -291,22 +297,27 @@ static func _make_prop(parent: Node, tex_name: String, region: Rect2, pos: Vecto
 	return spr
 
 
+## 灌木 + 花点缀（新瓦片集；蘑菇仍是 Cainos 红灌木，视觉上与装饰草丛区分）
 static func _scatter_bushes(parent: Node, count: int) -> void:
 	for i in count:
 		var pos := Vector2(randf_range(80, 1200), randf_range(80, 700))
-		_make_prop(parent, "plant.png", R_BUSHES[randi() % R_BUSHES.size()], pos)
+		_make_prop(parent, GROUND_SHEET, N_BUSHES[randi() % N_BUSHES.size()], pos)
+	var flower_count := count / 2
+	for i in flower_count:
+		var pos := Vector2(randf_range(80, 1200), randf_range(80, 700))
+		_make_prop(parent, GROUND_SHEET, N_FLOWERS[randi() % N_FLOWERS.size()], pos)
 
 
 static func _tree_ring(parent: Node, skip_west: bool = false, skip_east: bool = false) -> void:
 	# 沿四边种一圈树，留出门的缺口
 	for x in range(80, 1250, 130):
-		_make_prop(parent, "plant.png", R_TREES[randi() % 3], Vector2(x, 70), 10.0)
-		_make_prop(parent, "plant.png", R_TREES[randi() % 3], Vector2(x, 730), 10.0)
+		_make_prop(parent, GROUND_SHEET, N_TREES[randi() % 3], Vector2(x, 70), 12.0)
+		_make_prop(parent, GROUND_SHEET, N_TREES[randi() % 3], Vector2(x, 730), 12.0)
 	for y in range(160, 700, 130):
 		if not skip_west or abs(y - 384) > 90:
-			_make_prop(parent, "plant.png", R_TREES[randi() % 3], Vector2(40, y), 10.0)
+			_make_prop(parent, GROUND_SHEET, N_TREES[randi() % 3], Vector2(40, y), 12.0)
 		if not skip_east or abs(y - 384) > 90:
-			_make_prop(parent, "plant.png", R_TREES[randi() % 3], Vector2(1240, y), 10.0)
+			_make_prop(parent, GROUND_SHEET, N_TREES[randi() % 3], Vector2(1240, y), 12.0)
 
 
 static func _build_plaza_props(props: Node) -> void:
@@ -315,11 +326,17 @@ static func _build_plaza_props(props: Node) -> void:
 	_tree_ring(props, true, true)
 	_scatter_bushes(props, 10)
 	# 路牌：东门→树屋区，西门→石巢塔楼
-	_make_prop(props, "props.png", R_SIGN, Vector2(1190, 340))
-	_make_prop(props, "props.png", R_SIGN, Vector2(80, 340))
-	# 广场中央装饰：大岩石 + 木桶
-	_make_prop(props, "props.png", R_ROCK_BIG, Vector2(760, 260), 12.0)
-	_make_prop(props, "props.png", R_BARREL, Vector2(480, 300), 10.0)
+	_make_prop(props, GROUND_SHEET, N_SIGN, Vector2(1190, 340))
+	_make_prop(props, GROUND_SHEET, N_SIGN, Vector2(80, 340))
+	# 路灯：东西主路两端
+	_make_prop(props, GROUND_SHEET, N_LAMP, Vector2(1140, 352), 6.0)
+	_make_prop(props, GROUND_SHEET, N_LAMP, Vector2(140, 352), 6.0)
+	# 长椅：中央路口旁
+	_make_prop(props, GROUND_SHEET, N_BENCH, Vector2(700, 330), 10.0)
+	# 广场中央装饰：大岩石 + 木桶 + 树桩
+	_make_prop(props, TEX_DIR + "props.png", R_ROCK_BIG, Vector2(760, 260), 12.0)
+	_make_prop(props, TEX_DIR + "props.png", R_BARREL, Vector2(480, 300), 10.0)
+	_make_prop(props, GROUND_SHEET, N_STUMP, Vector2(560, 250))
 
 
 static func _build_treehouse_props(props: Node) -> void:
@@ -334,25 +351,26 @@ static func _build_treehouse_props(props: Node) -> void:
 		{"tree": Vector2(960, 260), "door": Vector2(960, 312)},
 	]
 	for h in houses:
-		_make_prop(props, "plant.png", R_TREES[0], h["tree"], 14.0)
-		_make_prop(props, "props.png", R_DOOR, h["door"])
-		_make_prop(props, "props.png", R_SIGN, h["door"] + Vector2(52, 4))
+		_make_prop(props, GROUND_SHEET, N_TREES[0], h["tree"], 14.0)
+		_make_prop(props, TEX_DIR + "props.png", R_DOOR, h["door"])
+		_make_prop(props, GROUND_SHEET, N_SIGN, h["door"] + Vector2(52, 4))
 	# 杂物点缀
-	_make_prop(props, "props.png", R_BARREL, Vector2(420, 350), 10.0)
-	_make_prop(props, "props.png", R_VASE, Vector2(880, 350))
+	_make_prop(props, TEX_DIR + "props.png", R_BARREL, Vector2(420, 350), 10.0)
+	_make_prop(props, TEX_DIR + "props.png", R_VASE, Vector2(880, 350))
+	_make_prop(props, GROUND_SHEET, N_LOG, Vector2(520, 330))
 
 
 static func _build_tower_props(props: Node) -> void:
 	if props == null or props.get_child_count() > 0:
 		return
 	# 石柱阵
-	_make_prop(props, "struct.png", R_PILLAR, Vector2(300, 210), 16.0)
-	_make_prop(props, "struct.png", R_PILLAR, Vector2(980, 210), 16.0)
-	_make_prop(props, "struct.png", R_PILLAR_MOSSY, Vector2(300, 520), 16.0)
-	_make_prop(props, "struct.png", R_PILLAR_MOSSY, Vector2(980, 520), 16.0)
+	_make_prop(props, TEX_DIR + "struct.png", R_PILLAR, Vector2(300, 210), 16.0)
+	_make_prop(props, TEX_DIR + "struct.png", R_PILLAR, Vector2(980, 210), 16.0)
+	_make_prop(props, TEX_DIR + "struct.png", R_PILLAR_MOSSY, Vector2(300, 520), 16.0)
+	_make_prop(props, TEX_DIR + "struct.png", R_PILLAR_MOSSY, Vector2(980, 520), 16.0)
 	# 南侧入口拱门
-	_make_prop(props, "struct.png", R_ARCH, Vector2(640, 700))
+	_make_prop(props, TEX_DIR + "struct.png", R_ARCH, Vector2(640, 700))
 	# 碎石
-	_make_prop(props, "props.png", R_ROCK_BIG, Vector2(420, 400), 12.0)
-	_make_prop(props, "props.png", R_ROCK_SMALL, Vector2(860, 380))
-	_make_prop(props, "props.png", R_ROCK_SMALL, Vector2(500, 560))
+	_make_prop(props, TEX_DIR + "props.png", R_ROCK_BIG, Vector2(420, 400), 12.0)
+	_make_prop(props, TEX_DIR + "props.png", R_ROCK_SMALL, Vector2(860, 380))
+	_make_prop(props, TEX_DIR + "props.png", R_ROCK_SMALL, Vector2(500, 560))
