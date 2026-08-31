@@ -18,6 +18,26 @@ const WORLD_H := 24
 
 const TEX_DIR := "res://assets/tilesets/cainos/"
 
+## 森林广场瓦片集（384x1040，32px 网格：地形区 y0-384，下方为道具素材）
+## 布局：草 y0-3 / 石子路 y4-7 / 土路 y8-11；每种地形 3 个 4x4 块：
+##   左块=带草边界的孤岛（外角+边+填充）、中块=纯填充、右块=草心环（内角）
+## (10,1) 是全透明空瓦片，建图集时跳过
+const GROUND_SHEET := "res://assets/tilesets/forest_plaza.png"
+const SHEET_COLS := 12
+const SHEET_GROUND_ROWS := 12   # 地形区行数（y 384 以下不建瓦片）
+const EMPTY_TILES: Array[Vector2i] = [Vector2i(10, 1)]
+
+const TERRAIN_STONE := 0
+const TERRAIN_DIRT := 1
+
+## peering 位全表（配置地形瓦片时遍历用）
+const _ALL_BITS: Array[TileSet.CellNeighbor] = [
+	TileSet.CELL_NEIGHBOR_RIGHT_SIDE, TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
+	TileSet.CELL_NEIGHBOR_BOTTOM_SIDE, TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
+	TileSet.CELL_NEIGHBOR_LEFT_SIDE, TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
+	TileSet.CELL_NEIGHBOR_TOP_SIDE, TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
+]
+
 ## 道具贴图区域（AtlasTexture region）
 const R_TREES := [
 	Rect2(22, 12, 96, 138),
@@ -50,34 +70,116 @@ static var baking: bool = false
 
 
 static func build_tileset() -> TileSet:
-	## 每次在内存中构建 Cainos TileSet：
-	## source 0 = 草地（8x4 纯草 + 过渡块），source 1 = 石地
+	## 在内存中构建地形 TileSet（森林广场瓦片集）：
+	## source 0 = 整张图集（仅地形区 12x12，跳过空瓦片）
+	## 地形集 0：terrain 0=石子路、terrain 1=土路（过渡对象=无地形的草地背景）
 	var ts := TileSet.new()
 	ts.tile_size = Vector2i(TILE_SIZE, TILE_SIZE)
-	for tex_path in [TEX_DIR + "grass.png", TEX_DIR + "stone.png"]:
-		var tex := load(tex_path) as Texture2D
-		var atlas := TileSetAtlasSource.new()
-		atlas.texture = tex
-		atlas.texture_region_size = Vector2i(TILE_SIZE, TILE_SIZE)
-		var tw := int(tex.get_size().x) / TILE_SIZE
-		var th := int(tex.get_size().y) / TILE_SIZE
-		for y in th:
-			for x in tw:
-				atlas.create_tile(Vector2i(x, y))
-		ts.add_source(atlas)
+	var tex := load(GROUND_SHEET) as Texture2D
+	var atlas := TileSetAtlasSource.new()
+	atlas.texture = tex
+	atlas.texture_region_size = Vector2i(TILE_SIZE, TILE_SIZE)
+	for y in SHEET_GROUND_ROWS:
+		for x in SHEET_COLS:
+			if Vector2i(x, y) in EMPTY_TILES:
+				continue
+			atlas.create_tile(Vector2i(x, y))
+	ts.add_source(atlas, 0)
+
+	ts.add_terrain_set(0)
+	ts.set_terrain_set_mode(0, TileSet.TERRAIN_MODE_MATCH_CORNERS_AND_SIDES)
+	ts.add_terrain(0)
+	ts.set_terrain_name(0, TERRAIN_STONE, "石子路")
+	ts.set_terrain_color(0, TERRAIN_STONE, Color(0.75, 0.72, 0.65))
+	ts.add_terrain(0)
+	ts.set_terrain_name(0, TERRAIN_DIRT, "土路")
+	ts.set_terrain_color(0, TERRAIN_DIRT, Color(0.72, 0.55, 0.35))
+
+	_setup_road_terrain(atlas, TERRAIN_STONE, 4)   # 石子路在 y4-7
+	_setup_road_terrain(atlas, TERRAIN_DIRT, 8)    # 土路在 y8-11
 	return ts
 
 
+## 给一种路面地形配置 peering bits。row0 = 该地形首行（石子路 4 / 土路 8）。
+## 每种地形 3 个 4x4 块：列0-3 孤岛块（外角+边+填充）、列4-7 纯填充、列8-11 环块（内角）。
+static func _setup_road_terrain(atlas: TileSetAtlasSource, tid: int, row0: int) -> void:
+	# -- 孤岛块（列 0-3）：外角只把严格朝外的角设为 -1；边瓦片两个朝外的角为 -1 --
+	for ly in 4:
+		for lx in 4:
+			var outside := _island_outside_bits(lx, ly)
+			_set_tile_terrain(atlas, Vector2i(lx, row0 + ly), tid, outside)
+	# -- 填充块（列 4-7）：全部位 = 自身地形 --
+	for ly in 4:
+		for lx in range(4, 8):
+			_set_tile_terrain(atlas, Vector2i(lx, row0 + ly), tid, [])
+	# -- 环块（列 8-11）：只配四个内角（角位 -1，其余全 T），环的其余瓦片不配地形 --
+	var inner := {
+		Vector2i(8, row0): TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
+		Vector2i(11, row0): TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
+		Vector2i(8, row0 + 3): TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
+		Vector2i(11, row0 + 3): TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
+	}
+	for coord in inner:
+		_set_tile_terrain(atlas, coord, tid, [inner[coord]])
+
+
+## 孤岛块 (lx,ly) 处瓦片的「朝外」peering 位列表（这些位 = 草地背景 -1）。
+static func _island_outside_bits(lx: int, ly: int) -> Array:
+	var bits: Array = []
+	if lx == 0:
+		bits.append(TileSet.CELL_NEIGHBOR_LEFT_SIDE)
+	elif lx == 3:
+		bits.append(TileSet.CELL_NEIGHBOR_RIGHT_SIDE)
+	if ly == 0:
+		bits.append(TileSet.CELL_NEIGHBOR_TOP_SIDE)
+	elif ly == 3:
+		bits.append(TileSet.CELL_NEIGHBOR_BOTTOM_SIDE)
+	# 外角：仅严格朝外的那一个角
+	if lx == 0 and ly == 0:
+		bits.append(TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER)
+	elif lx == 3 and ly == 0:
+		bits.append(TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER)
+	elif lx == 0 and ly == 3:
+		bits.append(TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER)
+	elif lx == 3 and ly == 3:
+		bits.append(TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER)
+	# 边瓦片：两个朝外的角
+	if ly in [1, 2]:
+		if lx == 0:
+			bits.append(TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER)
+			bits.append(TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER)
+		elif lx == 3:
+			bits.append(TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER)
+			bits.append(TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER)
+	if lx in [1, 2]:
+		if ly == 0:
+			bits.append(TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER)
+			bits.append(TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER)
+		elif ly == 3:
+			bits.append(TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER)
+			bits.append(TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER)
+	return bits
+
+
+static func _set_tile_terrain(atlas: TileSetAtlasSource, coord: Vector2i, tid: int, outside: Array) -> void:
+	var td := atlas.get_tile_data(coord, 0)
+	if td == null:
+		return
+	td.terrain_set = 0   # 必须先指定地形集，才能设 terrain 与 peering 位
+	td.set_terrain(tid)
+	for bit in _ALL_BITS:
+		td.set_terrain_peering_bit(bit, -1 if bit in outside else tid)
+
+
 static func _grass_tile() -> Vector2i:
-	# 上半部分是纯草（含少量小花），左侧 4 列最干净
-	if randf() < 0.85:
-		return Vector2i(randi() % 4, randi() % 4)
-	return Vector2i(4 + randi() % 4, randi() % 4)
+	# 草地填充：中块中心 2x2（(5,1)(6,1)(5,2)(6,2)）是唯一干净无缝的纯草纹理；
+	# 中块其余瓦片边缘带浅草补丁（用于向浅草地过渡），平铺会出现折线残影
+	return Vector2i(5 + randi() % 2, 1 + randi() % 2)
 
 
 static func _stone_tile() -> Vector2i:
-	# 石板填充块：第 4 列前 4 行是干净填充
-	return Vector2i(4, randi() % 4)
+	# 石子路纯填充变体：中块（列 4-7，行 4-7）
+	return Vector2i(4 + randi() % 4, 4 + randi() % 4)
 
 
 ## 给 areas 下三个区域的 Ground 铺地。已有 cell 的区域跳过（烘焙后不再重铺）。
@@ -106,37 +208,52 @@ static func paint_area_grounds(areas: Node2D) -> void:
 					_paint_tower(ground)
 
 
-static func _paint_plaza(ground: TileMapLayer) -> void:
-	# 广场：草地 + 中央十字石板路
+## 草地全铺 + 地形刷铺路。ignore_empty_terrains=false：草地瓦片无地形，
+## 路面边缘才会刷出过渡块（草皮收边）。
+static func _paint_grass_base(ground: TileMapLayer) -> void:
 	for y in WORLD_H:
 		for x in WORLD_W:
-			var coord := Vector2i(x, y)
+			ground.set_cell(Vector2i(x, y), 0, _grass_tile())
+
+
+static func _paint_terrain(ground: TileMapLayer, cells: Array, terrain: int) -> void:
+	if cells.is_empty():
+		return
+	ground.set_cells_terrain_connect(cells, 0, terrain, false)
+
+
+static func _paint_plaza(ground: TileMapLayer) -> void:
+	# 广场：草地 + 中央十字石子路（地形刷自动过渡）
+	_paint_grass_base(ground)
+	var road: Array[Vector2i] = []
+	for y in WORLD_H:
+		for x in WORLD_W:
 			if y >= 11 and y <= 13:
-				ground.set_cell(coord, 1, _stone_tile())  # 东西向主路（连接两侧门）
+				road.append(Vector2i(x, y))   # 东西向主路（连接两侧门）
 			elif x >= 18 and x <= 21 and y >= 4 and y <= 19:
-				ground.set_cell(coord, 1, _stone_tile())  # 南北向中路
-			else:
-				ground.set_cell(coord, 0, _grass_tile())
+				road.append(Vector2i(x, y))   # 南北向中路
+	_paint_terrain(ground, road, TERRAIN_STONE)
 
 
 static func _paint_treehouse(ground: TileMapLayer) -> void:
-	# 树屋区：草地 + 横路 + 三条入户小径
+	# 树屋区：草地 + 横路 + 三条入户小径（土路，地形刷自动过渡）
+	_paint_grass_base(ground)
+	var road: Array[Vector2i] = []
 	for y in WORLD_H:
 		for x in WORLD_W:
-			var coord := Vector2i(x, y)
 			if y >= 11 and y <= 13:
-				ground.set_cell(coord, 1, _stone_tile())
+				road.append(Vector2i(x, y))
 			elif y >= 8 and y <= 10 and (x == 9 or x == 20 or x == 30):
-				ground.set_cell(coord, 1, _stone_tile())
-			else:
-				ground.set_cell(coord, 0, _grass_tile())
+				road.append(Vector2i(x, y))
+	_paint_terrain(ground, road, TERRAIN_DIRT)
 
 
 static func _paint_tower(ground: TileMapLayer) -> void:
-	# 石巢塔楼：全石板地面
+	# 石巢塔楼：全石板地面（100% 覆盖无需过渡，直接铺填充块，
+	# 避免地图边界被地形刷刷出草皮收边）
 	for y in WORLD_H:
 		for x in WORLD_W:
-			ground.set_cell(Vector2i(x, y), 1, _stone_tile())
+			ground.set_cell(Vector2i(x, y), 0, _stone_tile())
 
 
 ## 给 areas 下三个区域的 Props 生成道具。已有子节点的区域跳过。
