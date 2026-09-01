@@ -20,6 +20,10 @@ signal dialogue_choices(choices: Array)
 signal dialogue_choice_made(choice_index: int)
 signal dialogue_ended()
 
+# -- 采集交互提示（右下角：按 E 采集 XX）--
+signal collect_hint_show(item_name: String)
+signal collect_hint_hide()
+
 # -- AI 对话相关 --
 signal dialogue_ai_meta(npc_id: String, ai_mode: bool, free_input_enabled: bool)
 signal dialogue_free_input(text: String)
@@ -45,6 +49,7 @@ signal loop_reset()
 signal inventory_opened()
 signal inventory_closed()
 signal item_sold(item_id: String, count: int, price_total: int)
+signal sell_requested()   # 对话内玩家主动提出卖东西（dialogue_ui → game.gd 路由）
 
 # -- 提示 --
 signal toast(message: String)

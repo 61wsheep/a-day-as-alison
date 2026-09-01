@@ -98,7 +98,7 @@ func _run() -> void:
 	_check("item_sold 合计=50", total_price == 50)
 	_check("卖空后 has_kind 条件失效", not gm.conditions_met({"has_kind": ["forage"]}))
 
-	# -- 真实采集路径：collectible._on_body_entered → 进背包 --
+	# -- 真实采集路径：靠近（body_entered）→ 按 E（_try_collect）→ 进背包 --
 	var pool: Node = scene.get_node_or_null("Areas/Plaza/Mushrooms")
 	if pool and pool.get_child_count() > 0:
 		var collect: Node = pool.get_child(0)
@@ -107,9 +107,11 @@ func _run() -> void:
 		collect.show()
 		collect.monitoring = true
 		collect._on_body_entered(get_tree().get_first_node_in_group("player"))
-		_check("collectible 拾取进背包", inv.count_of(target_id) == before + 1)
+		collect._try_collect()
+		_check("collectible 按 E 采集进背包", inv.count_of(target_id) == before + 1)
+		_check("采集后隐藏消失", not collect.visible)
 	else:
-		_check("collectible 拾取进背包", false)
+		_check("collectible 按 E 采集进背包", false)
 
 	# -- 背包面板：开合 + 移动锁定 --
 	var inv_panel: Node = scene.get_node_or_null("InventoryPanel")

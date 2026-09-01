@@ -64,6 +64,8 @@ var _ai_badge: Label
 var _choice_panel: PanelContainer
 var _choice_box: VBoxContainer
 var _interact_hint: Label
+var _collect_hint: Label
+var _sell_btn: Button
 var _toast_label: Label
 var _toast_timer: Timer
 var _portrait_cache: Dictionary = {}
@@ -84,6 +86,10 @@ func _ready() -> void:
 	var bus = get_node("/root/EventBus")
 	bus.interaction_hint_show.connect(func(): _interact_hint.show())
 	bus.interaction_hint_hide.connect(func(): _interact_hint.hide())
+	bus.collect_hint_show.connect(func(item_name: String) -> void:
+		_collect_hint.text = "[E] 采集 %s" % item_name
+		_collect_hint.show())
+	bus.collect_hint_hide.connect(func(): _collect_hint.hide())
 	bus.dialogue_line.connect(_on_dialogue_line)
 	bus.dialogue_choices.connect(_on_choices)
 	bus.dialogue_ended.connect(_on_dialogue_ended)
@@ -94,6 +100,20 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
+	# -- 采集提示（右下角，NPC 对话提示上方）--
+	_collect_hint = Label.new()
+	_collect_hint.text = "[E] 采集"
+	_collect_hint.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	_collect_hint.offset_left = -140
+	_collect_hint.offset_top = -82
+	_collect_hint.offset_right = -16
+	_collect_hint.offset_bottom = -50
+	_collect_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_collect_hint.add_theme_font_size_override("font_size", 18)
+	_collect_hint.add_theme_color_override("font_color", Color(0.95, 0.85, 0.5))
+	_collect_hint.hide()
+	add_child(_collect_hint)
+
 	# -- 交互提示（右下角） --
 	_interact_hint = Label.new()
 	_interact_hint.text = "[E] 对话"
@@ -310,6 +330,17 @@ func _on_choices(choices: Array) -> void:
 	send.pressed.connect(_on_free_input_submit)
 	row.add_child(send)
 
+	# 售卖入口：对话内玩家主动提出卖东西（索拉雅 + 见过 + 有采集品时才出现）
+	if _can_sell_here():
+		_choice_box.add_child(_make_choice_sep())
+		_sell_btn = Button.new()
+		_sell_btn.text = "卖点东西（我有采集品要出手）"
+		_sell_btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		_sell_btn.add_theme_font_size_override("font_size", 14)
+		_sell_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4))
+		_sell_btn.pressed.connect(_on_sell_pressed)
+		_choice_box.add_child(_sell_btn)
+
 	_choice_panel.show()
 	if _choice_box.get_child_count() > 0:
 		(_choice_box.get_child(0) as Button).grab_focus()
@@ -324,6 +355,22 @@ func _make_choice_sep() -> Control:
 func _on_choice_pressed(index: int) -> void:
 	_choice_panel.hide()
 	get_node("/root/EventBus").dialogue_choice_made.emit(index)
+
+
+## 对话内是否可发起售卖：在跟索拉雅说话、已认识她、且背包有采集品。
+func _can_sell_here() -> bool:
+	if _thinking_npc != "soraya":
+		return false
+	var gm = get_node("/root/GameManager")
+	if not gm.has_flag("met_soraya"):
+		return false
+	var inv: Node = get_node_or_null("/root/Inventory")
+	return inv != null and inv.has_kind("forage")
+
+
+func _on_sell_pressed() -> void:
+	_choice_panel.hide()
+	get_node("/root/EventBus").sell_requested.emit()
 
 
 ## 不回答 → 以「（沉默不语）」作为玩家输入，交给 NPC（AI 会话 / S2 旁路）回应。

@@ -43,6 +43,7 @@ func _ready() -> void:
 	bus.loop_reset.connect(_on_loop_reset)
 	bus.door_entered.connect(func(area_id: String, spawn: String) -> void: switch_area(area_id, spawn, true))
 	bus.game_action.connect(_on_game_action)
+	bus.sell_requested.connect(_on_sell_requested)
 	bus.dialogue_ended.connect(_on_dialogue_ended)
 	bus.day_started.connect(_on_day_started)
 	bus.midnight_reached.connect(_on_midnight)
@@ -290,6 +291,13 @@ func _finish_sleep() -> void:
 # ---------------------------------------------------------------------------
 # 剧情动作路由 / 结局
 # ---------------------------------------------------------------------------
+## 对话内玩家主动提出卖东西：记下动作并结束当前对话，
+## 走 _on_dialogue_ended 的 "sell" 分支打开售卖面板。
+func _on_sell_requested() -> void:
+	_pending_action = "sell"
+	get_node("/root/EventBus").dialogue_exit_requested.emit()
+
+
 func _on_game_action(action_id: String) -> void:
 	if action_id.begins_with("rental:"):
 		get_node("RentalUI").open(action_id.trim_prefix("rental:"))

@@ -7,8 +7,9 @@
 [ext_resource type="Script" uid="uid://bfkr5bwcqfs4q" path="res://scripts/npc/padwin.gd" id="12_y6deb"]
 [ext_resource type="Texture2D" uid="uid://d3hb16lr0ox5k" path="res://assets/tilesets/cainos/struct.png" id="15_yq6so"]
 [ext_resource type="Script" uid="uid://bnf8vnhao4emb" path="res://scripts/player/player_controller.gd" id="17_og1vs"]
-[ext_resource type="Script" path="res://scripts/ui/inventory_panel.gd" id="24_y6deb"]
-[ext_resource type="Script" path="res://scripts/ui/sell_panel.gd" id="25_og1vs"]
+[ext_resource type="Script" uid="uid://c0wtnsiirupvr" path="res://scripts/ui/inventory_panel.gd" id="24_y6deb"]
+[ext_resource type="Script" uid="uid://bdupxml7myx7h" path="res://scripts/ui/sell_panel.gd" id="25_og1vs"]
+[ext_resource type="Script" path="res://scripts/ui/keybind_panel.gd" id="keybind_panel_script"]
 [ext_resource type="PackedScene" uid="uid://b5l27rsuniof2" path="res://scenes/npc_cactus_bishop.tscn" id="cactus_scene"]
 [ext_resource type="Script" uid="uid://b07le8jfojm0" path="res://scripts/collectible.gd" id="collectible_script"]
 [ext_resource type="Script" uid="uid://cty0kby1vtln0" path="res://scripts/ui/dialogue_ui.gd" id="dialogue_ui_script"]
@@ -2193,6 +2194,7 @@ dialogue_file = "res://resources/dialogues/soraya.json"
 [node name="Berry1" type="Area2D" parent="Areas/Plaza/Berries" unique_id=1254574771]
 position = Vector2(300, 560)
 script = ExtResource("collectible_script")
+item_id = "berry"
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Berries/Berry1" unique_id=643640065]
 shape = ExtResource("mushroom_shape")
@@ -2202,6 +2204,7 @@ shape = ExtResource("mushroom_shape")
 [node name="Berry2" type="Area2D" parent="Areas/Plaza/Berries" unique_id=2124116971]
 position = Vector2(800, 210)
 script = ExtResource("collectible_script")
+item_id = "berry"
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Berries/Berry2" unique_id=1215415657]
 shape = ExtResource("mushroom_shape")
@@ -2211,6 +2214,7 @@ shape = ExtResource("mushroom_shape")
 [node name="Berry3" type="Area2D" parent="Areas/Plaza/Berries" unique_id=1686395645]
 position = Vector2(980, 620)
 script = ExtResource("collectible_script")
+item_id = "berry"
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Berries/Berry3" unique_id=904743703]
 shape = ExtResource("mushroom_shape")
@@ -2220,6 +2224,7 @@ shape = ExtResource("mushroom_shape")
 [node name="Berry4" type="Area2D" parent="Areas/Plaza/Berries" unique_id=1292878429]
 position = Vector2(200, 250)
 script = ExtResource("collectible_script")
+item_id = "berry"
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Berries/Berry4" unique_id=2119793832]
 shape = ExtResource("mushroom_shape")
@@ -2876,3 +2881,6 @@ script = ExtResource("24_y6deb")
 
 [node name="SellPanel" type="CanvasLayer" parent="." unique_id=796000731]
 script = ExtResource("25_og1vs")
+
+[node name="KeybindPanel" type="CanvasLayer" parent="." unique_id=1586300244]
+script = ExtResource("keybind_panel_script")
