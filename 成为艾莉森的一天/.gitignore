@@ -10,3 +10,6 @@
 
 # AI API 密钥（本地密钥不进版本库）
 ai/api_key.txt
+
+# Cainos 素材原始压缩包（cainos/ 目录已提交，zip 不入库）
+assets/tilesets/cainos.zip
