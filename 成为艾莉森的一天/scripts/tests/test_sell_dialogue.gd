@@ -80,7 +80,8 @@ func _run() -> void:
 	var sell: Node = scene.get_node_or_null("SellPanel")
 	_check("SellPanel 已打开", sell != null and bool(sell._open))
 	if sell and sell._open:
-		_check("面板列出蘑菇", sell._checks.has("mushroom"))
+		_check("面板列出蘑菇", sell._rows.has("mushroom"))
+		_check("蘑菇行有数量选择框", sell._rows["mushroom"].get("spin", null) != null)
 		(sell as Node)._close()
 
 	# 无采集品时卖点入口消失

@@ -82,16 +82,31 @@ func _run() -> void:
 			sold_events.append({"id": id, "count": count, "price": price}))
 
 	sell.open()
-	_check("面板列出 2 种可卖品", sell._checks.size() == 2)
-	# 全选 → 一口价卖出
-	for check in sell._checks.values():
-		check.button_pressed = true
-	sell._on_sell()
+	_check("面板列出 2 种可卖品", sell._rows.size() == 2)
+	# 每行都有数量 SpinBox，默认=持有数（勾选即卖整类，兼容旧行为）
+	var berry_row: Dictionary = sell._rows.get("berry", {})
+	var berry_spin: SpinBox = berry_row.get("spin", null) as SpinBox
+	_check("浆果行有数量选择框", berry_spin != null)
+	if berry_spin:
+		_check("数量默认=持有数 2", int(berry_spin.value) == 2)
+		_check("数量上限=持有数 2", int(berry_spin.max_value) == 2)
 
+	# -- 部分卖出：勾选浆果，只卖 1 颗 --
+	(berry_row["check"] as CheckButton).button_pressed = true
+	berry_spin.value = 1
+	sell._on_sell()
+	_check("部分卖出后浆果剩 1", inv.count_of("berry") == 1)
+	_check("蘑菇未动仍 3", inv.count_of("mushroom") == 3)
+	_check("金币 +7（1×7）", gm.gold == gold_before + 7)
+
+	# -- 全选（默认整类）→ 卖出剩余 --
+	for row in sell._rows.values():
+		(row["check"] as CheckButton).button_pressed = true
+	sell._on_sell()
 	_check("卖出后蘑菇清空", not inv.has("mushroom"))
 	_check("卖出后浆果清空", not inv.has("berry"))
-	_check("金币增加 50（3×12 + 2×7）", gm.gold == gold_before + 50)
-	_check("item_sold 发 2 次", sold_events.size() == 2)
+	_check("金币累计 +50（7 + 3×12 + 1×7）", gm.gold == gold_before + 50)
+	_check("item_sold 发 3 次", sold_events.size() == 3)
 	var total_price := 0
 	for ev in sold_events:
 		total_price += int(ev["price"])
