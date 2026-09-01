@@ -41,5 +41,10 @@ signal ending_reached(ending_id: String)
 # -- 循环 --
 signal loop_reset()
 
+# -- 背包 / 售卖 --
+signal inventory_opened()
+signal inventory_closed()
+signal item_sold(item_id: String, count: int, price_total: int)
+
 # -- 提示 --
 signal toast(message: String)

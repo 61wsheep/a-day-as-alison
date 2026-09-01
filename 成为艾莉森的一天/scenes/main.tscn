@@ -3,7 +3,12 @@
 [ext_resource type="Texture2D" uid="uid://b085vicaso83n" path="res://assets/tilesets/forest_plaza.png" id="2_pm3ni"]
 [ext_resource type="Texture2D" uid="uid://co2op5dljwuy7" path="res://assets/tilesets/cainos/plant.png" id="4_og1vs"]
 [ext_resource type="Texture2D" uid="uid://8l88rppgrxx3" path="res://assets/tilesets/cainos/props.png" id="5_2wyq8"]
+[ext_resource type="Script" uid="uid://bcxl6yjd4hcqm" path="res://scripts/npc/npc_base.gd" id="9_pm3ni"]
+[ext_resource type="Script" uid="uid://bfkr5bwcqfs4q" path="res://scripts/npc/padwin.gd" id="12_y6deb"]
 [ext_resource type="Texture2D" uid="uid://d3hb16lr0ox5k" path="res://assets/tilesets/cainos/struct.png" id="15_yq6so"]
+[ext_resource type="Script" uid="uid://bnf8vnhao4emb" path="res://scripts/player/player_controller.gd" id="17_og1vs"]
+[ext_resource type="Script" path="res://scripts/ui/inventory_panel.gd" id="24_y6deb"]
+[ext_resource type="Script" path="res://scripts/ui/sell_panel.gd" id="25_og1vs"]
 [ext_resource type="PackedScene" uid="uid://b5l27rsuniof2" path="res://scenes/npc_cactus_bishop.tscn" id="cactus_scene"]
 [ext_resource type="Script" uid="uid://b07le8jfojm0" path="res://scripts/collectible.gd" id="collectible_script"]
 [ext_resource type="Script" uid="uid://cty0kby1vtln0" path="res://scripts/ui/dialogue_ui.gd" id="dialogue_ui_script"]
@@ -16,7 +21,7 @@
 [ext_resource type="PackedScene" uid="uid://cn2d7ukn283u5" path="res://scenes/player.tscn" id="player_scene"]
 [ext_resource type="Script" uid="uid://bn86qwpgdvhgg" path="res://scripts/ui/rental_ui.gd" id="rental_ui_script"]
 [ext_resource type="PackedScene" uid="uid://dfnbgvvysrkoe" path="res://scenes/npc_soraya.tscn" id="soraya_scene"]
-[ext_resource type="Script" path="res://scripts/ui/status_panel.gd" id="status_panel_script"]
+[ext_resource type="Script" uid="uid://dtq25xeihabla" path="res://scripts/ui/status_panel.gd" id="status_panel_script"]
 [ext_resource type="Script" uid="uid://bpcv48fa8d7fa" path="res://scripts/ui/tarot_ui.gd" id="tarot_ui_script"]
 [ext_resource type="Script" uid="uid://b5268vlc2q1jl" path="res://scripts/systems/treehouse_door.gd" id="thdoor_script"]
 [ext_resource type="PackedScene" uid="uid://wsdltld05wsh" path="res://scenes/npc_tian.tscn" id="tian_scene"]
@@ -2177,8 +2182,49 @@ shape = ExtResource("mushroom_shape")
 [node name="Icon" type="Sprite2D" parent="Areas/Plaza/Mushrooms/Mushroom3" unique_id=362941843]
 texture = SubResource("AtlasTexture_mgpkq")
 
-[node name="Soraya" parent="Areas/Plaza" unique_id=1842856679 instance=ExtResource("soraya_scene")]
+[node name="Soraya" type="CharacterBody2D" parent="Areas/Plaza" unique_id=1842856679 instance=ExtResource("soraya_scene")]
 position = Vector2(640, 300)
+script = ExtResource("9_pm3ni")
+npc_id = "soraya"
+dialogue_file = "res://resources/dialogues/soraya.json"
+
+[node name="Berries" type="Node2D" parent="Areas/Plaza" unique_id=1386350600]
+
+[node name="Berry1" type="Area2D" parent="Areas/Plaza/Berries" unique_id=1254574771]
+position = Vector2(300, 560)
+script = ExtResource("collectible_script")
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Berries/Berry1" unique_id=643640065]
+shape = ExtResource("mushroom_shape")
+
+[node name="Icon" type="Sprite2D" parent="Areas/Plaza/Berries/Berry1" unique_id=1817351022]
+
+[node name="Berry2" type="Area2D" parent="Areas/Plaza/Berries" unique_id=2124116971]
+position = Vector2(800, 210)
+script = ExtResource("collectible_script")
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Berries/Berry2" unique_id=1215415657]
+shape = ExtResource("mushroom_shape")
+
+[node name="Icon" type="Sprite2D" parent="Areas/Plaza/Berries/Berry2" unique_id=350506929]
+
+[node name="Berry3" type="Area2D" parent="Areas/Plaza/Berries" unique_id=1686395645]
+position = Vector2(980, 620)
+script = ExtResource("collectible_script")
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Berries/Berry3" unique_id=904743703]
+shape = ExtResource("mushroom_shape")
+
+[node name="Icon" type="Sprite2D" parent="Areas/Plaza/Berries/Berry3" unique_id=2099037617]
+
+[node name="Berry4" type="Area2D" parent="Areas/Plaza/Berries" unique_id=1292878429]
+position = Vector2(200, 250)
+script = ExtResource("collectible_script")
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Berries/Berry4" unique_id=2119793832]
+shape = ExtResource("mushroom_shape")
+
+[node name="Icon" type="Sprite2D" parent="Areas/Plaza/Berries/Berry4" unique_id=551366238]
 
 [node name="TreehouseDistrict" type="Node2D" parent="Areas" unique_id=1339552219]
 
@@ -2666,13 +2712,17 @@ house_id = "willow"
 [node name="Zone" type="CollisionShape2D" parent="Areas/TreehouseDistrict/DoorWillow" unique_id=1081836878]
 shape = SubResource("door_zone")
 
-[node name="Padwin" parent="Areas/TreehouseDistrict" unique_id=457572635 instance=ExtResource("padwin_scene")]
+[node name="Padwin" type="CharacterBody2D" parent="Areas/TreehouseDistrict" unique_id=457572635 instance=ExtResource("padwin_scene")]
 position = Vector2(500, 480)
+script = ExtResource("12_y6deb")
 npc_id = "padwin"
 dialogue_file = "res://resources/dialogues/padwin.json"
 
-[node name="CactusBishop" parent="Areas/TreehouseDistrict" unique_id=1553942891 instance=ExtResource("cactus_scene")]
+[node name="CactusBishop" type="CharacterBody2D" parent="Areas/TreehouseDistrict" unique_id=1553942891 instance=ExtResource("cactus_scene")]
 position = Vector2(820, 470)
+script = ExtResource("9_pm3ni")
+npc_id = "cactus_bishop"
+dialogue_file = "res://resources/dialogues/cactus_bishop.json"
 
 [node name="StoneNestTower" type="Node2D" parent="Areas" unique_id=1379880746]
 modulate = Color(0.55, 0.55, 0.7, 1)
@@ -2766,11 +2816,15 @@ target_spawn = "SpawnFromWest"
 [node name="Zone" type="CollisionShape2D" parent="Areas/StoneNestTower/DoorSouth" unique_id=329490066]
 shape = SubResource("door_zone")
 
-[node name="TianAltar" parent="Areas/StoneNestTower" unique_id=364276716 instance=ExtResource("tian_scene")]
+[node name="TianAltar" type="CharacterBody2D" parent="Areas/StoneNestTower" unique_id=364276716 instance=ExtResource("tian_scene")]
 position = Vector2(640, 240)
+script = ExtResource("9_pm3ni")
+npc_id = "tian"
+dialogue_file = "res://resources/dialogues/tower_voice.json"
 
-[node name="Player" parent="." unique_id=1344765881 instance=ExtResource("player_scene")]
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1344765881 instance=ExtResource("player_scene")]
 position = Vector2(640, 480)
+script = ExtResource("17_og1vs")
 
 [node name="DialogueUI" type="CanvasLayer" parent="." unique_id=796514301]
 layer = 10
@@ -2816,3 +2870,9 @@ text = "Gold: 100"
 [node name="DayLabel" type="Label" parent="HUD/MarginContainer/HBoxContainer" unique_id=1012268017]
 layout_mode = 2
 text = "Day 1"
+
+[node name="InventoryPanel" type="CanvasLayer" parent="." unique_id=1925119271]
+script = ExtResource("24_y6deb")
+
+[node name="SellPanel" type="CanvasLayer" parent="." unique_id=796000731]
+script = ExtResource("25_og1vs")

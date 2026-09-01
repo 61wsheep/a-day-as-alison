@@ -145,8 +145,8 @@ func _present_result(result: Dictionary) -> void:
 	_card_name.text = gm.daily_tarot_card
 	var luck_text := ""
 	match gm.daily_luck:
-		1: luck_text = "\n\n（吉兆：今日蘑菇售价 ×1.5）"
-		-1: luck_text = "\n\n（凶兆：今日蘑菇售价 ×0.5）"
+		1: luck_text = "\n\n（吉兆：今日采集品售价 ×1.2）"
+		-1: luck_text = "\n\n（凶兆：今日采集品售价 ×0.8）"
 	_reading.text = str(result.get("prophecy", "")) + luck_text
 	_action_btn.text = "开始今天"
 	get_node("/root/EventBus").tarot_drawn.emit({"name": gm.daily_tarot_card, "luck": gm.daily_luck})

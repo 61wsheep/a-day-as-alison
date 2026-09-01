@@ -58,6 +58,22 @@
       ]
     },
     {
+      "id": "sell",
+      "priority": 12,
+      "conditions": {"flag": ["met_soraya"], "has_kind": ["forage"]},
+      "lines": [
+        {
+          "speaker": "soraya",
+          "emotion": "smile_01",
+          "text": "有新鲜的采集品要出手吗？我按今天的行情收。",
+          "choices": [
+            {"text": "卖点东西", "effects": {"action": "sell"}, "end": true},
+            {"text": "先不了，下次吧。", "end": true}
+          ]
+        }
+      ]
+    },
+    {
       "id": "daily",
       "priority": 10,
       "conditions": {"flag": ["met_soraya"]},

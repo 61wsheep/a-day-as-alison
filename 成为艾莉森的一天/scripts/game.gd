@@ -308,6 +308,9 @@ func _on_dialogue_ended() -> void:
 		elif action == "pass_night":
 			_do_sleep()
 			return
+		elif action == "sell":
+			get_node("SellPanel").open()
+			return
 	# 午夜入睡面板会被 dialogue_started 顶掉（任何对话/界面打开都触发），
 	# 对话结束后若仍是午夜则补回——否则玩家卡死在午夜（T 键无效、自动推进已停）。
 	# 补回时刷新面板状态：午夜现场租房后，入睡按钮应即时解锁。
@@ -338,9 +341,11 @@ func _on_loop_reset() -> void:
 
 
 func _refresh_collectibles() -> void:
-	var pool := _mushroom_pool()
-	if pool:
-		for child in pool.get_children():
-			if child is Area2D and child.is_in_group("collectible"):
-				child.show()
-				child.monitoring = true
+	# 蘑菇（随机刷）与浆果丛（固定点）两个池都在每日循环重置时重新出现
+	for pool_name in ["Mushrooms", "Berries"]:
+		var pool := areas.get_node_or_null("Plaza/%s" % pool_name)
+		if pool:
+			for child in pool.get_children():
+				if child is Area2D and child.is_in_group("collectible"):
+					child.show()
+					child.monitoring = true

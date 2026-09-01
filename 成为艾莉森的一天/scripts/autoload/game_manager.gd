@@ -151,6 +151,15 @@ func conditions_met(cond: Dictionary) -> bool:
 		return false
 	if cond.has("rented") and treehouse_rented != bool(cond["rented"]):
 		return false
+	# -- 背包条件（对话选项用，如索拉雅「卖点东西」需背包有 forage） --
+	var inv: Node = get_node_or_null("/root/Inventory")
+	if inv != null:
+		for i in cond.get("has_item", []):
+			if inv.count_of(str(i)) <= 0:
+				return false
+		for k in cond.get("has_kind", []):
+			if not inv.has_kind(str(k)):
+				return false
 	return true
 
 

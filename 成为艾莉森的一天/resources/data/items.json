@@ -1,0 +1,41 @@
+{
+  "items": [
+    {
+      "id": "mushroom",
+      "name": "森林蘑菇",
+      "kind": "forage",
+      "base_price": 10,
+      "stack_max": 20,
+      "icon": { "atlas": "res://assets/tilesets/forest_plaza.png", "region": [1, 385, 30, 30] },
+      "desc": "藏在草丛里的普通蘑菇，镇上的常客。"
+    },
+    {
+      "id": "berry",
+      "name": "红浆果",
+      "kind": "forage",
+      "base_price": 6,
+      "stack_max": 30,
+      "icon": { "atlas": "res://assets/tilesets/forest_plaza.png", "region": [5, 421, 20, 23] },
+      "desc": "酸甜的小浆果，索拉雅偶尔会买来酿酒。"
+    },
+    {
+      "id": "herb_moonleaf",
+      "name": "月光草",
+      "kind": "herb",
+      "properties": ["cool", "night"],
+      "base_price": 4,
+      "stack_max": 20,
+      "icon": { "atlas": "res://assets/tilesets/forest_plaza.png", "region": [38, 421, 20, 23] },
+      "desc": "只在傍晚后散发微光的草药。"
+    },
+    {
+      "id": "potion_blank",
+      "name": "未命名草药瓶",
+      "kind": "potion",
+      "base_price": 0,
+      "stack_max": 5,
+      "icon": { "atlas": "res://assets/tilesets/forest_plaza.png", "region": [70, 421, 20, 23] },
+      "desc": "封存着植物的性情——它的价值由酿它的那一刻决定。"
+    }
+  ]
+}
