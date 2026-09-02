@@ -86,7 +86,7 @@ func _ready() -> void:
 	var bus = get_node("/root/EventBus")
 	bus.interaction_hint_show.connect(func() -> void:
 		# 每次 NPC 靠近都复位文案：上次可能是委托板的「查看委托板」
-		_interact_hint.text = "[E] 对话"
+		_interact_hint.text = "[E] 对话　[H] 历史对话"
 		_interact_hint.show())
 	bus.interaction_hint_hide.connect(func(): _interact_hint.hide())
 	bus.board_hint_show.connect(func() -> void:
@@ -125,7 +125,7 @@ func _build_ui() -> void:
 	_interact_hint = Label.new()
 	_interact_hint.text = "[E] 对话"
 	_interact_hint.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	_interact_hint.offset_left = -140
+	_interact_hint.offset_left = -240
 	_interact_hint.offset_top = -48
 	_interact_hint.offset_right = -16
 	_interact_hint.offset_bottom = -16

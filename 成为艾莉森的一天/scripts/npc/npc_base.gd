@@ -69,6 +69,13 @@ func _input(event: InputEvent) -> void:
 		return                     # 自由输入框聚焦时，E 不旁路给对话
 	if not _player_in_range:
 		return
+	# H：靠近 NPC 时查看与该角色的历史对话（非对话中、玩家未锁、不在输入框里才响应）
+	if not _dialogue_active and not _movement_locked() and not _is_text_focus_owner() \
+			and event is InputEventKey and event.pressed and not event.echo \
+			and event.keycode == KEY_H:
+		get_node("/root/EventBus").history_requested.emit(npc_id)
+		get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("ui_accept"):
 		if _ai_mode:               # S1 里 E 无推进作用，忽略
 			return
@@ -215,8 +222,15 @@ func _advance() -> void:
 func _emit_line(line: Dictionary) -> void:
 	var speaker := str(line.get("speaker", npc_id))
 	var display := _display_name(speaker)
+	var text := str(line.get("text", ""))
 	get_node("/root/EventBus").dialogue_line.emit(
-		speaker, display, str(line.get("text", "")), str(line.get("emotion", "")))
+		speaker, display, text, str(line.get("emotion", "")))
+	# 实录上报：脚本台词 + AI 会话行 + narrator/player 行都记录，供「历史对话」回看
+	if text != "":
+		var log := get_node_or_null("/root/DialogueLog")
+		if log:
+			log.append(npc_id, speaker, display, text,
+				int(get_node("/root/GameManager").current_day))
 
 
 func _display_name(speaker: String) -> String:
@@ -299,6 +313,12 @@ func _end_dialogue() -> void:
 func _on_free_input(text: String) -> void:
 	if not _dialogue_active:
 		return
+	# 玩家自由输入也进实录（“历史对话”完整实录含你说过的话）
+	if text != "":
+		var log := get_node_or_null("/root/DialogueLog")
+		if log:
+			log.append(npc_id, "player", "艾莉森", text.strip_edges(),
+				int(get_node("/root/GameManager").current_day))
 	if _ai_mode:
 		if _ai_session:
 			_ai_session.submit_free_text(text)

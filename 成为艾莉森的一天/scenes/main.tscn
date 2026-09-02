@@ -26,6 +26,7 @@
 [ext_resource type="Script" path="res://scripts/ui/quest_board_ui.gd" id="quest_board_ui_script"]
 [ext_resource type="Script" path="res://scripts/ui/tarot_divination_ui.gd" id="tarot_div_ui_script"]
 [ext_resource type="Script" path="res://scripts/notice_board.gd" id="notice_board_script"]
+[ext_resource type="Script" path="res://scripts/ui/history_panel.gd" id="history_panel_script"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pm3ni"]
 texture = ExtResource("2_pm3ni")
@@ -2898,6 +2899,10 @@ script = ExtResource("quest_board_ui_script")
 [node name="TarotDivinationUI" type="CanvasLayer" parent="." unique_id=1987600002]
 layer = 20
 script = ExtResource("tarot_div_ui_script")
+
+[node name="HistoryPanel" type="CanvasLayer" parent="." unique_id=1987600007]
+layer = 15
+script = ExtResource("history_panel_script")
 
 [node name="NoticeBoard" type="Area2D" parent="Areas/Plaza" unique_id=1987600003]
 position = Vector2(940, 400)

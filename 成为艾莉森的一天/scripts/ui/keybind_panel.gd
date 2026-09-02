@@ -17,6 +17,8 @@ const KEY_ROWS := [
 	 "detail": "跳过当前时段，加速推进一天。"},
 	{"color": Color(0.55, 0.65, 0.7), "action": "按键帮助", "key": "K",
 	 "detail": "打开/关闭本按键帮助面板。"},
+	{"color": Color(0.85, 0.6, 0.85), "action": "历史对话", "key": "H",
+	 "detail": "靠近 NPC 按 H，回看与该角色本局的完整对话实录。"},
 	{"color": Color(0.75, 0.4, 0.4), "action": "关闭 / 退出", "key": "Esc",
 	 "detail": "关闭当前面板，或退出对话。"},
 ]

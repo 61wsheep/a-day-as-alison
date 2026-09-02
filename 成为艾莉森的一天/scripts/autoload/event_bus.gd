@@ -39,6 +39,9 @@ signal clue_found(clue_id: String)
 signal area_changed(area_id: String)
 signal door_entered(target_area: String, target_spawn: String)
 
+# -- 历史对话（贴近 NPC 按 H 打开） --
+signal history_requested(npc_id: String)
+
 # -- 游戏动作（由剧情 effects 触发，game.gd 统一路由） --
 signal game_action(action_id: String)
 
