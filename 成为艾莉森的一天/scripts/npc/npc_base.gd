@@ -86,6 +86,10 @@ func _input(event: InputEvent) -> void:
 				_line_idx += 1
 				_advance()
 		else:
+			# 弹窗/其他对话开着（玩家移动被锁）时不重开对话——否则对话结束连按 E
+			# 会把 NPC 对话重新叠到占卜/售卖等面板上（M2 占卜弹窗被打断的根因）。
+			if _movement_locked():
+				return
 			_start_dialogue()
 
 
@@ -371,3 +375,10 @@ func _emit_current_choices() -> void:
 func _is_text_focus_owner() -> bool:
 	var c := get_viewport().gui_get_focus_owner()
 	return c is LineEdit
+
+
+## 玩家当前是否被锁（对话/弹窗打开）。开场新对话前必须检查——否则结束连按 E 会把
+## 对话叠到占卜/售卖等面板上。
+func _movement_locked() -> bool:
+	var p := get_tree().get_first_node_in_group("player")
+	return p != null and bool(p._movement_locked)

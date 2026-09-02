@@ -128,6 +128,12 @@ func _run() -> void:
 	_check("占卜对象 = padwin", str(div._npc_id) == "padwin")
 	_check("对应委托 id", str(div._quest_id) == "tarot_padwin_01")
 
+	# -- 回归 #3：占卜面板打开后再连按一次 E，不得把 NPC 对话重新叠到弹窗上 --
+	_press_e(padwin)   # 额外一次 E（复现文件证实修复前会 padwin._dialogue_active=true）
+	await _wait(0.2)
+	_check("弹窗下连按 E 不重开对话", not bool(padwin._dialogue_active))
+	_check("占卜面板仍在", div != null and bool(div._open))
+
 	# -- 解读文案三分支（纯函数）--
 	_check("npc 专属解读命中",
 		div.reading_for({"npc_readings": {"padwin": "A"}, "reading_to_person": "B", "reading": "C"}, "padwin") == "A")
