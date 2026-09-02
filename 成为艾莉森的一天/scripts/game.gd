@@ -319,6 +319,10 @@ func _on_dialogue_ended() -> void:
 		elif action == "sell":
 			get_node("SellPanel").open()
 			return
+		elif action.begins_with("divine:"):
+			# 帕德温占卜支线：对话选「抽一张牌」→ 结束后打开占卜面板（NPC 取 action 后缀）
+			get_node("TarotDivinationUI").open(action.trim_prefix("divine:"))
+			return
 	# 午夜入睡面板会被 dialogue_started 顶掉（任何对话/界面打开都触发），
 	# 对话结束后若仍是午夜则补回——否则玩家卡死在午夜（T 键无效、自动推进已停）。
 	# 补回时刷新面板状态：午夜现场租房后，入睡按钮应即时解锁。

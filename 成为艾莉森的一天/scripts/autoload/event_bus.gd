@@ -24,6 +24,10 @@ signal dialogue_ended()
 signal collect_hint_show(item_name: String)
 signal collect_hint_hide()
 
+# -- 委托板交互提示（右下角：按 E 查看委托板；dialogue_ui 渲染）--
+signal board_hint_show()
+signal board_hint_hide()
+
 # -- AI 对话相关 --
 signal dialogue_ai_meta(npc_id: String, ai_mode: bool, free_input_enabled: bool)
 signal dialogue_free_input(text: String)

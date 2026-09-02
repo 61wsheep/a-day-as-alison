@@ -1,0 +1,25 @@
+{
+  "quests": [
+    {
+      "id": "tarot_padwin_01",
+      "title": "帕德温的旧怀表",
+      "giver": "padwin",
+      "kind": "tarot_reading",
+      "unlock": {
+        "day_min": 3,
+        "affection_min": { "padwin": 50 }
+      },
+      "brief": "告示板上贴着张字条：树屋区的帕德温总在黄昏盯着怀表发呆。他托人寻一位会占卜的过客——替他问问，那怎么也放不下的一天，到底该不该放下。",
+      "steps": [
+        { "type": "tarot_reading_for", "npc": "padwin", "question": "我该放下那一天吗？" }
+      ],
+      "rewards": {
+        "gold": 30,
+        "affection": { "padwin": 10 },
+        "set_flag": ["padwin_watch_resolved"]
+      },
+      "ack": "帕德温凝视着牌面，沉默了很久。最后他把怀表贴回胸口，轻轻呼出一口气：「……我知道了。有些事，不是用来放下的，是用来记得的。」",
+      "complete_hint": "他好像想通了什么。……改天再去找他说说话吧。"
+    }
+  ]
+}

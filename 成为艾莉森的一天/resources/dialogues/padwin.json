@@ -21,6 +21,31 @@
       "end_effects": {"set_flag": ["met_padwin"]}
     },
     {
+      "id": "divine_offer",
+      "priority": 60,
+      "conditions": {"flag": ["quest_active_tarot_padwin_01"]},
+      "lines": [
+        {"speaker": "padwin", "emotion": "think", "text": "……你来得正好。我在告示板上留了张字条，没想到真有人接。"},
+        {"speaker": "padwin", "emotion": "shy", "text": "这只怀表，我每天傍晚都盯着它看。有人劝我别等了，可我连自己到底在等谁，都说不上来。"},
+        {"speaker": "padwin", "emotion": "helpless", "text": "替我看看牌吧——我想知道，那一天……我是不是真的该放下了。", "choices": [
+          {"text": "好，我来为你抽一张牌。", "reply": "……麻烦你了。", "reply_emotion": "idle", "effects": {"action": "divine:padwin"}, "end": true},
+          {"text": "（今天不太合适，我改天再来。）", "reply": "……嗯。等你想来的时候，我都在。", "reply_emotion": "idle", "end": true}
+        ]}
+      ]
+    },
+    {
+      "id": "resolved",
+      "priority": 60,
+      "conditions": {"flag": ["padwin_watch_resolved"], "flag_not": ["padwin_watch_spoken"]},
+      "lines": [
+        {"speaker": "narrator", "text": "（这天傍晚，帕德温难得没有盯着怀表。他把表搁在窗台上，望着远处慢慢暗下来的树影。）"},
+        {"speaker": "padwin", "emotion": "idle", "text": "你说得对。我等的那个人，大概早就不在那一天里了。"},
+        {"speaker": "padwin", "emotion": "think", "text": "可我还是会留着这块表——不是还想等谁，是想记住，曾经有人让我愿意等那么久。"},
+        {"speaker": "player", "emotion": "smile_02", "text": "（他把怀表收进衣袋，脸上第一次露出不那么戒备的神情。）"}
+      ],
+      "end_effects": {"set_flag": ["padwin_watch_spoken"]}
+    },
+    {
       "id": "daily",
       "priority": 10,
       "conditions": {"flag": ["met_padwin"]},

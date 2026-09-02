@@ -84,8 +84,15 @@ func _ready() -> void:
 	layer = 10
 	_build_ui()
 	var bus = get_node("/root/EventBus")
-	bus.interaction_hint_show.connect(func(): _interact_hint.show())
+	bus.interaction_hint_show.connect(func() -> void:
+		# 每次 NPC 靠近都复位文案：上次可能是委托板的「查看委托板」
+		_interact_hint.text = "[E] 对话"
+		_interact_hint.show())
 	bus.interaction_hint_hide.connect(func(): _interact_hint.hide())
+	bus.board_hint_show.connect(func() -> void:
+		_interact_hint.text = "[E] 查看委托板"
+		_interact_hint.show())
+	bus.board_hint_hide.connect(func(): _interact_hint.hide())
 	bus.collect_hint_show.connect(func(item_name: String) -> void:
 		_collect_hint.text = "[E] 采集 %s" % item_name
 		_collect_hint.show())
