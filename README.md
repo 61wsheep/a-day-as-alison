@@ -132,6 +132,11 @@ scripts/
    - 或设置环境变量 `SILICONFLOW_API_KEY`
    - 不配置则自动使用本地 JSON 对话（内容固定，体验降级）
 
+> 💡 **Web 版（浏览器）说明**：由于浏览器 [CORS](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CORS) 安全策略限制，网页无法直接调用 SiliconFlow API，因此 Web 版中 AI 实时对话功能不可用，会自动回落为本地 JSON 对话。下载 Windows 版本可体验完整的 AI 自由对话功能。
+   - 在游戏开始界面输入 SiliconFlow API Key
+   - 或设置环境变量 `SILICONFLOW_API_KEY`
+   - 不配置则自动使用本地 JSON 对话（内容固定，体验降级）
+
 4. 运行场景
    - 按 **F6** 运行当前场景，或按 **F5** 运行主场景
 
