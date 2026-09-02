@@ -2168,7 +2168,7 @@ shape = SubResource("door_zone")
 [node name="Mushrooms" type="Node2D" parent="Areas/Plaza" unique_id=395089219]
 
 [node name="Mushroom1" type="Area2D" parent="Areas/Plaza/Mushrooms" unique_id=2144188267]
-position = Vector2(500, 420)
+position = Vector2(470, 520)
 script = ExtResource("collectible_script")
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Mushrooms/Mushroom1" unique_id=65420023]
@@ -2178,7 +2178,7 @@ shape = ExtResource("mushroom_shape")
 texture = SubResource("AtlasTexture_73205")
 
 [node name="Mushroom2" type="Area2D" parent="Areas/Plaza/Mushrooms" unique_id=477610003]
-position = Vector2(1000, 380)
+position = Vector2(1080, 470)
 script = ExtResource("collectible_script")
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Mushrooms/Mushroom2" unique_id=1899063753]
@@ -2206,6 +2206,7 @@ position = Vector2(640, 300)
 position = Vector2(300, 560)
 script = ExtResource("collectible_script")
 item_id = "berry"
+regrow_seconds = 25
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Berries/Berry1" unique_id=643640065]
 shape = ExtResource("mushroom_shape")
@@ -2216,6 +2217,7 @@ shape = ExtResource("mushroom_shape")
 position = Vector2(800, 210)
 script = ExtResource("collectible_script")
 item_id = "berry"
+regrow_seconds = 25
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Berries/Berry2" unique_id=1215415657]
 shape = ExtResource("mushroom_shape")
@@ -2226,6 +2228,7 @@ shape = ExtResource("mushroom_shape")
 position = Vector2(980, 620)
 script = ExtResource("collectible_script")
 item_id = "berry"
+regrow_seconds = 25
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Berries/Berry3" unique_id=904743703]
 shape = ExtResource("mushroom_shape")
@@ -2236,6 +2239,7 @@ shape = ExtResource("mushroom_shape")
 position = Vector2(200, 250)
 script = ExtResource("collectible_script")
 item_id = "berry"
+regrow_seconds = 25
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Areas/Plaza/Berries/Berry4" unique_id=2119793832]
 shape = ExtResource("mushroom_shape")

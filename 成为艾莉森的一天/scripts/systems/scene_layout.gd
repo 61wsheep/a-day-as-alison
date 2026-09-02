@@ -29,6 +29,10 @@ const EMPTY_TILES: Array[Vector2i] = [Vector2i(10, 1)]
 
 const TERRAIN_STONE := 0
 const TERRAIN_DIRT := 1
+## 烘焙进 main.tscn 的广场瓦片集把「草地」也做成 terrain 2（石子路0/土路1/草地2，
+## 全在同一 terrain_set 0 内）。运行时判定草坪须查 td.terrain == TERRAIN_GRASS，
+## 而不是 terrain_set == -1（那套只存在于未烘焙的动态 tileset）。
+const TERRAIN_GRASS := 2
 
 ## peering 位全表（配置地形瓦片时遍历用）
 const _ALL_BITS: Array[TileSet.CellNeighbor] = [
@@ -181,6 +185,16 @@ static func _grass_tile() -> Vector2i:
 	# 草地填充：中块中心 2x2（(5,1)(6,1)(5,2)(6,2)）是唯一干净无缝的纯草纹理；
 	# 中块其余瓦片边缘带浅草补丁（用于向浅草地过渡），平铺会出现折线残影
 	return Vector2i(5 + randi() % 2, 1 + randi() % 2)
+
+
+## 世界坐标是否落在「纯草地」（非路面）。烘焙地面以 td.terrain == TERRAIN_GRASS 为准；
+## 采集物只在草坪刷新，避免刷在石子路/土路上（地形刷铺出的过渡带 terrain 也不是草地）。
+static func is_grass_tile(ground: TileMapLayer, world_pos: Vector2) -> bool:
+	if ground == null:
+		return false
+	var cell := ground.local_to_map(ground.to_local(world_pos))
+	var td := ground.get_cell_tile_data(cell)
+	return td != null and td.terrain == TERRAIN_GRASS
 
 
 static func _stone_tile() -> Vector2i:

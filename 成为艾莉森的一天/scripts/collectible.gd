@@ -5,6 +5,8 @@ class_name Collectible
 ## 与普通灌木丛/地形装饰区分：采集物带轻微浮动动画 + 头顶金色◆标记。
 ## 拾取成功才消失；背包满（超 stack_max）拒收并保留，弹 toast 提示。
 ## 循环重置时通过 game.gd 的 _refresh_collectibles() 重新出现。
+## 当天再结：regrow_seconds > 0（浆果丛）→ 采后起一次性计时器，固定原位重新出现，
+## 无需等睡到第二天。蘑菇 regrow_seconds=0，沿用 game.gd 的随机草坪重刷。
 
 ## preload 而非全局类名：避免依赖全局脚本类缓存（headless/编辑器刷新前不注册）
 const SceneLayout := preload("res://scripts/systems/scene_layout.gd")
@@ -12,8 +14,12 @@ const ItemDB := preload("res://scripts/systems/item_db.gd")
 
 ## 采到的物品 id（items.json 里的 id），替代原来的 gold_value 直加金币。
 @export var item_id: String = "mushroom"
+## >0 时采后经过约 regrow_seconds×(0.8~1.2) 秒在固定点重新出现（当天再结）。
+## 0 = 保持原逻辑（蘑菇隐藏进池子，由 game.gd 随机草坪刷）。
+@export var regrow_seconds: float = 0.0
 
 var _in_range := false
+var _regrow_timer: Timer = null
 
 
 func _ready() -> void:
@@ -116,5 +122,25 @@ func _try_collect() -> void:
 		hide()
 		set_deferred("monitoring", false)
 		get_node("/root/EventBus").collect_hint_hide.emit()
+		if regrow_seconds > 0.0:
+			_schedule_regrow()
 	else:
 		get_node("/root/EventBus").toast.emit("背包满了！")
+
+
+## 当天再结：采后 ~regrow_seconds×(0.8~1.2) 秒在原位重新出现（仍隐藏才生效，
+## 与次日循环重置的双路径幂等）。计时器挂在采集物自身，Plaza 禁用时段自动暂停。
+func _schedule_regrow() -> void:
+	if _regrow_timer == null:
+		_regrow_timer = Timer.new()
+		_regrow_timer.one_shot = true
+		_regrow_timer.timeout.connect(_on_regrow)
+		add_child(_regrow_timer)
+	_regrow_timer.wait_time = regrow_seconds * randf_range(0.8, 1.2)
+	_regrow_timer.start()
+
+
+func _on_regrow() -> void:
+	if not visible:   # 循环重置已提前把它 show 出来了就不重复动作
+		show()
+		monitoring = true

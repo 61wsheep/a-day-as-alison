@@ -152,12 +152,28 @@ func _spawn_mushroom() -> void:
 				candidates.append(child)
 		if not candidates.is_empty():
 			var shroom: Area2D = candidates.pick_random()
-			var rx := randf_range(_world_rect.position.x + 64, _world_rect.end.x - 64)
-			var ry := randf_range(_world_rect.position.y + 64, _world_rect.end.y - 64)
-			shroom.global_position = Vector2(rx, ry)
+			var pos := _random_grass_pos()
+			shroom.global_position = pos
 			shroom.show()
 			shroom.monitoring = true
 	_schedule_next_mushroom()
+
+
+## 在广场草坪上取一个随机点（多次采样避开路面；兜底固定草坪点）。
+## 采集物只在草坪刷新——刷在石子路/土路上既违和又会卡住寻路观感。
+func _random_grass_pos() -> Vector2:
+	var ground: TileMapLayer = areas.get_node_or_null("Plaza/Ground")
+	if ground:
+		var min_x := _world_rect.position.x + 64.0
+		var max_x := _world_rect.end.x - 64.0
+		var min_y := _world_rect.position.y + 64.0
+		var max_y := _world_rect.end.y - 64.0
+		for i in 40:
+			var p := Vector2(randf_range(min_x, max_x), randf_range(min_y, max_y))
+			if SceneLayout.is_grass_tile(ground, p):
+				return p
+	# 采样失败兜底：广场已实测的草坪点
+	return Vector2(891, 500)
 
 
 # ---------------------------------------------------------------------------
