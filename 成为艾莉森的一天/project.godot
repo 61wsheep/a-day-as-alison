@@ -27,6 +27,14 @@ AIBridge="res://scripts/autoload/ai_bridge.gd"
 
 window/stretch/mode="canvas_items"
 
+[gui]
+
+theme/custom="res://resources/default_theme.tres"
+
+[input]
+
+window/stretch/mode="canvas_items"
+
 [input]
 
 ui_accept={
