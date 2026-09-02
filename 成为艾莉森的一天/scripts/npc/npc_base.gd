@@ -209,10 +209,12 @@ func _advance() -> void:
 			var labels: Array = []
 			for c in valid:
 				labels.append(str(c.get("text", "……")))
-			bus.dialogue_choices.emit(labels)
-			# 同时显示该行文本作为选项前的铺垫
+			# 先播该行文本作选项前的铺垫，再弹选项。
+			# 顺序不能反：dialogue_line 处理器会把刚弹出的选项面板隐藏（见 dialogue_ui._on_dialogue_line），
+			# 反了玩家就看不到选项——真机占卜 divine_offer / intro 带文本+选项的行按钮全隐形，抽牌面板永远触不发。
 			if str(line.get("text", "")) != "":
 				_emit_line(line)
+			bus.dialogue_choices.emit(labels)
 			return
 		_emit_line(line)
 		return

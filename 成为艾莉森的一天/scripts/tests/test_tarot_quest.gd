@@ -117,6 +117,13 @@ func _run() -> void:
 		await _wait(0.1)
 	_check("推进到占卜选择点", bool(padwin._waiting_for_choice))
 
+	# 回归：带文本+选项的行，选项按钮必须对玩家可见。npc_base._advance 顺序 bug 会让
+	# dialogue_ui._on_dialogue_line 把刚弹的选项面板隐藏，真机上选项不可点 → action divine:padwin
+	# 永远不触发 → 抽牌面板弹不出（用户两次反馈"依旧没弹出"的根因）。
+	var divine_btn := _find_button_by_text(scene.get_node_or_null("DialogueUI"), "好，我来为你抽一张牌。")
+	_check("抽牌选项按钮存在", divine_btn != null)
+	_check("抽牌选项按钮对玩家可见", divine_btn != null and bool(divine_btn.is_visible_in_tree()))
+
 	# 选「好，我来为你抽一张牌。」（divine_offer 选项 0）→ action divine:padwin
 	get_node("/root/EventBus").dialogue_choice_made.emit(0)
 	await _wait(0.2)
