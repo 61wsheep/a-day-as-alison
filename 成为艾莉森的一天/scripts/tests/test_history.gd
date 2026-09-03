@@ -136,6 +136,14 @@ func _run() -> void:
 	_check("面板含第 N 天分组", body_text.contains("第"))
 	_check("面板含实际台词", body_text.contains("租金") or body_text.contains("帕德温"))
 	_check("打开时锁定玩家移动", bool(player._movement_locked))
+	# 回归：正文必须有实际渲染高度——缺 fit_content 时 RichTextLabel 在 ScrollContainer
+	# 内高度塌成 0（真机正文一片空白，headless get_parsed_text 却仍返回全文，测不出）。
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var body_min_h: float = hp._body.get_minimum_size().y
+	var body_h: float = hp._body.size.y
+	print("[HIST] body 渲染高度 min=%.0f actual=%.0f" % [body_min_h, body_h])
+	_check("面板正文实际渲染高度>0（防塌陷）", body_min_h > 10.0 or body_h > 10.0)
 
 	# -- Esc 关闭 → 解锁 --
 	hp._unhandled_input(_make_esc())

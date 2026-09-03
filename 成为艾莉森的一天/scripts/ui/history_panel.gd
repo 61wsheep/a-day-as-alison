@@ -57,6 +57,7 @@ func _build_ui() -> void:
 
 	_body = RichTextLabel.new()
 	_body.bbcode_enabled = true
+	_body.fit_content = true   # 关键：否则 ScrollContainer 内 RichTextLabel 高度塌成 0，正文渲染空白
 	_body.scroll_following = true
 	_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_body.custom_minimum_size = Vector2(580, 0)
