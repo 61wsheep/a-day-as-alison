@@ -55,6 +55,18 @@ func _make_esc() -> InputEventKey:
 	return ev
 
 
+## 读文件全文；不存在/打不开返回空串。
+func _file_text(path: String) -> String:
+	if not FileAccess.file_exists(path):
+		return ""
+	var f := FileAccess.open(path, FileAccess.READ)
+	if f == null:
+		return ""
+	var t := f.get_as_text()
+	f.close()
+	return t
+
+
 func _press_e(npc: Node) -> void:
 	npc._player_in_range = true
 	npc._input(_make_e())
@@ -66,8 +78,15 @@ func _run() -> void:
 		bridge.set_enabled(false)
 	var gm: Node = get_node("/root/GameManager")
 	var log: Node = get_node("/root/DialogueLog")
-	log.set_storage_path("user://dialogue_log.test.json")   # 测试隔离盘，不碰真机历史
-	log.clear_all()
+	log.clear_all()   # 本轮纯内存实录，无盘可清，只清内存即可
+	# 快照 user:// 默认实录文件（可能是旧版"自动落盘"在真机留下的）：新版实录纯内存，
+	# 本轮不得新增/改动它 —— 若未来有人把自动落盘加回来，这里会 FAIL 拦住。
+	var real_path := "user://dialogue_log.json"
+	var real_before: String = _file_text(real_path)
+	# 清掉旧版测试遗留的测试盘（旧代码 set_storage_path 会写穿它），确保下方
+	# "本轮不写盘"断言确定性成立。
+	if FileAccess.file_exists("user://dialogue_log.test.json"):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path("user://dialogue_log.test.json"))
 
 	# -- 装主场景 --
 	var scene: Node = (load("res://scenes/main.tscn") as PackedScene).instantiate()
@@ -151,18 +170,22 @@ func _run() -> void:
 	_check("Esc 关闭面板", not bool(hp.is_open()))
 	_check("关闭后解锁移动", not bool(player._movement_locked))
 
-	# -- 回归：跨进程持久化（根因：实录曾是纯内存态，重开游戏后 H 面板永远空白）--
-	# 实录已随每次 append 写穿到测试盘。模拟"重开游戏"：清空内存 → 从磁盘 reload
-	#（等价于新进程 _ready 的 _load）→ 历史应原样恢复。
-	var log3: Node = get_node("/root/DialogueLog")
-	_check("实录已写穿到磁盘", FileAccess.file_exists("user://dialogue_log.test.json"))
-	var before_reload: int = log3.for_npc("padwin").size()
-	log3.logs.clear()   # 只清内存，不清盘
-	_check("模拟重启：内存实录已空", log3.for_npc("padwin").is_empty())
-	log3.reload()
-	_check("重启后从磁盘恢复实录",
-		log3.for_npc("padwin").size() >= before_reload and log3.for_npc("padwin").size() >= 3)
-	log3.clear_all()   # 收尾：清空测试盘，避免残留影响下次运行
+	# -- 回归：实录 = 本轮次纯内存，不落盘（无存档系统前不跨启动）--
+	# 需求：历史只显示这一轮次玩过的内容，关游戏即清空；等存档系统落地后随档读写。
+	# 模拟"下一次启动"：新建一份 DialogueLog（等价于新进程初始态）→ 应从空开始，
+	# 上一进程内存里的 padwin 实录带不过来；且本轮全程不写任何盘。
+	var fresh_log: Node = (load("res://scripts/autoload/dialogue_log.gd") as GDScript).new()
+	_check("新一轮次实录从空开始（不跨启动）", fresh_log.for_npc("padwin").is_empty())
+	_check("本轮实录不写盘（关游戏即清空）", not FileAccess.file_exists("user://dialogue_log.test.json"))
+	_check("本轮不新增/改动默认实录文件", _file_text(real_path) == real_before)
+	# 存档接入点仍可用：serialize 导出当前轮实录，deserialize 随档还原（未来随档读写）。
+	var dumped: Dictionary = log.serialize()
+	var in_dump: int = (dumped.get("padwin", []) as Array).size()
+	_check("存档接口 serialize 可导出实录", in_dump >= 3)
+	fresh_log.deserialize(dumped)
+	_check("存档接口 deserialize 可还原实录", fresh_log.for_npc("padwin").size() >= 3)
+	fresh_log.free()
+	log.clear_all()   # 收尾：清空本轮内存，模拟关闭游戏 → 下文空态提示
 
 	# 收尾后 H 打开 → 面板显示"尚无记录"空态提示，而不是白屏/崩溃
 	player._movement_locked = false
