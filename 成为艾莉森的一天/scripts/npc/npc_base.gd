@@ -28,6 +28,7 @@ var _ai_mode := false
 var _ai_thinking := false
 var _ai_free_input_enabled := false
 var _ai_session: AIDialogueSession = null
+var _last_topics: Array = []   # AI 本轮给的话题建议（供玩家点击后记入实录）
 
 
 func _ready() -> void:
@@ -247,6 +248,10 @@ func _on_choice_made(choice_index: int) -> void:
 	if not _dialogue_active:
 		return
 	if _ai_mode:
+		# 点话题建议 = 艾莉森开口说的话，与自由输入一致记入实录（否则 AI 对话里
+		# 玩家的话只剩 NPC 行，按 H 看不到自己说过什么）。
+		if choice_index >= 0 and choice_index < _last_topics.size():
+			_log_player_line(str(_last_topics[choice_index]))
 		if _ai_session:
 			_ai_session.submit_topic(choice_index)   # 话题按钮 → 当作玩家输入推进
 		return
@@ -315,12 +320,7 @@ func _end_dialogue() -> void:
 func _on_free_input(text: String) -> void:
 	if not _dialogue_active:
 		return
-	# 玩家自由输入也进实录（“历史对话”完整实录含你说过的话）
-	if text != "":
-		var log := get_node_or_null("/root/DialogueLog")
-		if log:
-			log.append(npc_id, "player", "艾莉森", text.strip_edges(),
-				int(get_node("/root/GameManager").current_day))
+	_log_player_line(text)   # 玩家自由输入 / 不回答（沉默）也进实录
 	if _ai_mode:
 		if _ai_session:
 			_ai_session.submit_free_text(text)
@@ -335,6 +335,18 @@ func _on_free_input(text: String) -> void:
 		_ai_session.sideline_done.connect(_on_ai_sideline_done)
 		_ai_session.thinking_changed.connect(_on_ai_thinking)
 	_ai_session.free_input_turn(text)
+
+
+## 玩家发言进实录（"历史对话"完整实录要含艾莉森说过的话）。
+## 覆盖：自由输入框打字 / 不回答（沉默） / 点击 AI 话题建议按钮。
+func _log_player_line(text: String) -> void:
+	var t := text.strip_edges()
+	if t == "":
+		return
+	var log := get_node_or_null("/root/DialogueLog")
+	if log:
+		log.append(npc_id, "player", "艾莉森", t,
+			int(get_node("/root/GameManager").current_day))
 
 
 func _request_exit() -> void:
@@ -369,6 +381,7 @@ func _on_ai_line(speaker: String, text: String, emotion: String) -> void:
 
 
 func _on_ai_choices(topics: Array) -> void:
+	_last_topics = topics   # 缓存：玩家点话题按钮时据此记实录、取文本
 	if _ai_mode:
 		get_node("/root/EventBus").dialogue_choices.emit(topics)
 
