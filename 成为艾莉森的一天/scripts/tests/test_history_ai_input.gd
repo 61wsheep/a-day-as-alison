@@ -11,6 +11,7 @@ var _failures := 0
 var _passes := 0
 var _turn := 0
 var _topics_seen: Array = []
+var _ui_lines: Array = []   # 对话面板实际显示的行（bus.dialogue_line 捕获：玩家/AI/旁白）
 
 
 func _ready() -> void:
@@ -69,6 +70,8 @@ func _run() -> void:
 	bridge.set_mock_responder(_mock_llm)
 
 	bus.dialogue_choices.connect(func(topics: Array): _topics_seen = topics)
+	bus.dialogue_line.connect(func(speaker: String, _d: String, text: String, _e: String):
+		_ui_lines.append([speaker, text]))
 
 	# -- 装主场景，关晨间塔罗 --
 	var scene: Node = (load("res://scenes/main.tscn") as PackedScene).instantiate()
@@ -108,13 +111,18 @@ func _run() -> void:
 	await _wait(0.6)
 	_check("自由输入玩家行入实录", _has_text(log, "padwin", "player", typed))
 	_check("NPC 对自由输入的回复已入实录", _has_speaker_after(log, "padwin", "padwin", typed))
+	_check("UI 面板显示自由输入玩家话", _ui_has_player(typed))
 
-	# -- 点击话题建议按钮（第 2 轮回复给的话题）→ 实录 + 推进第 3 轮 --
+	# -- 点击话题建议按钮（第 2 轮回复给的话题）→ 实录 + UI 显示 + 推进第 3 轮 --
 	_check("第 2 轮后仍有话题建议", _topics_seen.size() == 3)
 	var topic := str(_topics_seen[0])
 	bus.dialogue_choice_made.emit(0)
 	await _wait(0.6)
 	_check("点击的话题按钮文字已入实录", _has_text(log, "padwin", "player", topic))
+	_check("UI 面板显示点击话题玩家话", _ui_has_player(topic))
+	# 第 3 轮 mock 判停 → 收场契约：AI 最后一句留在正文（不被"[… 不想再聊]"系统行覆盖）
+	_check("AI 最后一句未被子系统告别行覆盖", _ui_last_contains("风从东边的林子来"))
+	_check("收场无系统告别正文行", not _ui_text_has("不想再聊"))
 
 	# -- 面板能回看到两种玩家发言 --
 	hp._close()
@@ -161,4 +169,27 @@ func _has_speaker_after(log: Node, npc_id: String, speaker: String, after_text: 
 			return true
 		if str(e.get("text", "")).contains(after_text):
 			found_after = true
+	return false
+
+
+## UI（bus.dialogue_line）是否出现过艾莉森的这条发言。
+func _ui_has_player(text: String) -> bool:
+	for row in _ui_lines:
+		if str(row[0]) == "player" and str(row[1]).contains(text):
+			return true
+	return false
+
+
+## UI 当前/最后一行正文是否包含 text（收场时 AI 最后一句应保持在最后）。
+func _ui_last_contains(text: String) -> bool:
+	if _ui_lines.is_empty():
+		return false
+	return str(_ui_lines[-1][1]).contains(text)
+
+
+## UI 全程是否出现过包含 text 的行（用于断言没有系统告别正文行）。
+func _ui_text_has(text: String) -> bool:
+	for row in _ui_lines:
+		if str(row[1]).contains(text):
+			return true
 	return false

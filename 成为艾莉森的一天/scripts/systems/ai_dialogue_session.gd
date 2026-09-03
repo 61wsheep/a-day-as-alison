@@ -237,19 +237,21 @@ func _handle_response(raw: String) -> void:
 		_ended = true
 		_flush_memory()
 		return
-	# S1：显示回复 + 话题按钮
+	# S1：显示回复（+ 未结束才给话题按钮）。
 	var text := str(parsed.get("response_text", ""))
 	var emo := str(parsed.get("emotion", ""))
 	line_ready.emit(_npc_id, text, emo)
-	_last_topics = parsed.get("topic_suggestions", []) if parsed.get("topic_suggestions") is Array else []
-	choices_ready.emit(_last_topics)
-	# 结束判定
+	# 结束判定（先算：判停/到轮数上限的那一轮不再弹话题与输入框——否则 AI 最后
+	# 一句刚显示就被盖在选项面板下，且那些按钮点了也无效，观感"最后一句话没显示"）
 	var should_end := bool(parsed.get("should_end_conversation", false))
 	if should_end and _turn <= MIN_TURNS:
 		should_end = false
 	if should_end or _turn >= MAX_TURNS:
-		_ended = true   # 先置位：告别停留期间忽略玩家后续提交
+		_ended = true   # 先置位：收尾停留期间忽略玩家后续提交
 		session_finished.emit()
+		return
+	_last_topics = parsed.get("topic_suggestions", []) if parsed.get("topic_suggestions") is Array else []
+	choices_ready.emit(_last_topics)
 
 
 func _apply_turn(parsed: Dictionary) -> void:

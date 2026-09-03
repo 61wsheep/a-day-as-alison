@@ -337,16 +337,16 @@ func _on_free_input(text: String) -> void:
 	_ai_session.free_input_turn(text)
 
 
-## 玩家发言进实录（"历史对话"完整实录要含艾莉森说过的话）。
+## 玩家发言以"艾莉森行"显示在对话面板上，并进实录（历史回看也要含你说过的话）。
 ## 覆盖：自由输入框打字 / 不回答（沉默） / 点击 AI 话题建议按钮。
+## 走 _emit_line：一次调用同时完成 ①bus.dialogue_line 渲染"艾莉森：…"到 UI
+## ②DialogueLog 记录。此前玩家自由输入只在后台提交给 AI，UI 从不显示自己的话，
+## 看起来就像只弹"（NPC 在想着什么…）"或 NPC 回复——这里把玩家的话显出来。
 func _log_player_line(text: String) -> void:
 	var t := text.strip_edges()
 	if t == "":
 		return
-	var log := get_node_or_null("/root/DialogueLog")
-	if log:
-		log.append(npc_id, "player", "艾莉森", t,
-			int(get_node("/root/GameManager").current_day))
+	_emit_line({"speaker": "player", "text": t})
 
 
 func _request_exit() -> void:
@@ -359,16 +359,17 @@ func _on_ai_thinking(active: bool) -> void:
 	get_node("/root/EventBus").ai_thinking.emit(active)
 
 
-## AI 自然判停（should_end_conversation）：先给出告别提示，停留片刻再退出，
-## 避免 AI 最后一句一闪而过、对话"无声无息地消失"。
+## AI 自然判停（should_end_conversation）：把 AI 自己说的最后一句留在面板上，
+## 停留片刻再退出，避免对话"无声无息地消失"。
+## 注意：不在此处用"[XX 似乎不想再聊下去了。]"覆盖正文——那会瞬间盖掉 AI 真正
+## 的告别句（真机表现为"NPC 说的最后一句话没显示出来"）。收场提示改走顶部 toast，
+## 正文保持 AI 最后一句可见直到对话关闭。
 func _on_ai_session_finished() -> void:
 	if not _dialogue_active:
 		return
-	_emit_line({
-		"speaker": npc_id,
-		"text": "[%s 似乎不想再聊下去了。]" % _display_name(npc_id),
-		"emotion": "",
-	})
+	var bus := get_node("/root/EventBus")
+	if bus:
+		bus.toast.emit("（%s 似乎不想再聊下去了…）" % _display_name(npc_id))
 	await get_tree().create_timer(2.5).timeout
 	if _dialogue_active:
 		_end_dialogue()
