@@ -66,6 +66,7 @@ func _run() -> void:
 		bridge.set_enabled(false)
 	var gm: Node = get_node("/root/GameManager")
 	var log: Node = get_node("/root/DialogueLog")
+	log.set_storage_path("user://dialogue_log.test.json")   # 测试隔离盘，不碰真机历史
 	log.clear_all()
 
 	# -- 装主场景 --
@@ -141,6 +142,28 @@ func _run() -> void:
 	await _wait(0.2)
 	_check("Esc 关闭面板", not bool(hp.is_open()))
 	_check("关闭后解锁移动", not bool(player._movement_locked))
+
+	# -- 回归：跨进程持久化（根因：实录曾是纯内存态，重开游戏后 H 面板永远空白）--
+	# 实录已随每次 append 写穿到测试盘。模拟"重开游戏"：清空内存 → 从磁盘 reload
+	#（等价于新进程 _ready 的 _load）→ 历史应原样恢复。
+	var log3: Node = get_node("/root/DialogueLog")
+	_check("实录已写穿到磁盘", FileAccess.file_exists("user://dialogue_log.test.json"))
+	var before_reload: int = log3.for_npc("padwin").size()
+	log3.logs.clear()   # 只清内存，不清盘
+	_check("模拟重启：内存实录已空", log3.for_npc("padwin").is_empty())
+	log3.reload()
+	_check("重启后从磁盘恢复实录",
+		log3.for_npc("padwin").size() >= before_reload and log3.for_npc("padwin").size() >= 3)
+	log3.clear_all()   # 收尾：清空测试盘，避免残留影响下次运行
+
+	# 收尾后 H 打开 → 面板显示"尚无记录"空态提示，而不是白屏/崩溃
+	player._movement_locked = false
+	padwin._player_in_range = true
+	padwin._input(_make_h())
+	await _wait(0.2)
+	_check("空历史时面板显示提示文案", str(hp._body.get_parsed_text()).contains("还没有与"))
+	hp._unhandled_input(_make_esc())
+	await _wait(0.2)
 
 	scene.queue_free()
 	await _wait(0.3)
