@@ -9,14 +9,14 @@
       "lines": [
         {"speaker": "padwin", "emotion": "talk", "text": "站住。生面孔。"},
         {"speaker": "player", "emotion": "talk_02", "text": "（这张脸……不可能。他怎么会在这里？他明明——）"},
-        {"speaker": "padwin", "emotion": "idle", "text": "盯着我做什么。我叫帕德温，替人看守这片树屋区。"},
+        {"speaker": "padwin", "emotion": "idle", "text": "盯着我做什么。我叫帕德温，守卫团团长。这片树屋区归我管，有事可以直接来守卫团找我。"},
         {"speaker": "player", "emotion": "talk_01", "text": "……", "choices": [
           {"text": "（把带来的番茄递过去）见面礼。", "reply": "番茄？！拿走拿走——我对这东西过敏。别问我怎么知道的。", "reply_emotion": "awkward", "effects": {"set_flag": ["tomato_test_done"], "discover_clue": ["clue_padwin_no_memory"], "affection": {"padwin": 5}}},
           {"text": "你……真的不记得我了吗？", "reply": "我们见过？抱歉，没印象。你认错人了。", "reply_emotion": "helpless", "effects": {"discover_clue": ["clue_padwin_no_memory"]}},
           {"text": "……打扰了。", "reply": "嗯。", "reply_emotion": "idle", "end": true, "end_effects": {"set_flag": ["met_padwin"]}}
         ]},
         {"speaker": "player", "emotion": "cry", "text": "（他拒绝了番茄——前世的帕德温也是这样。可是他的眼睛里，没有一点认得我的意思。）"},
-        {"speaker": "padwin", "emotion": "think", "text": "这森林一来新人，就有麻烦跟着。晚上别乱逛，尤其是广场西边那座石塔。"}
+        {"speaker": "padwin", "emotion": "think", "text": "这森林一来新人，就有麻烦跟着。晚上别乱逛，尤其是广场西边那座石塔。我领你去守卫团登记，记个名号。"}
       ],
       "end_effects": {"set_flag": ["met_padwin"]}
     },
@@ -46,14 +46,169 @@
       "end_effects": {"set_flag": ["padwin_watch_spoken"]}
     },
     {
-      "id": "daily",
+      "id": "daily_a1",
       "priority": 10,
-      "conditions": {"flag": ["met_padwin"]},
+      "conditions": {"flag": ["met_padwin"], "day_min": 1, "day_max": 2},
       "ai": true,
+      "rotate": true,
       "lines": [
-        {"speaker": "padwin", "emotion": "idle", "text": "又是你。租金攒够了？树屋区还有空房。"},
-        {"speaker": "padwin", "emotion": "talk", "text": "提醒你一句：广场西边的石巢塔楼，别靠近。触犯「天」的规矩的人，都被带去了那里——没有一个回来讲过里面的事。"},
-        {"speaker": "player", "emotion": "talk_02", "text": "（没有记忆的他，这一世却像还在守着什么。）"}
+        {"speaker": "padwin", "emotion": "idle", "text": "生面孔。新搬来的？到守卫团登记个名字住址。出了事，我们也知道该找谁。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他不认得我。可那声音一响，我还是会恍惚一瞬。）"}
+      ]
+    },
+    {
+      "id": "daily_a2",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 1, "day_max": 2},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "talk", "text": "夜里别在林子乱走，尤其是塔楼那边。镇上的规矩多，但都讲得清道理——记不住就多问。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "（他交代完差事就走，走出两步又停下，头也没回地补了半句：「……刚来的都这样，待久了就熟了。」）"}
+      ]
+    },
+    {
+      "id": "daily_a3",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 1, "day_max": 2},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "idle", "text": "这季节蘑菇多，认不准的别摘。吃坏了，半夜可没人送你去药师。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他说得凶，语气里却是公事带出的一点操心——大概对每个新来的，他都这么说。）"}
+      ]
+    },
+    {
+      "id": "daily_a4",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 1, "day_max": 2},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "talk", "text": "快下雨了。这边路不好认——你住哪栋？顺路的话我捎你过去。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（守卫团团长亲自给新人带路，兴许也是分内事。可我还是把这条路记了很久。）"}
+      ]
+    },
+    {
+      "id": "daily_a5",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 1, "day_max": 2},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "idle", "text": "你总在树屋区附近转。找什么？……要是没处去，广场那边有长椅，比在这儿吹风强。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "（他把我当成无处可去的闲人了。我没说出口——我不是没地方去，我只是说不上来，这张脸让我有点挪不开脚。）"}
+      ]
+    },
+    {
+      "id": "daily_b1",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "think", "text": "你昨天说那事——算了，当我没问。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他叫住我又不说。他到底想问我什么？）"}
+      ]
+    },
+    {
+      "id": "daily_b2",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "awkward", "text": "（别扭地递过来一条烤鱼）多烤的。吃不完浪费。"},
+        {"speaker": "player", "emotion": "smile_02", "text": "（他永远不会承认这是特意留的。可鱼还是热的。）"}
+      ]
+    },
+    {
+      "id": "daily_b3",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "think", "text": "你走路没声。……像谁教过你。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "（他起疑了。可前世的我，确实被教过怎么在林子里不惊动鸟。）"}
+      ]
+    },
+    {
+      "id": "daily_b4",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "idle", "text": "今天别去塔楼那边。……我说不上为什么。就是别去。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他不知道自己这句话带了点恳求的味道。）"}
+      ]
+    },
+    {
+      "id": "daily_b5",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "idle", "text": "……嗯。你没事就好。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他刚巡逻回来，绕了远路——从能看到我的那片坡上过的。）"}
+      ]
+    },
+    {
+      "id": "daily_c1",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "think", "text": "（望着远处，声音放低）有些日子，我会觉得……日子像在重来。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "（他第一次对别人说这话。他选了我。）"}
+      ]
+    },
+    {
+      "id": "daily_c2",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "idle", "text": "你要是哪天不见了——"},
+        {"speaker": "padwin", "emotion": "awkward", "text": "……守卫团会登寻人启事的。"},
+        {"speaker": "player", "emotion": "smile_02", "text": "（他差点说出来的那句话，我们都假装没听见。）"}
+      ]
+    },
+    {
+      "id": "daily_c3",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "awkward", "text": "你上回割伤的手，好了？……嗯。那别逞强了。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他记着。他全都记着。我明明只提过一次。）"}
+      ]
+    },
+    {
+      "id": "daily_c4",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "shy", "text": "夜里冷。我那屋门不锁。……你爱来不来。"},
+        {"speaker": "player", "emotion": "smile_02", "text": "（他没看我，耳根却红了。我假装没发现。）"}
+      ]
+    },
+    {
+      "id": "daily_c5",
+      "priority": 10,
+      "conditions": {"flag": ["met_padwin"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "padwin", "emotion": "think", "text": "我今天在溪边坐了很久。什么都没想。……挺怪的。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "（对一个时刻警戒的团长来说，「什么都没想」是句很重的话。）"}
       ]
     }
   ]

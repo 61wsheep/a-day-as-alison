@@ -147,6 +147,8 @@ func conditions_met(cond: Dictionary) -> bool:
 			return false
 	if cond.has("day_min") and current_day < int(cond["day_min"]):
 		return false
+	if cond.has("day_max") and current_day > int(cond["day_max"]):
+		return false
 	if cond.has("time") and current_time != str(cond["time"]):
 		return false
 	if cond.has("rented") and treehouse_rented != bool(cond["rented"]):

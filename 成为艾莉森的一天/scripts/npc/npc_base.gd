@@ -179,15 +179,44 @@ func _begin_ai_session(dlg: Dictionary) -> void:
 
 func _select_dialogue() -> Dictionary:
 	var gm = get_node("/root/GameManager")
-	var best: Dictionary = {}
 	var best_priority := -1
+	var matches: Array = []
 	for dlg in _data.get("dialogues", []):
 		if gm.conditions_met(dlg.get("conditions", {})):
 			var p := int(dlg.get("priority", 0))
 			if p > best_priority:
 				best_priority = p
-				best = dlg
-	return best
+				matches = [dlg]
+			elif p == best_priority:
+				matches.append(dlg)
+	if matches.is_empty():
+		return {}
+	if matches.size() == 1:
+		return matches[0]
+	# 同优先级多条命中：仅当都是 L2 回落变奏（rotate:true）时按天轮换，
+	# 避免离线连玩复读同一段；脚本剧情条目（无 rotate）保持取数组首个的旧行为。
+	var has_rotate := false
+	for m in matches:
+		if bool(m.get("rotate", false)):
+			has_rotate = true
+	if not has_rotate:
+		return matches[0]
+	matches.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return str(a.get("id", "")) < str(b.get("id", "")))
+	var day := 1
+	if gm:
+		day = int(gm.current_day)
+	# 轮换基准对齐到本组匹配的最小起始天：A/B/C 分档条目按档位各自开场，
+	# 否则全局 (day-1)%n 会让 day3 落到 b3、day7(C 档首日)落到 c2，档内叙事顺序被打乱。
+	# 无 day_min 的纯轮换池退化为以 day1 为基准的旧行为。
+	var base_day := -1
+	for m in matches:
+		var dm := int(m.get("conditions", {}).get("day_min", -1))
+		if dm > 0 and (base_day < 0 or dm < base_day):
+			base_day = dm
+	if base_day < 0:
+		base_day = 1
+	return matches[(day - base_day) % matches.size()]
 
 
 func _advance() -> void:
