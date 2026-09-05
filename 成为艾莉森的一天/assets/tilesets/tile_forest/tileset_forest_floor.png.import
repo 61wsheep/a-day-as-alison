@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c2s1qo3b0s406"
-path="res://.godot/imported/tileset_forest_floor.png-da9c391754cb829ee941fef41aaa89f0.ctex"
+path="res://.godot/imported/tileset_forest_floor.png-2394e6bca28eef65307cc99d70c1eccd.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/tilesets/tile_forest/tileset_forest_floor.png"
-dest_files=["res://.godot/imported/tileset_forest_floor.png-da9c391754cb829ee941fef41aaa89f0.ctex"]
+dest_files=["res://.godot/imported/tileset_forest_floor.png-2394e6bca28eef65307cc99d70c1eccd.ctex"]
 
 [params]
 
