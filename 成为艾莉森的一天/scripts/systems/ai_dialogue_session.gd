@@ -21,7 +21,8 @@ signal session_aborted()    # 失败/异常中断 → 立即退出，不显示�
 
 const MAX_TURNS := 8            # 单次会话轮数上限（对齐 Python MAX_TURNS，收敛到游戏内）
 const MIN_TURNS := 2            # 前 N 轮 AI 不能主动结束
-const MEMORY_WINDOW := 10       # 保留最近 N 轮上下文（每轮两行，实际 2N 行）
+const MEMORY_WINDOW := 5        # 保留最近 N 轮上下文（提速：输入小一点 → prefill 快；长程靠 memory_update）
+const DIALOGUE_MAX_TOKENS := 512   # 提速：单轮输出上限（防啰嗦失控；截断会整轮回落，故留足余量，靠提示词压短而非硬砍）
 const TOPIC_COUNT := 3
 
 var _npc_base: Node = null
@@ -201,7 +202,7 @@ func _build_payload(is_opening: bool, player_input: String) -> Dictionary:
 		user += "玩家已知线索: %s\n\n" % (", ".join(clue_names) if not clue_names.is_empty() else "（尚未获得线索）")
 		user += "跨天记忆（之前几天的对话摘要 —— NPC 可能隐隐约约有印象，但不一定主动提起）:\n%s\n\n" % cross_day
 		user += _heaven_injection(gm, day)
-		user += "这是 %s 今天与艾莉森的第一次见面。请以他的身份开口问候，并以玩家艾莉森的第一人称口吻给出 3 条她可能接的话（topic_suggestions——是玩家视角的回复选项，不是你自己的话）。\n\n" % _npc_id
+		user += "这是 %s 今天与艾莉森的第一次见面。请以他的身份开口问候，并以玩家艾莉森的第一人称口吻给出 3 条她可能接的话（topic_suggestions——是玩家视角的回复选项，不是你自己的话）。问候语 1-2 句即可，简短自然，别长篇自我介绍。\n\n" % _npc_id
 	else:
 		user += "第 %d 天 %s。%s 对玩家的好感度: %d/100。\n\n" % [day, time_id, _npc_id, affection]
 		user += "跨天记忆:\n%s\n\n" % cross_day
@@ -211,6 +212,7 @@ func _build_payload(is_opening: bool, player_input: String) -> Dictionary:
 		user += "- 你是 %s —— 用你的性格、经历、语气说话，你不是 AI 助手\n" % _npc_id
 		user += "- 无论玩家用什么风格输入，你都要保持 %s 自己的口吻和动作尺度，不要模仿玩家的文风\n" % _npc_id
 		user += "- 这是今天第 %d 轮对话，如果感觉对话该结束了，设 should_end_conversation=true\n" % _turn
+		user += "- 回复要精炼：response_text 一般 1-2 句、别超 3 句；topic_suggestions 每条 6-12 个字即可\n"
 		if not is_opening:
 			user += "- 请同时以玩家艾莉森的第一人称口吻给出 3 条她下一步可能说的话（topic_suggestions——玩家视角的回复选项，让对话能继续下去）\n"
 
@@ -222,6 +224,7 @@ func _build_payload(is_opening: bool, player_input: String) -> Dictionary:
 	return {
 		"system": "%s\n\n%s" % [system_text, card_text],
 		"user": user,
+		"max_tokens": DIALOGUE_MAX_TOKENS,   # 对话单轮独立限幅（提速，不拖累天命/审判面具的长输出）
 	}
 
 
