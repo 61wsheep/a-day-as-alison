@@ -16,6 +16,10 @@ const TILE_SIZE := 32
 const WORLD_W := 40
 const WORLD_H := 24
 
+## 薄封装：地形语义查询统一走 TerrainQuery（v0.2 契约②），此处只转发。
+## preload 而非类名引用，避免依赖全局脚本类缓存（headless / 编辑器刷新前未注册）。
+const TerrainQuery := preload("res://scripts/systems/terrain_query.gd")
+
 const TEX_DIR := "res://assets/tilesets/cainos/"
 
 ## 森林广场瓦片集（384x1040，32px 网格：地形区 y0-384，下方为道具素材）
@@ -190,11 +194,7 @@ static func _grass_tile() -> Vector2i:
 ## 世界坐标是否落在「纯草地」（非路面）。烘焙地面以 td.terrain == TERRAIN_GRASS 为准；
 ## 采集物只在草坪刷新，避免刷在石子路/土路上（地形刷铺出的过渡带 terrain 也不是草地）。
 static func is_grass_tile(ground: TileMapLayer, world_pos: Vector2) -> bool:
-	if ground == null:
-		return false
-	var cell := ground.local_to_map(ground.to_local(world_pos))
-	var td := ground.get_cell_tile_data(cell)
-	return td != null and td.terrain == TERRAIN_GRASS
+	return TerrainQuery.terrain_type_at(ground, world_pos) == TERRAIN_GRASS
 
 
 static func _stone_tile() -> Vector2i:

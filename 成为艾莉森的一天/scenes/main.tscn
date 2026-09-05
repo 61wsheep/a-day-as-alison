@@ -3303,7 +3303,7 @@ script = ExtResource("game_script")
 [node name="Areas" type="Node2D" parent="." unique_id=345921568]
 
 [node name="Plaza" type="Node2D" parent="Areas" unique_id=1922488672]
-visible = false
+y_sort_enabled = true
 
 [node name="Ground" type="TileMapLayer" parent="Areas/Plaza" unique_id=1000783117]
 z_index = -3
@@ -3876,7 +3876,7 @@ text = "委托板"
 horizontal_alignment = 1
 
 [node name="TreehouseDistrict" type="Node2D" parent="Areas" unique_id=1339552219]
-visible = false
+y_sort_enabled = true
 
 [node name="Ground" type="TileMapLayer" parent="Areas/TreehouseDistrict" unique_id=1698090374]
 z_index = -3
@@ -4375,6 +4375,7 @@ position = Vector2(818, 477)
 
 [node name="StoneNestTower" type="Node2D" parent="Areas" unique_id=1379880746]
 modulate = Color(0.55, 0.55, 0.7, 1)
+y_sort_enabled = true
 
 [node name="Ground" type="TileMapLayer" parent="Areas/StoneNestTower" unique_id=365101950]
 z_index = -3
