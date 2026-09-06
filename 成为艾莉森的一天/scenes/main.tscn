@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://br7ggv0of1kmr" path="res://scenes/levels/plaza.tscn" id="2_vxglm"]
 [ext_resource type="PackedScene" uid="uid://b4uslq72om778" path="res://scenes/levels/treehouse_district.tscn" id="3_muem4"]
 [ext_resource type="PackedScene" uid="uid://csaoe7d5dlwqy" path="res://scenes/levels/stone_nest_tower.tscn" id="4_dp3eg"]
-[ext_resource type="PackedScene" path="res://scenes/levels/alison_room.tscn" id="5_alison"]
+[ext_resource type="PackedScene" uid="uid://b484atxomgdv5" path="res://scenes/levels/alison_room.tscn" id="5_alison"]
 [ext_resource type="Script" uid="uid://c0wtnsiirupvr" path="res://scripts/ui/inventory_panel.gd" id="24_y6deb"]
 [ext_resource type="Script" uid="uid://bdupxml7myx7h" path="res://scripts/ui/sell_panel.gd" id="25_og1vs"]
 [ext_resource type="Script" uid="uid://cty0kby1vtln0" path="res://scripts/ui/dialogue_ui.gd" id="dialogue_ui_script"]
@@ -27,13 +27,15 @@ script = ExtResource("game_script")
 [node name="Areas" type="Node2D" parent="." unique_id=345921568]
 
 [node name="Plaza" parent="Areas" unique_id=64118211 instance=ExtResource("2_vxglm")]
+visible = false
 
 [node name="TreehouseDistrict" parent="Areas" unique_id=1225464444 instance=ExtResource("3_muem4")]
-visible = true
+visible = false
 
 [node name="StoneNestTower" parent="Areas" unique_id=756506408 instance=ExtResource("4_dp3eg")]
+visible = false
 
-[node name="AlisonRoom" parent="Areas" instance=ExtResource("5_alison")]
+[node name="AlisonRoom" parent="Areas" unique_id=1335491077 instance=ExtResource("5_alison")]
 
 [node name="Player" parent="." unique_id=1344765881 instance=ExtResource("player_scene")]
 position = Vector2(640, 480)
