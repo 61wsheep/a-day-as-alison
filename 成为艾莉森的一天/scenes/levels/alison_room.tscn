@@ -1,0 +1,93 @@
+[gd_scene format=4]
+
+[ext_resource type="TileSet" uid="uid://dvrjo8anslvw2" path="res://assets/tilesets/tile_forest/wooden_floor.tres" id="1_wfloor"]
+[ext_resource type="Script" uid="uid://cnh8sw8p00fdk" path="res://scripts/systems/door.gd" id="2_door"]
+
+[sub_resource type="RectangleShape2D" id="rect_topbottom"]
+size = Vector2(704, 16)
+
+[sub_resource type="RectangleShape2D" id="rect_right"]
+size = Vector2(16, 384)
+
+[sub_resource type="RectangleShape2D" id="rect_leftupper"]
+size = Vector2(16, 44)
+
+[sub_resource type="RectangleShape2D" id="rect_leftlower"]
+size = Vector2(16, 256)
+
+[sub_resource type="CircleShape2D" id="door_zone"]
+radius = 24.0
+
+[node name="AlisonRoom" type="Node2D"]
+y_sort_enabled = true
+
+[node name="Ground" type="TileMapLayer" parent="."]
+z_index = -3
+tile_set = ExtResource("1_wfloor")
+
+[node name="Props" type="Node2D" parent="."]
+
+[node name="WallTop" type="StaticBody2D" parent="Props"]
+position = Vector2(608, 248)
+
+[node name="Collision" type="CollisionShape2D" parent="Props/WallTop"]
+shape = SubResource("rect_topbottom")
+
+[node name="Visual" type="Polygon2D" parent="Props/WallTop"]
+color = Color(0.22, 0.15, 0.11, 1)
+polygon = PackedVector2Array(-352, -8, 352, -8, 352, 8, -352, 8)
+
+[node name="WallBottom" type="StaticBody2D" parent="Props"]
+position = Vector2(608, 648)
+
+[node name="Collision" type="CollisionShape2D" parent="Props/WallBottom"]
+shape = SubResource("rect_topbottom")
+
+[node name="Visual" type="Polygon2D" parent="Props/WallBottom"]
+color = Color(0.22, 0.15, 0.11, 1)
+polygon = PackedVector2Array(-352, -8, 352, -8, 352, 8, -352, 8)
+
+[node name="WallRight" type="StaticBody2D" parent="Props"]
+position = Vector2(968, 448)
+
+[node name="Collision" type="CollisionShape2D" parent="Props/WallRight"]
+shape = SubResource("rect_right")
+
+[node name="Visual" type="Polygon2D" parent="Props/WallRight"]
+color = Color(0.22, 0.15, 0.11, 1)
+polygon = PackedVector2Array(-8, -192, 8, -192, 8, 192, -8, 192)
+
+[node name="WallLeftUpper" type="StaticBody2D" parent="Props"]
+position = Vector2(248, 278)
+
+[node name="Collision" type="CollisionShape2D" parent="Props/WallLeftUpper"]
+shape = SubResource("rect_leftupper")
+
+[node name="Visual" type="Polygon2D" parent="Props/WallLeftUpper"]
+color = Color(0.22, 0.15, 0.11, 1)
+polygon = PackedVector2Array(-8, -22, 8, -22, 8, 22, -8, 22)
+
+[node name="WallLeftLower" type="StaticBody2D" parent="Props"]
+position = Vector2(248, 512)
+
+[node name="Collision" type="CollisionShape2D" parent="Props/WallLeftLower"]
+shape = SubResource("rect_leftlower")
+
+[node name="Visual" type="Polygon2D" parent="Props/WallLeftLower"]
+color = Color(0.22, 0.15, 0.11, 1)
+polygon = PackedVector2Array(-8, -128, 8, -128, 8, 128, -8, 128)
+
+[node name="BedroomDoorIn" type="Marker2D" parent="."]
+position = Vector2(340, 342)
+
+[node name="WakeUp" type="Marker2D" parent="."]
+position = Vector2(870, 560)
+
+[node name="DoorOut" type="Area2D" parent="."]
+position = Vector2(256, 342)
+script = ExtResource("2_door")
+target_area = "treehouse_district"
+target_spawn = "SpawnFromRoom"
+
+[node name="Zone" type="CollisionShape2D" parent="DoorOut"]
+shape = SubResource("door_zone")
