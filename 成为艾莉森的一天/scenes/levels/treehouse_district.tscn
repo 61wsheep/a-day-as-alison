@@ -3426,6 +3426,9 @@ offset = Vector2(0, -13.5)
 [node name="SpawnFromPlaza" type="Marker2D" parent="." unique_id=1167767802]
 position = Vector2(140, 416)
 
+[node name="SpawnFromRoom" type="Marker2D" parent="."]
+position = Vector2(620, 412)
+
 [node name="DoorWest" type="Area2D" parent="." unique_id=947144194]
 position = Vector2(20, 416)
 script = ExtResource("7_y16ij")

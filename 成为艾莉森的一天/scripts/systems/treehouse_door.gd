@@ -15,7 +15,11 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if _player_in_range and event.is_action_pressed("ui_accept"):
-		get_node("/root/EventBus").game_action.emit("rental:" + house_id)
+		# 已租下树屋：按 E 走进自己的小屋（D13：任何一间树屋门都通向同一间艾莉森的小屋）
+		if get_node("/root/GameManager").treehouse_rented:
+			get_node("/root/EventBus").door_entered.emit("alison_room", "BedroomDoorIn")
+		else:
+			get_node("/root/EventBus").game_action.emit("rental:" + house_id)
 
 
 func _on_body_entered(body: Node2D) -> void:
