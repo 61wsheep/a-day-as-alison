@@ -127,7 +127,7 @@ animations = [{
 script = ExtResource("pc_script")
 
 [node name="Collision" type="CollisionShape2D" parent="." unique_id=2019897450]
-position = Vector2(-0.5, 0.5)
+position = Vector2(-0.5, 0)
 shape = ExtResource("col_shape")
 
 [node name="Camera" type="Camera2D" parent="." unique_id=684957449]
