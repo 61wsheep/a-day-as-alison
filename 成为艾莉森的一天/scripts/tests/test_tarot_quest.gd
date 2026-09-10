@@ -5,6 +5,8 @@ extends Node
 ## 复用 npc_base 真实输入路径（_start_dialogue + 合成 E 键推进 + 选选项）。
 ## 与晨间 TarotUI 隔离：本流程不写 gm.tarot_drawn_today / daily_luck。
 
+const TestHelpers := preload("res://scripts/tests/test_helpers.gd")
+
 var _failures := 0
 var _passes := 0
 
@@ -67,13 +69,8 @@ func _run() -> void:
 	var scene: Node = (load("res://scenes/main.tscn") as PackedScene).instantiate()
 	get_tree().root.add_child(scene)
 	await _wait(1.0)
-	# 关掉晨间塔罗（两次点击：抽牌 → 关闭）
-	var tarot: Node = scene.get_node_or_null("TarotUI")
-	if tarot and tarot.has_method("_on_action"):
-		tarot._on_action()
-		await _wait(0.3)
-		tarot._on_action()
-		await _wait(0.3)
+	# 翻完开场旁白：播放期间玩家是锁住的，不翻完后面所有「按 E」都会被吃掉
+	await TestHelpers.dismiss_opening(scene)
 	gm.current_day = 3   # quest unlock day_min=3
 
 	# -- M2 节点挂入主场景 --

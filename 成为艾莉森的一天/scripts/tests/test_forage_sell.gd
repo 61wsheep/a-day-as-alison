@@ -7,6 +7,8 @@ extends Node
 
 const ItemDB := preload("res://scripts/systems/item_db.gd")
 
+const TestHelpers := preload("res://scripts/tests/test_helpers.gd")
+
 var _failures := 0
 var _passes := 0
 
@@ -59,13 +61,8 @@ func _run() -> void:
 	var scene: Node = (load("res://scenes/main.tscn") as PackedScene).instantiate()
 	get_tree().root.add_child(scene)
 	await _wait(1.0)
-	# 关掉晨间塔罗（它抽牌会覆盖 daily_luck 与 dialogue_started）
-	var tarot: Node = scene.get_node_or_null("TarotUI")
-	if tarot and tarot.has_method("_on_action"):
-		tarot._on_action()
-		await _wait(0.3)
-		tarot._on_action()
-		await _wait(0.3)
+	# 翻完开场旁白（播放期间玩家锁着）；塔罗已挪进艾莉森小屋，开局不再自动弹
+	await TestHelpers.dismiss_opening(scene)
 
 	# 塔罗抽完后再定吉凶，锁死 luck=1 供定价断言
 	gm.daily_luck = 1

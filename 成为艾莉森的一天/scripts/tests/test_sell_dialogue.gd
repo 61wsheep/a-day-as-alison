@@ -3,6 +3,8 @@ extends Node
 ## 售卖入口测试（玩家主动，#3/#4）—— 携带采集品时不再自动触发收购对话；
 ## 对话内出现「卖点东西」入口（_can_sell_here），按下 → sell_requested → SellPanel 打开。
 
+const TestHelpers := preload("res://scripts/tests/test_helpers.gd")
+
 var _failures := 0
 var _passes := 0
 
@@ -47,12 +49,8 @@ func _run() -> void:
 	get_tree().root.add_child(scene)
 	await _wait(1.0)
 
-	var tarot: Node = scene.get_node_or_null("TarotUI")
-	if tarot and tarot.has_method("_on_action"):
-		tarot._on_action()
-		await _wait(0.3)
-		tarot._on_action()
-		await _wait(0.3)
+	# 翻完开场旁白（播放期间玩家锁着）；塔罗已挪进艾莉森小屋，开局不再自动弹
+	await TestHelpers.dismiss_opening(scene)
 	gm.daily_luck = 1
 
 	var soraya: Node = scene.get_node_or_null("Areas/Plaza/Soraya")

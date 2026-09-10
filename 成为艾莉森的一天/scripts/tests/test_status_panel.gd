@@ -3,6 +3,8 @@ extends Node
 ## 状态面板（Tab）回归测试 —— 开合、内容快照、对话中禁开、移动锁定。
 ## 用法：godot --headless scenes/tests/test_status_panel.tscn
 
+const TestHelpers := preload("res://scripts/tests/test_helpers.gd")
+
 var _failures := 0
 var _passes := 0
 
@@ -49,13 +51,8 @@ func _run() -> void:
 	get_tree().root.add_child(scene)
 	await _wait(1.0)
 
-	# 关掉晨间塔罗（它会发 dialogue_started，面板在「对话中」禁开）
-	var tarot: Node = scene.get_node_or_null("TarotUI")
-	if tarot and tarot.has_method("_on_action"):
-		tarot._on_action()
-		await _wait(0.3)
-		tarot._on_action()
-		await _wait(0.3)
+	# 翻完开场旁白（播放期间玩家锁着）；塔罗已挪进艾莉森小屋，开局不再自动弹
+	await TestHelpers.dismiss_opening(scene)
 
 	var panel: Node = scene.get_node_or_null("StatusPanel")
 	_check("StatusPanel 已挂入主场景", panel != null)

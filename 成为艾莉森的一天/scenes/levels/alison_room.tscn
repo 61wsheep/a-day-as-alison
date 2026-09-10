@@ -3,6 +3,7 @@
 [ext_resource type="TileSet" uid="uid://dvrjo8anslvw2" path="res://assets/tilesets/tile_forest/wooden_floor.tres" id="1_wfloor"]
 [ext_resource type="Script" uid="uid://cnh8sw8p00fdk" path="res://scripts/systems/door.gd" id="2_door"]
 [ext_resource type="TileSet" uid="uid://hwdsc3ebbkl3" path="res://assets/tilesets/tile_forest/tile_wooden_wall.tres" id="3_wwall"]
+[ext_resource type="Script" path="res://scripts/systems/tarot_table.gd" id="4_tarot"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0vh3j"]
 size = Vector2(3179.0122, 39.833332)
@@ -27,6 +28,9 @@ size = Vector2(59, 202.53699)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rjmdb"]
 size = Vector2(481.48132, 121.740845)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tarot"]
+size = Vector2(96, 72)
 
 [node name="AlisonRoom" type="Node2D" unique_id=1212594966]
 y_sort_enabled = true
@@ -122,8 +126,24 @@ scale = Vector2(0.6, 0.6)
 script = ExtResource("2_door")
 target_area = "treehouse_district"
 target_spawn = "SpawnFromRoom"
+require_tarot = true
 
 [node name="Zone" type="CollisionShape2D" parent="DoorOut" unique_id=1922331818]
 position = Vector2(2.7779508, -8.333321)
 scale = Vector2(0.6000002, 0.6000002)
 shape = SubResource("RectangleShape2D_rjmdb")
+
+[node name="MagicTable" type="Area2D" parent="."]
+position = Vector2(333.3333, 75)
+script = ExtResource("4_tarot")
+
+[node name="PlaceholderBody" type="Polygon2D" parent="MagicTable"]
+color = Color(0.34, 0.22, 0.12, 1)
+polygon = PackedVector2Array(-30, -8, 30, -8, 30, 26, -30, 26)
+
+[node name="PlaceholderTop" type="Polygon2D" parent="MagicTable"]
+color = Color(0.52, 0.36, 0.2, 1)
+polygon = PackedVector2Array(-34, -20, 34, -20, 34, -8, -34, -8)
+
+[node name="Zone" type="CollisionShape2D" parent="MagicTable"]
+shape = SubResource("RectangleShape2D_tarot")

@@ -5,6 +5,8 @@ extends Node
 ## 复用 npc_base 真实输入路径（_start_dialogue + 合成 E 键推进）。
 ## daily 标记 ai:true，测试环境禁用 AIBridge 走 JSON 路径（确定性）。
 
+const TestHelpers := preload("res://scripts/tests/test_helpers.gd")
+
 var _failures := 0
 var _passes := 0
 
@@ -92,13 +94,8 @@ func _run() -> void:
 	var scene: Node = (load("res://scenes/main.tscn") as PackedScene).instantiate()
 	get_tree().root.add_child(scene)
 	await _wait(1.0)
-	# 关掉晨间塔罗（两次点击：抽牌 → 关闭）
-	var tarot: Node = scene.get_node_or_null("TarotUI")
-	if tarot and tarot.has_method("_on_action"):
-		tarot._on_action()
-		await _wait(0.3)
-		tarot._on_action()
-		await _wait(0.3)
+	# 翻完开场旁白（播放期间玩家锁着）；塔罗已挪进艾莉森小屋，开局不再自动弹
+	await TestHelpers.dismiss_opening(scene)
 
 	var padwin: Node = scene.get_node_or_null("Areas/TreehouseDistrict/Padwin")
 	var hp: Node = scene.get_node_or_null("HistoryPanel")

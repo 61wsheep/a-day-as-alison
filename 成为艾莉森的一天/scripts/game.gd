@@ -49,7 +49,6 @@ func _ready() -> void:
 	bus.game_action.connect(_on_game_action)
 	bus.sell_requested.connect(_on_sell_requested)
 	bus.dialogue_ended.connect(_on_dialogue_ended)
-	bus.day_started.connect(_on_day_started)
 	bus.midnight_reached.connect(_on_midnight)
 	# 午夜开始对话（如塔楼问答）时收起入睡面板，避免遮挡
 	bus.dialogue_started.connect(func() -> void:
@@ -73,8 +72,9 @@ func _ready() -> void:
 	switch_area("plaza", "PlayerSpawn")
 	_switch_background("morning")
 
-	# 开场旁白（第一轮）：先锁住玩家播完五拍（绳→苔→树→看→撞），再抽晨间塔罗。
+	# 开场旁白（第一轮）：先锁住玩家播完五拍（绳→苔→树→看→撞）。
 	# 播放期间停掉自动推进，免得玩家读旁白时时间自己走掉。
+	# 第一轮不抽塔罗——抽牌已挪进艾莉森小屋，且第 1 天玩家还没搬进去（见 tarot_table.gd）。
 	var opening := get_node_or_null("OpeningUI")
 	if opening and opening.play_first_run():
 		_auto_advance_timer.stop()
@@ -82,7 +82,6 @@ func _ready() -> void:
 		await opening.finished
 		_set_player_locked(false)
 		_auto_advance_timer.start()
-	get_node("TarotUI").open()
 
 
 # ---------------------------------------------------------------------------
@@ -395,6 +394,9 @@ func _on_sell_requested() -> void:
 func _on_game_action(action_id: String) -> void:
 	if action_id.begins_with("rental:"):
 		get_node("RentalUI").open(action_id.trim_prefix("rental:"))
+	elif action_id == "tarot":
+		# 魔法桌按 E：开晨间塔罗（open 内部自己挡第 1 天/已抽过/面板已开）
+		get_node("TarotUI").open()
 	else:
 		# ending:* / pass_night 等对话结束后统一处理
 		_pending_action = action_id
@@ -430,24 +432,21 @@ func _on_dialogue_ended() -> void:
 # ---------------------------------------------------------------------------
 # 循环重置
 # ---------------------------------------------------------------------------
-func _on_day_started(_day: int) -> void:
-	# 每天清晨抽塔罗牌（若循环开场旁白还在播，等它播完再开）
-	await get_tree().create_timer(0.6).timeout
-	var opening := get_node_or_null("OpeningUI")
-	if opening and opening.is_playing():
-		await opening.finished
-	get_node("TarotUI").open()
-
-
 func _on_loop_reset() -> void:
 	_midnight_panel.hide()
 	get_node("/root/TimeManager").reset_to_morning()
 	_auto_advance_timer.stop()
 	_auto_advance_timer.start()
 	_refresh_collectibles()
-	switch_area("plaza", "PlayerSpawn")
+	# 第 2 天起在自己床上醒来（第 1 天还没租房，只能仍在广场露面）。
+	# 醒在屋里 → 走到魔法桌抽牌 → 才出得了门，这是新的每日开场动线。
+	var gm = get_node("/root/GameManager")
+	if gm.current_day >= 2 and gm.treehouse_rented:
+		switch_area("alison_room", "WakeUp")
+	else:
+		switch_area("plaza", "PlayerSpawn")
 	_switch_background("morning")
-	# 循环开场（第二轮起）：一行锚点旁白；播完由 _on_day_started 接晨间塔罗
+	# 循环开场（第二轮起）：一行锚点旁白；播完就交还玩家，抽牌由魔法桌触发
 	var opening := get_node_or_null("OpeningUI")
 	if opening and opening.play_loop_condensed(get_node("/root/GameManager").current_day):
 		_set_player_locked(true)

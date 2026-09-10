@@ -3,6 +3,8 @@ extends Node
 ## 交互反馈测试（#1/#2）—— 浆果点 item_id 正确、采集提示 show/hide、
 ## E 键采集进背包、按键帮助面板（K）开关与移动锁定。
 
+const TestHelpers := preload("res://scripts/tests/test_helpers.gd")
+
 var _failures := 0
 var _passes := 0
 
@@ -42,12 +44,8 @@ func _run() -> void:
 	get_tree().root.add_child(scene)
 	await _wait(1.0)
 
-	var tarot: Node = scene.get_node_or_null("TarotUI")
-	if tarot and tarot.has_method("_on_action"):
-		tarot._on_action()
-		await _wait(0.3)
-		tarot._on_action()
-		await _wait(0.3)
+	# 翻完开场旁白：播放期间玩家是锁住的，不翻完后面所有「按 E」都会被吃掉
+	await TestHelpers.dismiss_opening(scene)
 
 	var plaza: Node = scene.get_node("Areas/Plaza")
 	var dlg_ui: Node = scene.get_node("DialogueUI")

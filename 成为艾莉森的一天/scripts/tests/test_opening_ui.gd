@@ -85,16 +85,10 @@ func _run() -> void:
 
 	await _wait(0.5)
 
+	# 晨间塔罗已挪进艾莉森小屋（走到魔法桌前按 E），开局不该再自动弹
 	var tarot: Node = scene.get_node_or_null("TarotUI")
 	var tarot_panel: Control = tarot.get("_panel") if tarot else null
-	_check("开场播完接上晨间塔罗", tarot_panel != null and tarot_panel.visible)
-
-	# 塔罗自己也会锁玩家（open 时发 dialogue_started）——关掉它才能验「开场把玩家交还了」
-	if tarot and tarot.has_method("_on_action"):
-		tarot._on_action()
-		await _wait(0.3)
-		tarot._on_action()
-		await _wait(0.5)
+	_check("开场播完不再自动弹塔罗", tarot_panel != null and not tarot_panel.visible)
 	_check("结束后解锁玩家", player != null and not bool(player._movement_locked))
 
 	# ---- 阶段 2：循环开场（第二轮起只播一行锚点旁白，自动收） ----
@@ -109,7 +103,7 @@ func _run() -> void:
 	_check("循环开场的锚点是「苔」", ui._text_label.text.contains("苔"))
 	await _wait(3.2)
 	_check("循环开场自动收屏", not ui.is_playing())
-	_check("循环开场后仍接上塔罗", tarot_panel != null and tarot_panel.visible)
+	_check("循环开场后仍不自动弹塔罗", tarot_panel != null and not tarot_panel.visible)
 
 	_finish()
 

@@ -8,6 +8,8 @@ extends Node
 ##   2. 午夜面板被对话顶掉后，对话结束自动补回
 ##   3. 午夜现场租房 → 面板刷新、按钮解锁 → 两阶段入睡进入次日
 
+const TestHelpers := preload("res://scripts/tests/test_helpers.gd")
+
 var _failures := 0
 var _passes := 0
 
@@ -45,13 +47,8 @@ func _run() -> void:
 	get_tree().root.add_child(scene)
 	await _wait(1.0)
 
-	# 关掉晨间塔罗（抽牌 → 开始今天），避免遮挡午夜面板
-	var tarot: Node = scene.get_node_or_null("TarotUI")
-	if tarot and tarot.has_method("_on_action"):
-		tarot._on_action()
-		await _wait(0.3)
-		tarot._on_action()
-		await _wait(0.3)
+	# 翻完开场旁白（播放期间玩家锁着）；塔罗已挪进艾莉森小屋，开局不再自动弹
+	await TestHelpers.dismiss_opening(scene)
 
 	_check("初始未租房", not gm.treehouse_rented)
 	_check("初始为第 1 天", int(gm.current_day) == 1)

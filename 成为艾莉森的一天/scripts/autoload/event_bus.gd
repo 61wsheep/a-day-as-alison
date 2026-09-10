@@ -28,6 +28,10 @@ signal collect_hint_hide()
 signal board_hint_show()
 signal board_hint_hide()
 
+# -- 魔法桌交互提示（右下角：按 E 抽今天的牌；dialogue_ui 渲染）--
+signal tarot_hint_show()
+signal tarot_hint_hide()
+
 # -- AI 对话相关 --
 signal dialogue_ai_meta(npc_id: String, ai_mode: bool, free_input_enabled: bool)
 signal dialogue_free_input(text: String)

@@ -83,9 +83,12 @@ func _hide_all() -> void:
 	_panel.hide()
 
 
+## 打开抽牌面板。现在由魔法桌按 E 触发（不再开局自动弹），所以这里要挡三种情况：
+## 第 1 天（还没搬进小屋，没有牌可抽）、今天已经抽过、面板本来就开着。
+## 面板已开时直接返回，顺便让「在桌前连按 E」变成空操作，不会把已翻开的牌重置回「？？？」。
 func open() -> void:
 	var gm = get_node("/root/GameManager")
-	if gm.tarot_drawn_today:
+	if _panel.visible or gm.tarot_drawn_today or gm.current_day < 2:
 		return
 	_drawn = false
 	_card_name.text = "？？？"
@@ -97,6 +100,10 @@ func open() -> void:
 
 
 func _on_action() -> void:
+	# 面板没开就什么都不做：塔罗不再开局自动弹出后，外部（含各测试的防御式收尾）
+	# 那句 _on_action() 会变成「凭空抽一张牌」，静默改掉 tarot_drawn_today / daily_luck。
+	if not _panel.visible:
+		return
 	if not _drawn:
 		_draw_card()
 	else:

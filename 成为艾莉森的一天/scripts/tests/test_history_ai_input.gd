@@ -7,6 +7,8 @@ extends Node
 ## 用 mock LLM 走真实 npc_base + AIDialogueSession（S1），断言两种玩家发言都进 DialogueLog、
 ## HistoryPanel 能渲染出来。之前只记 NPC 行、不记玩家点的话题按钮——本测试拦回归。
 
+const TestHelpers := preload("res://scripts/tests/test_helpers.gd")
+
 var _failures := 0
 var _passes := 0
 var _turn := 0
@@ -77,12 +79,8 @@ func _run() -> void:
 	var scene: Node = (load("res://scenes/main.tscn") as PackedScene).instantiate()
 	get_tree().root.add_child(scene)
 	await _wait(1.0)
-	var tarot: Node = scene.get_node_or_null("TarotUI")
-	if tarot and tarot.has_method("_on_action"):
-		tarot._on_action()
-		await _wait(0.3)
-		tarot._on_action()
-		await _wait(0.3)
+	# 翻完开场旁白（播放期间玩家锁着）；塔罗已挪进艾莉森小屋，开局不再自动弹
+	await TestHelpers.dismiss_opening(scene)
 
 	var padwin: Node = scene.get_node_or_null("Areas/TreehouseDistrict/Padwin")
 	var hp: Node = scene.get_node_or_null("HistoryPanel")

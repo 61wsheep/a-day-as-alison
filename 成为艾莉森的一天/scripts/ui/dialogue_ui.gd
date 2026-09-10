@@ -93,6 +93,10 @@ func _ready() -> void:
 		_interact_hint.text = "[E] 查看委托板"
 		_interact_hint.show())
 	bus.board_hint_hide.connect(func(): _interact_hint.hide())
+	bus.tarot_hint_show.connect(func() -> void:
+		_interact_hint.text = "[E] 抽今天的牌"
+		_interact_hint.show())
+	bus.tarot_hint_hide.connect(func(): _interact_hint.hide())
 	bus.collect_hint_show.connect(func(item_name: String) -> void:
 		_collect_hint.text = "[E] 采集 %s" % item_name
 		_collect_hint.show())
