@@ -23,6 +23,10 @@ var _door_cooldown: bool = false
 var _judgment_shown: bool = false
 var _judgment_running: bool = false
 
+## 室内静态镜头：这些区拥有自己的固定镜头（进房间居中、不随玩家滚动），其余区交还 Player 跟随镜头
+const ROOM_CAMERA_AREAS: Array[String] = ["alison_room"]
+var _room_cam: Camera2D = null
+
 
 func _ready() -> void:
 	# 烘焙工具实例化本场景仅用于序列化，跳过游戏初始化
@@ -69,8 +73,16 @@ func _ready() -> void:
 	switch_area("plaza", "PlayerSpawn")
 	_switch_background("morning")
 
-	# 第一天清晨：塔罗占卜
-	get_node("TarotUI").open.call_deferred()
+	# 开场旁白（第一轮）：先锁住玩家播完五拍（绳→苔→树→看→撞），再抽晨间塔罗。
+	# 播放期间停掉自动推进，免得玩家读旁白时时间自己走掉。
+	var opening := get_node_or_null("OpeningUI")
+	if opening and opening.play_first_run():
+		_auto_advance_timer.stop()
+		_set_player_locked(true)
+		await opening.finished
+		_set_player_locked(false)
+		_auto_advance_timer.start()
+	get_node("TarotUI").open()
 
 
 # ---------------------------------------------------------------------------
@@ -105,6 +117,7 @@ func switch_area(area_id: String, spawn_name: String = "", from_door: bool = fal
 		gm.record_heaven_event("visit", "玩家穿过门，来到了 %s" % area_id, [area_id])
 	gm.current_area = area_id
 	get_node("/root/EventBus").area_changed.emit(area_id)
+	_sync_room_camera(area_id)
 
 
 func _find_area(area_id: String) -> Node2D:
@@ -112,6 +125,54 @@ func _find_area(area_id: String) -> Node2D:
 		if area.name.to_snake_case() == area_id or area.name == area_id:
 			return area
 	return null
+
+
+# ---------------------------------------------------------------------------
+# 室内静态镜头（alison_room 等）：固定居中、不随玩家滚动；离开交还 Player 跟随镜头。
+# 用运行时临时 Camera2D（挂在 Main 根、无缩放），按 Ground 已铺地板范围自动取景——
+# 改地板/改缩放都不用回来调镜头。Ground 可能在缩放根节点下，故用真实世界坐标算框。
+# ---------------------------------------------------------------------------
+func _sync_room_camera(area_id: String) -> void:
+	if not area_id in ROOM_CAMERA_AREAS:
+		_release_room_camera()
+		return
+	var area := _find_area(area_id)
+	if area == null:
+		return
+	var ground := area.get_node_or_null("Ground") as TileMapLayer
+	if ground == null or ground.get_used_rect().size == Vector2i.ZERO:
+		_release_room_camera()
+		return
+	_release_room_camera()
+	var r := ground.get_used_rect()
+	var tl: Vector2 = ground.to_global(ground.map_to_local(r.position))
+	var br: Vector2 = ground.to_global(ground.map_to_local(r.end))
+	_room_cam = Camera2D.new()
+	_room_cam.name = "RoomCamera"
+	add_child(_room_cam)
+	_room_cam.global_position = (tl + br) * 0.5
+	_room_cam.zoom = Vector2.ONE * _fit_room_zoom(br - tl)
+	_room_cam.enabled = true
+	_room_cam.make_current()
+
+
+func _fit_room_zoom(ground_size: Vector2, margin := 1.1) -> float:
+	var vp := get_viewport().get_visible_rect().size
+	if vp.x <= 0.0 or vp.y <= 0.0 or ground_size.x <= 0.0 or ground_size.y <= 0.0:
+		return 1.0
+	var z := minf(vp.x / (absf(ground_size.x) * margin), vp.y / (absf(ground_size.y) * margin))
+	return clampf(z, 0.3, 3.0)
+
+
+func _release_room_camera() -> void:
+	if _room_cam == null:
+		return
+	_room_cam.queue_free()
+	_room_cam = null
+	var pc := get_node_or_null("Player/Camera") as Camera2D
+	if pc:
+		pc.reset_smoothing()
+		pc.make_current()
 
 
 # ---------------------------------------------------------------------------
@@ -184,6 +245,23 @@ func _input(event: InputEvent) -> void:
 		if player and player._movement_locked:
 			return
 		_advance_time()
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F12:
+		_capture_debug_shot()
+
+
+## F12 调试截图：把当前画面存到 res://debug_shots/，Claude 读回 PNG 即可"看见"实际构图，逐轮帮你调布局。
+func _capture_debug_shot() -> void:
+	var dir := "res://debug_shots/"
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
+	await RenderingServer.frame_post_draw  # 等本帧画完再抓，像素才完整
+	var img := get_viewport().get_texture().get_image()
+	if img == null:
+		return
+	var gm := get_node("/root/GameManager")
+	var t := Time.get_datetime_string_from_system().replace(":", "").replace(" ", "_")
+	var path := dir + "shot_%s_%s.png" % [gm.current_area, t]
+	img.save_png(path)
+	print("[debug] 截图已存 -> ", path, "  （把 res://debug_shots/ 下文件名发给 Claude）")
 
 
 func _advance_time() -> void:
@@ -353,8 +431,11 @@ func _on_dialogue_ended() -> void:
 # 循环重置
 # ---------------------------------------------------------------------------
 func _on_day_started(_day: int) -> void:
-	# 每天清晨抽塔罗牌
+	# 每天清晨抽塔罗牌（若循环开场旁白还在播，等它播完再开）
 	await get_tree().create_timer(0.6).timeout
+	var opening := get_node_or_null("OpeningUI")
+	if opening and opening.is_playing():
+		await opening.finished
 	get_node("TarotUI").open()
 
 
@@ -366,6 +447,18 @@ func _on_loop_reset() -> void:
 	_refresh_collectibles()
 	switch_area("plaza", "PlayerSpawn")
 	_switch_background("morning")
+	# 循环开场（第二轮起）：一行锚点旁白；播完由 _on_day_started 接晨间塔罗
+	var opening := get_node_or_null("OpeningUI")
+	if opening and opening.play_loop_condensed(get_node("/root/GameManager").current_day):
+		_set_player_locked(true)
+		await opening.finished
+		_set_player_locked(false)
+
+
+## 锁定/解锁玩家移动（与各 UI 面板同一约定：直接写 player._movement_locked）
+func _set_player_locked(locked: bool) -> void:
+	if player and "_movement_locked" in player:
+		player._movement_locked = locked
 
 
 func _refresh_collectibles() -> void:

@@ -3,7 +3,8 @@
     "version": "v0.1",
     "source": "《成为艾莉森的一天》文案.md §一（文案同学 2026-09-10 交付）",
     "note": "开场叙事包。first_run 用于第一轮完整开场（在撞到索拉雅之前）；loop_condensed 用于第二轮起的循环开场。锚点是『苔』，不是床——第一天她还没有床。",
-    "wired": false
+    "wired": true,
+    "consumer": "scripts/ui/opening_ui.gd（game.gd._ready 播 first_run，_on_loop_reset 播 loop_condensed）"
   },
 
   "first_run": {

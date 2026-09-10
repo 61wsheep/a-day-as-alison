@@ -7,7 +7,6 @@
       "priority": 100,
       "conditions": {"flag_not": ["met_soraya"]},
       "lines": [
-        {"speaker": "narrator", "text": "你跌跌撞撞地穿过陌生的林地——直通天际的树屋、空中滑行的缆车，没有一棵烧焦的树。然后，你撞上了一个人。"},
         {"speaker": "soraya", "emotion": "intro", "text": "「哎呀——掉了七朵！」她说，「没事没事，不脏的，回去洗一下就好啦。」"},
         {"speaker": "narrator", "text": "她蹲下去捡蘑菇的时候裙子铺开在石板上，一点也不怕脏，手很稳，一朵一朵往破了的袋子里放，连滚到灯杆脚下那朵都伸手够回来了。她没有立刻看你——先往左看了一眼，又往右看了一眼，看得很快，快得像不想让人发现她在看。"},
         {"speaker": "player", "emotion": "talk_01", "text": "……", "choices": [

@@ -4,6 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://b4uslq72om778" path="res://scenes/levels/treehouse_district.tscn" id="3_muem4"]
 [ext_resource type="PackedScene" uid="uid://csaoe7d5dlwqy" path="res://scenes/levels/stone_nest_tower.tscn" id="4_dp3eg"]
 [ext_resource type="PackedScene" uid="uid://b484atxomgdv5" path="res://scenes/levels/alison_room.tscn" id="5_alison"]
+[ext_resource type="Script" uid="uid://bnf8vnhao4emb" path="res://scripts/player/player_controller.gd" id="7_gqmmt"]
+[ext_resource type="Script" path="res://scripts/ui/opening_ui.gd" id="20_yc10j"]
 [ext_resource type="Script" uid="uid://c0wtnsiirupvr" path="res://scripts/ui/inventory_panel.gd" id="24_y6deb"]
 [ext_resource type="Script" uid="uid://bdupxml7myx7h" path="res://scripts/ui/sell_panel.gd" id="25_og1vs"]
 [ext_resource type="Script" uid="uid://cty0kby1vtln0" path="res://scripts/ui/dialogue_ui.gd" id="dialogue_ui_script"]
@@ -26,19 +28,26 @@ script = ExtResource("game_script")
 
 [node name="Areas" type="Node2D" parent="." unique_id=345921568]
 
-[node name="Plaza" parent="Areas" unique_id=64118211 instance=ExtResource("2_vxglm")]
+[node name="Plaza" type="Node2D" parent="Areas" unique_id=64118211 instance=ExtResource("2_vxglm")]
 visible = false
+y_sort_enabled = true
 
-[node name="TreehouseDistrict" parent="Areas" unique_id=1225464444 instance=ExtResource("3_muem4")]
+[node name="TreehouseDistrict" type="Node2D" parent="Areas" unique_id=1225464444 instance=ExtResource("3_muem4")]
 visible = false
+y_sort_enabled = true
 
-[node name="StoneNestTower" parent="Areas" unique_id=756506408 instance=ExtResource("4_dp3eg")]
+[node name="StoneNestTower" type="Node2D" parent="Areas" unique_id=756506408 instance=ExtResource("4_dp3eg")]
 visible = false
+modulate = Color(0.55, 0.55, 0.7, 1)
+y_sort_enabled = true
 
-[node name="AlisonRoom" parent="Areas" unique_id=1335491077 instance=ExtResource("5_alison")]
+[node name="AlisonRoom" type="Node2D" parent="Areas" unique_id=1335491077 instance=ExtResource("5_alison")]
+y_sort_enabled = true
+scale = Vector2(0.6, 0.6)
 
-[node name="Player" parent="." unique_id=1344765881 instance=ExtResource("player_scene")]
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1344765881 instance=ExtResource("player_scene")]
 position = Vector2(640, 480)
+script = ExtResource("7_gqmmt")
 
 [node name="DialogueUI" type="CanvasLayer" parent="." unique_id=796514301]
 layer = 10
@@ -105,3 +114,7 @@ script = ExtResource("tarot_div_ui_script")
 [node name="HistoryPanel" type="CanvasLayer" parent="." unique_id=1987600007]
 layer = 15
 script = ExtResource("history_panel_script")
+
+[node name="OpeningUI" type="CanvasLayer" parent="." unique_id=733427461]
+layer = 25
+script = ExtResource("20_yc10j")
