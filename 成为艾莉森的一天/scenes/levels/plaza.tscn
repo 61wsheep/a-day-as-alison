@@ -3016,8 +3016,11 @@ region = Rect2(160, 150, 30, 38)
 atlas = ExtResource("1_u0s1r")
 region = Rect2(2, 868, 29, 27)
 
-[sub_resource type="CircleShape2D" id="door_zone"]
-radius = 22.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dh57u"]
+size = Vector2(50, 236)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tj25p"]
+size = Vector2(62, 245)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_73205"]
 atlas = ExtResource("10_yuvdm")
@@ -3499,7 +3502,8 @@ target_area = "treehouse_district"
 target_spawn = "SpawnFromPlaza"
 
 [node name="Zone" type="CollisionShape2D" parent="DoorEast" unique_id=595200969]
-shape = SubResource("door_zone")
+position = Vector2(218, -29)
+shape = SubResource("RectangleShape2D_dh57u")
 
 [node name="DoorWest" type="Area2D" parent="." unique_id=978459913]
 position = Vector2(20, 384)
@@ -3508,7 +3512,8 @@ target_area = "stone_nest_tower"
 target_spawn = "SpawnFromPlaza"
 
 [node name="Zone" type="CollisionShape2D" parent="DoorWest" unique_id=284413542]
-shape = SubResource("door_zone")
+position = Vector2(-161, -31.5)
+shape = SubResource("RectangleShape2D_tj25p")
 
 [node name="Mushrooms" type="Node2D" parent="." unique_id=417536816]
 

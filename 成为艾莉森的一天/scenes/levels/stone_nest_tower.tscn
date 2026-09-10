@@ -53,8 +53,8 @@ region = Rect2(70, 488, 36, 22)
 atlas = ExtResource("7_68hwc")
 region = Rect2(70, 488, 36, 22)
 
-[sub_resource type="CircleShape2D" id="door_zone"]
-radius = 22.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xyuvl"]
+size = Vector2(81, 64)
 
 [node name="StoneNestTower" type="Node2D" unique_id=756506408]
 modulate = Color(0.55, 0.55, 0.7, 1)
@@ -147,7 +147,8 @@ target_area = "plaza"
 target_spawn = "SpawnFromWest"
 
 [node name="Zone" type="CollisionShape2D" parent="DoorSouth" unique_id=885037828]
-shape = SubResource("door_zone")
+position = Vector2(-0.5, -22)
+shape = SubResource("RectangleShape2D_xyuvl")
 
 [node name="TianAltar" parent="." unique_id=1355015305 instance=ExtResource("9_vi1ac")]
 position = Vector2(640, 240)

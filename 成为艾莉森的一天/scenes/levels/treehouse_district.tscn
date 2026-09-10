@@ -2994,6 +2994,9 @@ region = Rect2(167, 218, 25, 22)
 atlas = ExtResource("1_g0h2q")
 region = Rect2(34, 868, 28, 27)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j0lys"]
+size = Vector2(31, 379)
+
 [sub_resource type="CircleShape2D" id="door_zone"]
 radius = 22.0
 
@@ -3426,17 +3429,18 @@ offset = Vector2(0, -13.5)
 [node name="SpawnFromPlaza" type="Marker2D" parent="." unique_id=1167767802]
 position = Vector2(140, 416)
 
-[node name="SpawnFromRoom" type="Marker2D" parent="."]
+[node name="SpawnFromRoom" type="Marker2D" parent="." unique_id=358677601]
 position = Vector2(620, 412)
 
 [node name="DoorWest" type="Area2D" parent="." unique_id=947144194]
-position = Vector2(20, 416)
+position = Vector2(-155, 397)
 script = ExtResource("7_y16ij")
 target_area = "plaza"
 target_spawn = "SpawnFromEast"
 
 [node name="Zone" type="CollisionShape2D" parent="DoorWest" unique_id=478845181]
-shape = SubResource("door_zone")
+position = Vector2(2.5, -1.5)
+shape = SubResource("RectangleShape2D_j0lys")
 
 [node name="DoorOak" type="Area2D" parent="." unique_id=499218038]
 position = Vector2(300, 318)
