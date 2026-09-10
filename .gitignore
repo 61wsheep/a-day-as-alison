@@ -27,6 +27,17 @@ _preview/
 # 恢复会话参考目录（个人工作文件，不提交）
 _resume_refs/
 
+# F12 运行时调试截图（Claude 读图用，不入库）
+debug_shots/
+
 # 个人文档（项目介绍/岗位介绍，不入版本库）
 《成为艾莉森的一天》项目深度介绍.pdf
 项目介绍_AI产品经理岗位.md
+
+# 素材/场景压缩包（内容已在 assets/ scenes/ 里，原始包不入库）
+assets.zip
+scenes.zip
+
+# Python 探针缓存
+__pycache__/
+*.pyc
