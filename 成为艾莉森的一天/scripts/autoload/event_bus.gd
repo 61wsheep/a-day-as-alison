@@ -16,6 +16,9 @@ signal interaction_hint_show()
 signal interaction_hint_hide()
 signal dialogue_started()
 signal dialogue_line(speaker_id: String, display_name: String, text: String, emotion: String)
+## 流式增量：AI 台词边生成边显示（text 为「当前累计」全文，UI 直接覆盖，非追加）。
+## 独立于 dialogue_line —— 后者会写 DialogueLog 并触发立绘/提示，增量绝不能复用。
+signal dialogue_line_delta(speaker_id: String, display_name: String, text: String, emotion: String)
 signal dialogue_choices(choices: Array)
 signal dialogue_choice_made(choice_index: int)
 signal dialogue_ended()

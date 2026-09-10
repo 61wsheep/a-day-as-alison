@@ -13,6 +13,8 @@ extends RefCounted
 ##   choices_ready(topics)     sideline_done()          session_finished()
 
 signal thinking_changed(active: bool)
+## 流式增量：text 为「当前累计」全文（非增量片段），UI 覆盖显示即可。
+signal line_delta(speaker: String, text: String)
 signal line_ready(speaker: String, text: String, emotion: String)
 signal choices_ready(topics: Array)
 signal sideline_done()
@@ -138,7 +140,12 @@ func _build_and_request(is_opening: bool, player_input: String = "") -> void:
 	var raw := ""
 	if bridge:
 		print("[AIDialogueSession] 请求 AI（%s 第 %d 轮）…" % [_npc_id, _turn])
-		raw = await bridge.request_llm_with_guard(payload, 30.0)
+		# 流式：首字到达即 line_delta（UI 边收边显示）；失败由 bridge 内部回落非流式，契约不变
+		if bridge.has_method("is_stream_enabled") and bridge.is_stream_enabled():
+			raw = await bridge.request_llm_stream_with_guard(payload, 30.0,
+				func(visible: String) -> void: _on_stream_delta(visible))
+		else:
+			raw = await bridge.request_llm_with_guard(payload, 30.0)
 	_in_flight = false
 	thinking_changed.emit(false)
 	if _ended:
@@ -228,8 +235,17 @@ func _build_payload(is_opening: bool, player_input: String) -> Dictionary:
 	}
 
 
+## 流式增量回调：把「当前累计台词」转发给 UI。
+## 不结算、不写 DialogueLog（那是 line_ready/_apply_turn 的事）；会话已结束则丢弃。
+func _on_stream_delta(visible: String) -> void:
+	if _ended or visible.is_empty():
+		return
+	line_delta.emit(_npc_id, visible)
+
+
 func _handle_response(raw: String) -> void:
-	var r := AIJsonUtils.parse_response(raw, _REQUIRED_FIELDS)
+	# 宽松模式：流式下 JSON 可能被 max_tokens 截断，response_text 仍在即可结算本轮
+	var r := AIJsonUtils.parse_response(raw, _REQUIRED_FIELDS, true)
 	if not r.get("success", false):
 		_handle_failure("JSON 解析失败: %s" % r.get("error", ""))
 		return

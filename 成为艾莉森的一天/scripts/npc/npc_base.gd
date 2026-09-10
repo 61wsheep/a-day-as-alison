@@ -169,6 +169,7 @@ func _begin_ai_session(dlg: Dictionary) -> void:
 	_ai_session = AIDialogueSession.new()
 	_ai_session.setup(self, npc_id)
 	_ai_session.thinking_changed.connect(_on_ai_thinking)
+	_ai_session.line_delta.connect(_on_ai_line_delta)
 	_ai_session.line_ready.connect(_on_ai_line)
 	_ai_session.choices_ready.connect(_on_ai_choices)
 	_ai_session.sideline_done.connect(_on_ai_sideline_done)
@@ -360,6 +361,7 @@ func _on_free_input(text: String) -> void:
 	if _ai_session == null:
 		_ai_session = AIDialogueSession.new()
 		_ai_session.setup(self, npc_id)
+		_ai_session.line_delta.connect(_on_ai_line_delta)
 		_ai_session.line_ready.connect(_on_ai_line)
 		_ai_session.sideline_done.connect(_on_ai_sideline_done)
 		_ai_session.thinking_changed.connect(_on_ai_thinking)
@@ -408,6 +410,14 @@ func _on_ai_line(speaker: String, text: String, emotion: String) -> void:
 	if not _dialogue_active:
 		return   # 对话已结束（如 Esc 退出），丢弃迟到的 AI 回复
 	_emit_line({"speaker": speaker, "text": text, "emotion": emotion})
+
+
+## 流式增量：只转发给 UI 覆盖显示，**不走 _emit_line**——那条路径会写 DialogueLog，
+## 逐帧写入会把实录撑爆（同一句话记几十遍）。
+func _on_ai_line_delta(speaker: String, text: String) -> void:
+	if not _dialogue_active:
+		return
+	get_node("/root/EventBus").dialogue_line_delta.emit(speaker, _display_name(speaker), text, "")
 
 
 func _on_ai_choices(topics: Array) -> void:

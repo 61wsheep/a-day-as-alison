@@ -102,6 +102,7 @@ func _ready() -> void:
 		_collect_hint.show())
 	bus.collect_hint_hide.connect(func(): _collect_hint.hide())
 	bus.dialogue_line.connect(_on_dialogue_line)
+	bus.dialogue_line_delta.connect(_on_dialogue_line_delta)
 	bus.dialogue_choices.connect(_on_choices)
 	bus.dialogue_ended.connect(_on_dialogue_ended)
 	bus.toast.connect(_show_toast)
@@ -261,6 +262,17 @@ func _on_dialogue_line(speaker_id: String, display_name: String, text: String, e
 	_text_label.text = text
 	_hint_label.text = "[E] 继续    [Esc] 退出"
 	_update_portrait(speaker_id, emotion)
+	_panel.show()
+
+
+## 流式增量渲染：text 是「当前累计全文」，直接覆盖（不是追加，重复帧无副作用）。
+## 首字到达即隐藏"思考中"，让玩家立刻看到字在动；立绘等完整行到达时再更新。
+func _on_dialogue_line_delta(speaker_id: String, display_name: String, text: String, _emotion: String) -> void:
+	_choice_panel.hide()
+	_thinking_label.hide()
+	_name_label.text = display_name
+	_text_label.text = text
+	_hint_label.text = "[Esc] 退出"
 	_panel.show()
 
 

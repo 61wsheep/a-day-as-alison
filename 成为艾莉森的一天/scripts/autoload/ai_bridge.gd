@@ -24,7 +24,19 @@ const RETRY_MAX_ELAPSED_MS := 10000
 const NET_LOG_PATH := "user://ai_net.log"
 const NET_LOG_MAX_BYTES := 262144   # >256KB 重置，只留最近一次运行
 
+## ---- 流式（SSE）----
+## 一级回滚开关：--ai-stream-off / AI_STREAM=0 即整体退回非流式（行为与改造前一致）。
+## 流式失败也会自动回落非流式，故即使上游不支持也不会比现状更差。
+const STREAM_JSON_MODE := true      # 流式下仍请求 response_format: json_object（被 400 拒则自动关掉重试）
+const STREAM_FIRST_BYTE_MS := 8000  # 首字节看门狗
+const STREAM_IDLE_MS := 12000       # 空闲看门狗（距上次收到数据）
+const STREAM_TOTAL_MS := 45000      # 单次流式总时长上限
+const AIStreamClientScript := preload("res://scripts/systems/ai_stream_client.gd")
+const AIJsonUtilsScript := preload("res://scripts/systems/ai_json_utils.gd")
+
 var _http: HTTPRequest
+var _stream_client = null                   # 在途流式连接（AIStreamClient；不标类型避免依赖全局类缓存）
+var _stream_on := true                      # 见 STREAM_JSON_MODE 上方说明
 var _in_flight := false
 var _api_key := ""
 var _enabled := true
@@ -49,6 +61,9 @@ func _ready() -> void:
 		_force_off = true
 		_enabled = false
 		print("[AIBridge] 检测到 --ai-off / AI_DISABLED，AI 对话关闭。")
+	if OS.get_environment("AI_STREAM") == "0" or "--ai-stream-off" in OS.get_cmdline_user_args():
+		_stream_on = false
+		print("[AIBridge] 检测到 --ai-stream-off / AI_STREAM=0，退回非流式。")
 	_http = _make_http()
 	_log_net("[NET] AIBridge 启动 enabled=%s force_off=%s key_len=%d（无 key → AI 关闭，落固定对话，不会联网）"
 			% [str(_enabled), str(_force_off), _api_key.length()])
@@ -60,6 +75,16 @@ func is_available() -> bool:
 	if _mock_responder.is_valid():
 		return true   # mock 模式（测试）不需要 API key
 	return not _api_key.is_empty() and _http != null
+
+
+## 流式是否启用（--ai-stream-off / AI_STREAM=0 关闭；仅供会话层决定走哪条路径）。
+func is_stream_enabled() -> bool:
+	return _stream_on
+
+
+## 测试/运行时切换流式（不影响失败回落）。
+func set_stream_enabled(v: bool) -> void:
+	_stream_on = v
 
 
 func set_enabled(v: bool) -> void:
@@ -142,9 +167,12 @@ func _on_request_completed(result: int, response_code: int, _headers: PackedStri
 ## 整局卡 BUSY）——所以这里先置 _cancel_requested 让 _send_once 的等待循环尽快退出并
 ## 复位 _in_flight，再尽力断开底层连接；不依赖 cancel 是否回发信号。
 func cancel_current() -> void:
-	if _in_flight and _http != null:
+	if _in_flight:
 		_cancel_requested = true
-		_http.cancel_request()
+		if _stream_client != null:
+			_stream_client.close()   # 让流式轮询循环下一帧立即退出
+		if _http != null:
+			_http.cancel_request()
 
 
 ## 发送一次 LLM 请求。payload: { system: String, user: String }
@@ -178,18 +206,7 @@ func request_llm(payload: Dictionary) -> String:
 func _send_once(payload: Dictionary) -> String:
 	var t0 := Time.get_ticks_msec()
 	var stamp := Time.get_datetime_string_from_system()
-	var body := JSON.stringify({
-		"model": MODEL,
-		# payload 可单独带 max_tokens 限幅（如对话轮次设小值提速）；缺省用全局 1024
-		"max_tokens": int(payload.get("max_tokens", MAX_TOKENS)),
-		"temperature": TEMPERATURE,
-		# 强制 JSON 模式：避免模型输出 JSON 之外的文字导致整轮解析失败
-		"response_format": {"type": "json_object"},
-		"messages": [
-			{"role": "system", "content": str(payload.get("system", ""))},
-			{"role": "user", "content": str(payload.get("user", ""))},
-		],
-	})
+	var body := _build_body(payload, false, true)
 	var headers := PackedStringArray([
 		"Content-Type: application/json",
 		"Accept: application/json",
@@ -265,6 +282,37 @@ func _extract_content(response_text: String) -> String:
 	return ""
 
 
+## 组装 OpenAI chat.completions 请求体（流式/非流式共用，避免两处信封漂移）。
+## stream=true 时额外带 "stream": true；json_object=false 用于被上游 400 拒绝后的重试。
+func _build_body(payload: Dictionary, stream: bool, json_object: bool) -> String:
+	var d := {
+		"model": MODEL,
+		# payload 可单独带 max_tokens 限幅（如对话轮次设小值提速）；缺省用全局 1024
+		"max_tokens": int(payload.get("max_tokens", MAX_TOKENS)),
+		"temperature": TEMPERATURE,
+		"messages": [
+			{"role": "system", "content": str(payload.get("system", ""))},
+			{"role": "user", "content": str(payload.get("user", ""))},
+		],
+	}
+	if json_object:
+		# 强制 JSON 模式：避免模型输出 JSON 之外的文字导致整轮解析失败
+		d["response_format"] = {"type": "json_object"}
+	if stream:
+		d["stream"] = true
+	return JSON.stringify(d)
+
+
+## BASE_URL → {host, path}（HTTPClient 需要分开传；单一来源避免两处写死漂移）。
+func _api_parts() -> Dictionary:
+	var rest := BASE_URL.trim_prefix("https://").trim_prefix("http://")
+	var slash := rest.find("/")
+	return {
+		"host": rest.substr(0, slash) if slash >= 0 else rest,
+		"path": rest.substr(slash) if slash >= 0 else "/",
+	}
+
+
 ## 带硬超时兜底的请求。到点经 cancel_current → _cancel_requested 让 _send_once 尽快退出，
 ## _in_flight 必然复位，不再出现按一次 Esc/遇一次慢请求就永久全 BUSY 的锁死。
 func request_llm_with_guard(payload: Dictionary, hard_timeout: float) -> String:
@@ -279,6 +327,105 @@ func request_llm_with_guard(payload: Dictionary, hard_timeout: float) -> String:
 	var raw := await request_llm(payload)
 	t.queue_free()
 	_http.timeout = old_timeout
+	return raw
+
+
+# ---------------------------------------------------------------------------
+# 流式（SSE）
+# ---------------------------------------------------------------------------
+
+## 流式请求。on_delta(visible_text) 每收到新内容回调一次（传入当前可显示台词）。
+## 返回契约与 request_llm 完全一致：成功=LLM 原始 JSON 文本；失败=[API_ERROR]/[BUSY]/[DISABLED]。
+## 流式不可用/失败时自动回落非流式（一次），调用方无需感知。
+func request_llm_stream(payload: Dictionary, on_delta: Callable) -> String:
+	if _in_flight:
+		_log_net("[NET] stream BUSY：仍有请求在途被拒")
+		return "[BUSY]"
+	if not is_available():
+		return "[DISABLED]"
+
+	# mock：把整段结果一次吐给 on_delta（测试零网络，且覆盖"流式路径"的接线）
+	if _mock_responder.is_valid():
+		_in_flight = true
+		_cancel_requested = false
+		var mr: String = await _mock_responder.call(payload)
+		if on_delta.is_valid() and not _cancel_requested:
+			on_delta.call(AIJsonUtilsScript.extract_partial_string_field(mr, "response_text"))
+		_in_flight = false
+		return mr
+
+	_in_flight = true
+	var t0 := Time.get_ticks_msec()
+	var res := await _stream_once(payload, on_delta, STREAM_JSON_MODE)
+
+	# 上游若因 response_format 拒流式（400）且尚未吐出任何内容 → 关掉 json_object 重试一次
+	if not res.get("ok", false) and not _cancel_requested \
+			and int(res.get("http_code", 0)) == 400 and int(res.get("deltas", 0)) == 0:
+		_log_net("[NET] stream 400（疑似 response_format 被拒）→ 关 json_object 重试")
+		res = await _stream_once(payload, on_delta, false)
+
+	var raw := str(res.get("raw", ""))
+	var first := int(res.get("first_byte_ms", -1))
+	var total_ms := int(res.get("total_ms", 0))
+
+	if res.get("cancelled", false):
+		_log_net("[NET] stream | 已取消 | %dms | FAIL" % total_ms)
+		_in_flight = false
+		return "[API_ERROR] cancelled"
+
+	if res.get("ok", false) and not raw.strip_edges().is_empty():
+		_log_net("[NET] stream | 首字%dms | 总%dms | delta=%d | %s | OK"
+				% [first, total_ms, int(res.get("deltas", 0)),
+				"done" if res.get("done", false) else "no-done(截断)"])
+		print("[AIBridge] 流式完成 首字=%.1fs 总=%.1fs" % [first / 1000.0, total_ms / 1000.0])
+		_in_flight = false
+		return raw
+
+	# 流式失败 → 回落非流式（玩家仍能拿到回复，只是没有边收边显示）
+	var err := str(res.get("error", "空内容"))
+	if res.get("ok", false):
+		err = "流式返回空内容"
+	_log_net("[NET] stream | 首字%dms | %dms | FAIL 回落非流式：%s" % [first, total_ms, err])
+	print("[AIBridge] 流式失败（%s），回落非流式请求…" % err.left(60))
+	var fb := await _send_once(payload)
+	_in_flight = false
+	return fb
+
+
+## 单次流式尝试（不含回落/重试）。on_delta 在成功路径每帧可能被回调多次。
+func _stream_once(payload: Dictionary, on_delta: Callable, json_object: bool) -> Dictionary:
+	_cancel_requested = false
+	var parts := _api_parts()
+	var headers := PackedStringArray([
+		"Content-Type: application/json",
+		"Accept: text/event-stream",
+		"Authorization: Bearer %s" % _api_key,
+	])
+	# 不请求 gzip：HTTPClient 不会自动解压，压缩流会直接坏掉
+	_stream_client = AIStreamClientScript.new()
+	var res: Dictionary = await _stream_client.run(
+		str(parts.get("host", "")), str(parts.get("path", "/")), headers,
+		_build_body(payload, true, json_object), on_delta,
+		_is_cancel_requested, STREAM_FIRST_BYTE_MS, STREAM_IDLE_MS, STREAM_TOTAL_MS)
+	_stream_client = null
+	return res
+
+
+## 供 AIStreamClient 每帧查询是否已被取消（Esc / 守护超时）。
+func _is_cancel_requested() -> bool:
+	return _cancel_requested
+
+
+## 带硬超时的流式请求。到点经 cancel_current → 关闭流式连接让轮询循环尽快退出。
+func request_llm_stream_with_guard(payload: Dictionary, hard_timeout: float, on_delta: Callable) -> String:
+	var t := Timer.new()
+	t.one_shot = true
+	t.wait_time = hard_timeout
+	add_child(t)
+	t.timeout.connect(cancel_current)
+	t.start()
+	var raw := await request_llm_stream(payload, on_delta)
+	t.queue_free()
 	return raw
 
 
