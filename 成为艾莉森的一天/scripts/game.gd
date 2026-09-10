@@ -11,7 +11,6 @@ const HeavenSession := preload("res://scripts/systems/ai_heaven_session.gd")
 @onready var daylight: CanvasModulate = $DaylightModulate
 @onready var areas: Node2D = $Areas
 
-var _world_rect: Rect2
 var _mushroom_timer: Timer
 var _auto_advance_timer: Timer
 var _pending_action: String = ""
@@ -33,15 +32,12 @@ func _ready() -> void:
 	if SceneLayout.baking:
 		return
 
-	_world_rect = Rect2(0, 0, SceneLayout.WORLD_W * SceneLayout.TILE_SIZE, SceneLayout.WORLD_H * SceneLayout.TILE_SIZE)
-
 	# 地形与道具：已烘焙（main.tscn 有内容）则跳过，空白区域运行时兜底生成
 	SceneLayout.paint_area_grounds(areas)
 	SceneLayout.build_all_props(areas)
 
-	if player and player.has_method("setup_camera_limits"):
-		player.setup_camera_limits(_world_rect)
-
+	# 玩家相机界限不在此定死——各区地面尺寸不同（plaza/树屋已画出带负坐标的外圈），
+	# 由 switch_area 按当前区 Ground 实际范围动态设置（见 _sync_player_camera_limits）。
 	var bus = get_node("/root/EventBus")
 	bus.time_changed.connect(_on_time_changed)
 	bus.loop_reset.connect(_on_loop_reset)
@@ -116,6 +112,7 @@ func switch_area(area_id: String, spawn_name: String = "", from_door: bool = fal
 		gm.record_heaven_event("visit", "玩家穿过门，来到了 %s" % area_id, [area_id])
 	gm.current_area = area_id
 	get_node("/root/EventBus").area_changed.emit(area_id)
+	_sync_player_camera_limits(area)
 	_sync_room_camera(area_id)
 
 
@@ -127,30 +124,59 @@ func _find_area(area_id: String) -> Node2D:
 
 
 # ---------------------------------------------------------------------------
-# 室内静态镜头（alison_room 等）：固定居中、不随玩家滚动；离开交还 Player 跟随镜头。
-# 用运行时临时 Camera2D（挂在 Main 根、无缩放），按 Ground 已铺地板范围自动取景——
-# 改地板/改缩放都不用回来调镜头。Ground 可能在缩放根节点下，故用真实世界坐标算框。
+# 相机界限（跟着地面走）
+# 各区地面尺寸不同（plaza/树屋已画出带负坐标的外圈），界限一律按「当前区 Ground
+# 实际已铺范围」现算：切区时刷 Player 相机 limit，玩家钳制随之自动跟着地面走，
+# 编辑器里把地面改多大都不必回来改常量。
 # ---------------------------------------------------------------------------
+
+## 取区域 Ground 已铺范围的世界坐标框（Ground 可能在缩放根节点下，故用 to_global 换算）。
+## 返回零尺寸表示该区没有可用地面信息。
+func _ground_world_rect(area: Node2D) -> Rect2:
+	if area == null:
+		return Rect2()
+	var ground := area.get_node_or_null("Ground") as TileMapLayer
+	if ground == null:
+		return Rect2()
+	var r := ground.get_used_rect()
+	if r.size == Vector2i.ZERO:
+		return Rect2()
+	var tl: Vector2 = ground.to_global(ground.map_to_local(r.position))
+	var br: Vector2 = ground.to_global(ground.map_to_local(r.end))
+	# map_to_local 给的是格中心：两边各外扩半格，界限才落到地面真实外缘
+	# （留白交给 player_controller 钳制时的 24px，别在这里重复缩）
+	var half: Vector2 = ground.global_transform.basis_xform(Vector2(ground.tile_set.tile_size) * 0.5)
+	return Rect2(tl - half, (br - tl))
+
+
+## 按当前区地面刷新 Player 跟随相机的界限（玩家在 player_controller 里钳制在 limit 内）。
+## 取不到地面时保留上一次界限，避免把玩家钳死在原点。
+func _sync_player_camera_limits(area: Node2D) -> void:
+	if player == null or not player.has_method("setup_camera_limits"):
+		return
+	var rect := _ground_world_rect(area)
+	if rect.size == Vector2.ZERO:
+		return
+	player.setup_camera_limits(rect)
+
+
+## 室内静态镜头（alison_room 等）：固定居中、不随玩家滚动；离开交还 Player 跟随镜头。
+## 用运行时临时 Camera2D（挂在 Main 根、无缩放），按 Ground 已铺地板范围自动取景——
+## 改地板/改缩放都不用回来调镜头。
 func _sync_room_camera(area_id: String) -> void:
 	if not area_id in ROOM_CAMERA_AREAS:
 		_release_room_camera()
 		return
-	var area := _find_area(area_id)
-	if area == null:
-		return
-	var ground := area.get_node_or_null("Ground") as TileMapLayer
-	if ground == null or ground.get_used_rect().size == Vector2i.ZERO:
+	var rect := _ground_world_rect(_find_area(area_id))
+	if rect.size == Vector2.ZERO:
 		_release_room_camera()
 		return
 	_release_room_camera()
-	var r := ground.get_used_rect()
-	var tl: Vector2 = ground.to_global(ground.map_to_local(r.position))
-	var br: Vector2 = ground.to_global(ground.map_to_local(r.end))
 	_room_cam = Camera2D.new()
 	_room_cam.name = "RoomCamera"
 	add_child(_room_cam)
-	_room_cam.global_position = (tl + br) * 0.5
-	_room_cam.zoom = Vector2.ONE * _fit_room_zoom(br - tl)
+	_room_cam.global_position = rect.get_center()
+	_room_cam.zoom = Vector2.ONE * _fit_room_zoom(rect.size)
 	_room_cam.enabled = true
 	_room_cam.make_current()
 
@@ -223,11 +249,12 @@ func _spawn_mushroom() -> void:
 ## 采集物只在草坪刷新——刷在石子路/土路上既违和又会卡住寻路观感。
 func _random_grass_pos() -> Vector2:
 	var ground: TileMapLayer = areas.get_node_or_null("Plaza/Ground")
-	if ground:
-		var min_x := _world_rect.position.x + 64.0
-		var max_x := _world_rect.end.x - 64.0
-		var min_y := _world_rect.position.y + 64.0
-		var max_y := _world_rect.end.y - 64.0
+	var rect := _ground_world_rect(areas.get_node_or_null("Plaza") as Node2D)
+	if ground and rect.size != Vector2.ZERO:
+		var min_x := rect.position.x + 64.0
+		var max_x := rect.end.x - 64.0
+		var min_y := rect.position.y + 64.0
+		var max_y := rect.end.y - 64.0
 		for i in 40:
 			var p := Vector2(randf_range(min_x, max_x), randf_range(min_y, max_y))
 			if SceneLayout.is_grass_tile(ground, p):
