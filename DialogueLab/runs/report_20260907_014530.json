@@ -1,0 +1,280 @@
+{
+  "time": "20260907_014530",
+  "state": {
+    "npc_id": "padwin",
+    "day": 1,
+    "time_id": "morning",
+    "affection": 50,
+    "daily_tarot_card": "",
+    "clues_found": [],
+    "memory_updates": [],
+    "history": [],
+    "last_compliance": "",
+    "daily_prophecy": null,
+    "tomorrow_seed": "",
+    "heaven_memory_block": "",
+    "no_heaven": false
+  },
+  "script": [
+    "（把带来的番茄递过去）这个给你，就当见面礼。",
+    "你右眉那道疤……是怎么来的？"
+  ],
+  "summaries": [
+    {
+      "config": "baseline",
+      "turns": [
+        {
+          "turn": 1,
+          "player": "（把带来的番茄递过去）这个给你，就当见面礼。",
+          "ok": true,
+          "ttft_ms": null,
+          "total_ms": 7661.280200001784,
+          "prompt_tokens": 6265,
+          "cache_hit": 0,
+          "cache_miss": 6265,
+          "completion_tokens": 167,
+          "total_tokens": 6432,
+          "prompt_chars": 10199,
+          "sys_chars": 8492,
+          "usr_chars": 1707,
+          "est_tokens": 8119,
+          "error": "",
+          "reply": {
+            "npc_id": "padwin",
+            "response_text": "生面孔。这片归我管。报个来意。",
+            "emotional_shift": 0,
+            "internal_note": "注意到艾莉森身上的中世纪衣着，隐约觉得眼熟但想不起来",
+            "memory_update": "初次见到陌生女子艾莉森，衣着风格似曾相识",
+            "hints_to_other_npcs": [
+              "守卫团新兵曾见过类似衣着的人"
+            ],
+            "should_end_conversation": false,
+            "topic_suggestions": [
+              "我是新来的，不知道这里的规矩...",
+              "我在找住处，听说这里有树屋可以住？",
+              "这森林看起来很奇怪，那些会动的藤蔓是什么？"
+            ]
+          }
+        },
+        {
+          "turn": 2,
+          "player": "你右眉那道疤……是怎么来的？",
+          "ok": true,
+          "ttft_ms": null,
+          "total_ms": 5471.153700025752,
+          "prompt_tokens": 6329,
+          "cache_hit": 0,
+          "cache_miss": 6329,
+          "completion_tokens": 111,
+          "total_tokens": 6440,
+          "prompt_chars": 10331,
+          "sys_chars": 8492,
+          "usr_chars": 1839,
+          "est_tokens": 8177,
+          "error": "",
+          "reply": {
+            "npc_id": "padwin",
+            "response_text": "打仗时候留下的。",
+            "emotional_shift": -2,
+            "internal_note": "被问到伤疤时本能地戒备",
+            "memory_update": "艾莉森注意到了我右眉的疤痕",
+            "should_end_conversation": false,
+            "topic_suggestions": [
+              "你打过很多仗吗？",
+              "这里的战争是什么样的？",
+              "抱歉，我不该问这个。"
+            ]
+          }
+        }
+      ],
+      "total_ms": 13132.433900027536
+    },
+    {
+      "config": "stream",
+      "turns": [
+        {
+          "turn": 1,
+          "player": "（把带来的番茄递过去）这个给你，就当见面礼。",
+          "ok": true,
+          "ttft_ms": 952.3563000839204,
+          "total_ms": 14919.870999990962,
+          "prompt_tokens": 6265,
+          "cache_hit": 6144,
+          "cache_miss": 121,
+          "completion_tokens": 512,
+          "total_tokens": 6777,
+          "prompt_chars": 10199,
+          "sys_chars": 8492,
+          "usr_chars": 1707,
+          "est_tokens": 8119,
+          "error": "",
+          "reply": {}
+        },
+        {
+          "turn": 2,
+          "player": "你右眉那道疤……是怎么来的？",
+          "ok": true,
+          "ttft_ms": 1686.3335999660194,
+          "total_ms": 7331.921500037424,
+          "prompt_tokens": 6329,
+          "cache_hit": 0,
+          "cache_miss": 6329,
+          "completion_tokens": 150,
+          "total_tokens": 6479,
+          "prompt_chars": 10331,
+          "sys_chars": 8492,
+          "usr_chars": 1839,
+          "est_tokens": 8177,
+          "error": "",
+          "reply": {
+            "npc_id": "padwin",
+            "response_text": "打仗时候留下的。",
+            "emotional_shift": 0,
+            "internal_note": "对艾莉森直接问伤疤感到有些意外，但未觉冒犯——这问题本身不越界，只是他自己也记不清来历",
+            "memory_update": "艾莉森注意到了我右眉的疤",
+            "hints_to_other_npcs": [],
+            "should_end_conversation": false,
+            "topic_suggestions": [
+              "你在这里打过仗？",
+              "这伤口看着很深...现在还疼吗？",
+              "你似乎不太想聊这个。"
+            ]
+          }
+        }
+      ],
+      "total_ms": 22251.792500028387
+    },
+    {
+      "config": "cachetest-第1遍（冷）",
+      "turns": [
+        {
+          "turn": 1,
+          "player": "（把带来的番茄递过去）这个给你，就当见面礼。",
+          "ok": false,
+          "ttft_ms": null,
+          "total_ms": 30107.51879995223,
+          "prompt_tokens": null,
+          "cache_hit": null,
+          "cache_miss": null,
+          "completion_tokens": null,
+          "total_tokens": null,
+          "prompt_chars": 10199,
+          "sys_chars": 8492,
+          "usr_chars": 1707,
+          "est_tokens": 8119,
+          "error": "TimeoutError: The read operation timed out",
+          "reply": {}
+        }
+      ],
+      "total_ms": 30107.51879995223
+    },
+    {
+      "config": "cachetest-第2遍（热，应命中缓存）",
+      "turns": [
+        {
+          "turn": 1,
+          "player": "（把带来的番茄递过去）这个给你，就当见面礼。",
+          "ok": true,
+          "ttft_ms": null,
+          "total_ms": 22622.960699955,
+          "prompt_tokens": 6265,
+          "cache_hit": 6144,
+          "cache_miss": 121,
+          "completion_tokens": 486,
+          "total_tokens": 6751,
+          "prompt_chars": 10199,
+          "sys_chars": 8492,
+          "usr_chars": 1707,
+          "est_tokens": 8119,
+          "error": "",
+          "reply": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "npc_id": {
+                "type": "string",
+                "description": "当前 NPC 标识"
+              },
+              "response_text": {
+                "type": "string",
+                "description": "NPC 的完整回复文本。20-200 字。必须是 NPC 自己的话——不是天的旁白。"
+              },
+              "emotional_shift": {
+                "type": "integer",
+                "minimum": -10,
+                "maximum": 15,
+                "description": "本轮对话对 NPC 好感度的微调。正值=好感上升（上限+15，可慷慨），负值=下降（下限-10，需克制）"
+              },
+              "internal_note": {
+                "type": "string",
+                "description": "内部标记（玩家看不到）：NPC 此刻的真实想法或记忆更新"
+              },
+              "memory_update": {
+                "type": "string",
+                "description": "本轮对话后应存入 NPC 记忆的关键摘要（1-2 句）"
+              },
+              "hints_to_other_npcs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "暗示了其他 NPC 可能知道的信息（玩家可据此去找其他 NPC 验证）",
+                "maxItems": 3
+              },
+              "should_end_conversation": {
+                "type": "boolean",
+                "description": "NPC 是否在本轮自然结束对话（觉得聊够了）",
+                "default": false
+              },
+              "topic_suggestions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "（S1 会话用）以玩家艾莉森第一人称口吻写的 3 条推荐回复——是「玩家接下来可能说出口的话」，不是 NPC 的话题提议。每条≤30字，口语化、具体、贴合当下语境。仅 S1 每日会话模式需要，旁路对话可留空",
+                "maxItems": 3
+              }
+            },
+            "required": [
+              "response_text",
+              "emotional_shift",
+              "memory_update"
+            ]
+          }
+        },
+        {
+          "turn": 2,
+          "player": "你右眉那道疤……是怎么来的？",
+          "ok": true,
+          "ttft_ms": null,
+          "total_ms": 6556.77599995397,
+          "prompt_tokens": 6329,
+          "cache_hit": 5504,
+          "cache_miss": 825,
+          "completion_tokens": 147,
+          "total_tokens": 6476,
+          "prompt_chars": 10331,
+          "sys_chars": 8492,
+          "usr_chars": 1839,
+          "est_tokens": 8177,
+          "error": "",
+          "reply": {
+            "npc_id": "padwin",
+            "response_text": "打仗时候留下的。\n（他抬手碰了碰那道疤，眼睛望向远处）",
+            "emotional_shift": -1,
+            "internal_note": "对艾莉森的直接提问感到不适，但并未表现出明显反感。",
+            "memory_update": "艾莉森注意到了我右眉上的疤痕。",
+            "hints_to_other_npcs": [],
+            "should_end_conversation": false,
+            "topic_suggestions": [
+              "你经常受伤吗？",
+              "看起来这道疤有些年头了...",
+              "打仗...是在什么战场上？"
+            ]
+          }
+        }
+      ],
+      "total_ms": 29179.73669990897
+    }
+  ]
+}
