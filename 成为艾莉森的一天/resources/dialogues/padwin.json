@@ -11,14 +11,31 @@
         {"speaker": "player", "emotion": "talk_02", "text": "（这张脸……不可能。他怎么会在这里？他明明——）"},
         {"speaker": "padwin", "emotion": "idle", "text": "盯着我做什么。我叫帕德温，守卫团团长。这片树屋区归我管，有事可以直接来守卫团找我。"},
         {"speaker": "player", "emotion": "talk_01", "text": "……", "choices": [
-          {"text": "（把带来的番茄递过去）见面礼。", "reply": "番茄？！拿走拿走——我对这东西过敏。别问我怎么知道的。", "reply_emotion": "awkward", "effects": {"set_flag": ["tomato_test_done"], "discover_clue": ["clue_padwin_no_memory"], "affection": {"padwin": 5}}},
+          {"text": "（把整袋番茄递过去）见面礼。", "reply": "番茄我不能吃。……下次别带这个，带别的都行。", "reply_emotion": "idle", "effects": {"set_flag": ["tomato_test_done", "tomato_denied"], "discover_clue": ["clue_padwin_no_memory"], "affection": {"padwin": 3}}},
+          {"text": "（把切开的番茄递过去，切面朝上）见面礼。", "reply": "拿开那个。", "reply_emotion": "awkward", "effects": {"set_flag": ["tomato_test_done", "tomato_evidence"], "discover_clue": ["clue_padwin_no_memory"], "affection": {"padwin": 5}}},
           {"text": "你……真的不记得我了吗？", "reply": "我们见过？抱歉，没印象。你认错人了。", "reply_emotion": "helpless", "effects": {"discover_clue": ["clue_padwin_no_memory"]}},
           {"text": "……打扰了。", "reply": "嗯。", "reply_emotion": "idle", "end": true, "end_effects": {"set_flag": ["met_padwin"]}}
         ]},
-        {"speaker": "player", "emotion": "cry", "text": "（他拒绝了番茄——前世的帕德温也是这样。可是他的眼睛里，没有一点认得我的意思。）"},
+        {"speaker": "player", "emotion": "cry", "text": "（他话说到一半停了——先咽了一下，然后往后退，一只手撑住门框，抬起来挡在脸前面。那只手背上从虎口往上已经红了一片，红得很快，不是疹子，是整片皮翻上来的颜色。那不是记在嘴里的，是长在身上的。）", "conditions": {"flag": ["tomato_evidence"]}},
+        {"speaker": "player", "emotion": "cry", "text": "（他隔着一步就拒绝了，很干脆，眉毛都没动。前世的帕德温也是这样。可是他的眼睛里，没有一点认得我的意思。）", "conditions": {"flag": ["tomato_denied"]}},
         {"speaker": "padwin", "emotion": "think", "text": "这森林一来新人，就有麻烦跟着。晚上别乱逛，尤其是广场西边那座石塔。我领你去守卫团登记，记个名号。"}
       ],
       "end_effects": {"set_flag": ["met_padwin"]}
+    },
+    {
+      "id": "tomato_followup",
+      "priority": 70,
+      "conditions": {"flag": ["tomato_test_done"], "flag_not": ["tomato_followup_spoken"]},
+      "lines": [
+        {"speaker": "narrator", "text": "她又去了他住的那一层。走廊很干净，木地板擦过，窗缝里透进来的光落在脚边。开门的是他，还是那张脸，右眉上方那道旧疤比她记得的浅一些。"},
+        {"speaker": "padwin", "emotion": "talk", "text": "新搬来的？……嗯，是你。有事就说。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他挡着脸、手背红成一片的样子还印在我眼里。同一具身体，同一个毛病，同一个差点没缓过来的小时候。我拿到了我要的东西——只是他看我的眼神，跟看一个冒失的陌生人没有分别。）", "conditions": {"flag": ["tomato_evidence"]}},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他说得太顺了，顺得像真的从小就在这儿。一个从小在这里长大的人会这么说；一个记得前世、为了不让我知道他记得的人，也会这么说。这句话两边都通。）", "conditions": {"flag": ["tomato_denied"]}},
+        {"speaker": "padwin", "emotion": "awkward", "text": "……你站这儿做什么。"},
+        {"speaker": "narrator", "text": "下楼时她一直在想他咽那一下的样子——那不是记在嘴里的，是长在身上的。"},
+        {"speaker": "narrator", "text": "她什么也没验出来，只记住了他那句「带别的都行」。", "conditions": {"flag": ["tomato_denied"]}}
+      ],
+      "end_effects": {"set_flag": ["tomato_followup_spoken"]}
     },
     {
       "id": "divine_offer",

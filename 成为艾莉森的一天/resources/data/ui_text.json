@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "version": "v0.1",
+    "source": "《成为艾莉森的一天》文案.md §九（文案同学 2026-09-10 交付）",
+    "rule": "UI 文案集中层。脚本不得硬编码玩家可见字符串，一律自此读取；UI 改版只动此文件，不动 .gd。占位符 {n} 由脚本注入。",
+    "banned": ["失败", "重新开始", "Game Over"]
+  },
+
+  "buttons": {
+    "map":        { "mark": "记下来", "unmark": "不用记了", "go": "走过去" },
+    "herb":       { "brew": "封瓶", "clear": "倒掉", "sell": "拿去卖" },
+    "divination": { "draw": "抽一张", "collect": "收起来" },
+    "common":     { "confirm": "就这样", "back": "退回去" }
+  },
+
+  "tips": {
+    "brew_weather":   "今天在下雨。下雨配出来的东西是另一个颜色。",
+    "brew_off_target": "配出来了。不是你想的那个。",
+    "rent_no_gold":   "差得还多。",
+    "area_unlocked":  "那条路今天走得通了。",
+    "ask_species":    "这句话在森林里说，是要出事的。",
+    "tarot_drawn_today": "今天的牌已经翻过了。"
+  },
+
+  "empty": {
+    "inventory":  "什么都没有。手是干净的。",
+    "clues":      "还没有看见什么。",
+    "map_marks":  "这张图上还没有你自己记下的东西。",
+    "quests":     "今天没有人找你。",
+    "herb_garden": "采过了。要等明天。"
+  },
+
+  "loop": {
+    "day_end_rented":   "清晨。同一张床。",
+    "day_end_unhoused": "清晨。同一片苔。",
+    "ending_reached":   "大阿尔卡那 · 第 {n} 张",
+    "progress_reset":   "昨天赚的钱不在了。昨天问出来的话，今天问了没人接。",
+    "memory_kept":      "今天有一个人和你一起记得昨天。",
+    "new_faces":        "今天多了两个人。你没见过他们。",
+    "missing_cards":    "还差 {n} 张。"
+  },
+
+  "_todo_migrate": [
+    "scripts/ui/hud.gd — 'Gold: %d' / 'Day %d' / Morning|Afternoon|Evening|Night|Midnight（英文占位，待归入 ui_text）",
+    "scripts/ui/ending_ui.gd — '—— 回到清晨 ——'、'结局 · %s'、'已收集 %d / 22 —— 只有「世界」能打破循环'",
+    "scripts/ui/rental_ui.gd — 树屋/身份证描述串",
+    "scripts/ui/*.gd — 其余按钮/提示/空状态硬编码串"
+  ]
+}

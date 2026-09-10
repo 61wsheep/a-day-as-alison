@@ -52,6 +52,7 @@ const CLUE_NAMES := {
 	"clue_soraya_repeat": "索拉雅机械重复的迎接",
 	"clue_forest_fake": "塔楼中的森林起源之书",
 	"clue_id_card": "树屋里与自己完全相符的身份证",
+	"clue_tower_roster": "塔楼阶下的名录",
 }
 
 

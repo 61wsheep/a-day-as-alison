@@ -91,7 +91,12 @@ func show_ending(ending_id: String) -> void:
 	var e: Dictionary = _endings[ending_id]
 	_tarot_label.text = str(e.get("tarot", ""))
 	_title_label.text = "结局 · %s" % str(e.get("title", ""))
-	_text_label.text = str(e.get("text", ""))
+	# 未入住时用替换首句的版本（高塔结局进度清零，她很可能连房都还没租——
+	# 「在同一片苔上醒来」而不是「在同一张床上醒来」）。
+	var body := str(e.get("text", ""))
+	if not bool(gm.treehouse_rented) and e.has("text_unhoused"):
+		body = str(e["text_unhoused"])
+	_text_label.text = body
 	_progress_label.text = "已收集结局 %d / 22 —— 只有「世界」能打破循环" % gm.endings_unlocked.size()
 	get_node("Dim").show()
 	_panel.show()

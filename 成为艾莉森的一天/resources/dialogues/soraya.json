@@ -8,42 +8,70 @@
       "conditions": {"flag_not": ["met_soraya"]},
       "lines": [
         {"speaker": "narrator", "text": "你跌跌撞撞地穿过陌生的林地——直通天际的树屋、空中滑行的缆车，没有一棵烧焦的树。然后，你撞上了一个人。"},
-        {"speaker": "soraya", "emotion": "intro", "text": "哎呀——！我的蘑菇……"},
-        {"speaker": "player", "emotion": "cry", "text": "对、对不起！我帮你捡……"},
-        {"speaker": "soraya", "emotion": "smile_01", "text": "没关系没关系～你是新来的吧？这张脸我从来没见过。"},
+        {"speaker": "soraya", "emotion": "intro", "text": "「哎呀——掉了七朵！」她说，「没事没事，不脏的，回去洗一下就好啦。」"},
+        {"speaker": "narrator", "text": "她蹲下去捡蘑菇的时候裙子铺开在石板上，一点也不怕脏，手很稳，一朵一朵往破了的袋子里放，连滚到灯杆脚下那朵都伸手够回来了。她没有立刻看你——先往左看了一眼，又往右看了一眼，看得很快，快得像不想让人发现她在看。"},
         {"speaker": "player", "emotion": "talk_01", "text": "……", "choices": [
-          {"text": "请问……你是女巫吗？", "reply": "嘘——！！这种话在这里可不能乱问！", "reply_emotion": "laugh_talk_01", "effects": {"affection": {"soraya": -3}, "set_flag": ["asked_identity"]}},
+          {"text": "请问……你是女巫吗？", "reply": "欸，你刚才那句话——在森林里说，是要出事的哦。", "reply_emotion": "laugh_talk_01", "effects": {"set_flag": ["asked_identity"], "affection": {"soraya": -3}}},
           {"text": "这里……是什么地方？", "reply": "第一次见面就问这个呀。这里是贝戈尼亚森林，你以后的家。", "reply_emotion": "smile_02"},
           {"text": "我叫艾莉森。我不记得自己是怎么来的……", "reply": "别紧张，先深呼吸。每一个来到这里的人，开头都这样。", "reply_emotion": "smile_01", "effects": {"affection": {"soraya": 5}}}
         ]},
-        {"speaker": "soraya", "emotion": "intro", "text": "听好了，贝戈尼亚森林只有一条最高准则——永远、永远不要打探别人的「真实身份」。"},
-        {"speaker": "soraya", "emotion": "intro", "text": "狼人、女巫、精灵、祭司和普通人比邻而居，从外表谁也分不清谁。说破别人的身份，是这里最严重的罪行。"},
-        {"speaker": "player", "emotion": "talk_02", "text": "最严重的罪行……那会怎么样？"},
-        {"speaker": "soraya", "emotion": "smile_03", "text": "会被带去石巢塔楼，接受「天」的审判。法律是「天」定下的——违背道德、伤害他人的人，都会受到上天的惩戒。"},
-        {"speaker": "player", "emotion": "talk_01", "text": "「天」……那是谁？"},
-        {"speaker": "soraya", "emotion": "smile_02", "text": "这是森林大学的学生们日夜研究的最高课题。我只知道这么多啦。"},
-        {"speaker": "soraya", "emotion": "smile_01", "text": "给你这个——贝戈尼亚森林的地图。先去东边的树屋区挑一栋树屋办理入住吧。租金不够的话，广场上采蘑菇就能换金币。", "effects": {"set_flag": ["got_map"]}},
-        {"speaker": "narrator", "text": "索拉雅把一张还带着温度的地图塞进你手里，拎起蘑菇，哼着歌走远了。"}
+        {"speaker": "soraya", "emotion": "smile_01", "text": "她说这句话的时候还在笑。「不能问，」她说，「也不能自己说。这是这里最重的一条啦。」"},
+        {"speaker": "player", "emotion": "talk_02", "text": "「重到什么程度？」"},
+        {"speaker": "soraya", "emotion": "smile_03", "text": "「会被送去石巢塔楼。」她答得很快，快得没有停顿，像这句话在她嘴里放了很久，随时可以拿出来。"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "「别紧张，先深呼吸。新来的都这样，我见得多了。来，我跟你说说这儿的规矩。」"},
+        {"speaker": "narrator", "text": "然后她换了一副语气——不是变热情，热情本来就在，是变顺了。"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "「欢迎来到贝戈尼亚森林～」"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "「森林里住着狼人、女巫、精灵、祭司，也住着普通人。他们从外表上无法区分。他们可以住在同一栋树屋大楼里，同一层，隔一道墙。」"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "「只有确认情侣关系，或者有亲缘，才能——」"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "「表露自己的人种，是这里最严重的犯罪行为。打探他人的人种，同罪。」"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "「——才能知道对方是什么。」"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "「除普通人以外，所有人永生。因此森林里不会出现危及生命健康的违法行为。」"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "「法律由「天」制定。做了违背道德或者有害他人的事，会受到上天的惩戒。」"},
+        {"speaker": "soraya", "emotion": "smile_02", "text": "「天是什么呀——塔楼里那位在管，森林里也有人在琢磨。你想知道，可以去问，不过别问太多哦。」"},
+        {"speaker": "soraya", "emotion": "smile_02", "text": "「森林里有树屋区、广场和集市、药园、公园、大学，还有石巢塔楼。这是地图。」"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "「你需要选一栋树屋，办理入住。树屋按价格分档。你没有钱，可以采集蘑菇、采集浆果、去修房子的工地做工、制作草药瓶，或者替人占卜。」"},
+        {"speaker": "soraya", "emotion": "laugh_talk_01", "text": "「以上——啊，说完了。」"},
+        {"speaker": "player", "emotion": "talk_01", "text": "「你叫什么？」"},
+        {"speaker": "soraya", "emotion": "smile_02", "text": "「索拉雅！三楼往上第二栋，最靠广场那一栋。你要是找不到路，问谁都行，森林里的人都知道我住哪儿～」"},
+        {"speaker": "player", "emotion": "talk_02", "text": "「你在这儿多久了？」"},
+        {"speaker": "soraya", "emotion": "intro", "text": "「……很久了。」"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "「啊——那位提藤篮的女士，在森林里住了六十一年，她丈夫是普通人，前年走的。往北第四栋。」"},
+        {"speaker": "narrator", "text": "她讲别人有年份、有门牌、有谁死了；讲自己只有「很久了」。索拉雅把地图塞进你手里，拎起蘑菇，哼着歌走远了。"}
       ],
-      "end_effects": {"set_flag": ["met_soraya"], "affection": {"soraya": 5}}
+      "end_effects": {"set_flag": ["met_soraya", "got_map"], "affection": {"soraya": 5}}
     },
     {
       "id": "confront",
       "priority": 90,
       "conditions": {"flag": ["met_soraya"], "flag_not": ["soraya_confronted"], "day_min": 2},
       "lines": [
-        {"speaker": "soraya", "emotion": "smile_01", "text": "艾莉森，今天也顺利吗？蘑菇在广场南边长得最好哦。"},
-        {"speaker": "player", "emotion": "talk_02", "text": "索拉雅。我昨天看到你了——你对另一个新居民，说了和对我一模一样的话。一个字都不差。", "choices": [
-          {"text": "你到底是谁？为什么从不说起你自己的过去？", "reply": "…………我。", "reply_emotion": "intro", "effects": {"set_flag": ["soraya_confronted"], "discover_clue": ["clue_soraya_repeat"]}},
+        {"speaker": "narrator", "text": "她跟了三天。第三天她跟到路口就站住了——前面那一幕她认得：一个穿不合身外套的人从坡上跌跌撞撞下来，撞上索拉雅。袋子先破，蘑菇滚了一地，滚到石板缝里，滚到灯杆脚下。"},
+        {"speaker": "narrator", "text": "索拉雅往左看了一眼，往右看了一眼，然后蹲下去捡。「哎呀——掉了七朵！」那段话从头到尾走了一遍，语序一个字没变，跳过的那条也在同一个地方补回来。递地图的时候还是双手。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "「你今天掉了几朵？」"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "「七朵呀！欸，你怎么在这儿？你那栋在往北呢。」"},
+        {"speaker": "player", "emotion": "talk_02", "text": "「你昨天掉了几朵？」"},
+        {"speaker": "soraya", "emotion": "laugh_talk_01", "text": "「哎呀这个不重要啦——这里是贝戈尼亚森林。森林里住着狼人、女巫、精灵、祭司，也住着普通人。他们从外表上无法区分。」"},
+        {"speaker": "player", "emotion": "talk_02", "text": "「我问你昨天。」"},
+        {"speaker": "soraya", "emotion": "laugh_talk_02", "text": "「他们可以住在同一栋树屋大楼里，同一层，隔一道墙。只有确认情侣关系，或者有亲缘，才能——表露自己的人种，是这里最严重的犯罪行为。打探他人的人种，同罪。」"},
+        {"speaker": "player", "emotion": "talk_02", "text": "「索拉雅。」"},
+        {"speaker": "soraya", "emotion": "smile_03", "text": "「——才能知道对方是什么。」她笑得比刚才更用力了。她的手已经从袋子上移开，抓住了蘑菇篮的带子，一直没放。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "「你是不是记得所有的循环。」", "choices": [
+          {"text": "「你是不是记得所有的循环。」", "reply": "………………你在说什么呀。", "reply_emotion": "intro", "effects": {"set_flag": ["soraya_confronted"], "discover_clue": ["clue_soraya_repeat"]}},
           {"text": "……没什么，当我没问。", "reply": "欸？好、好吧。那记得吃饭哦。", "reply_emotion": "smile_02", "end": true}
         ]},
-        {"speaker": "soraya", "emotion": "intro", "text": "我能讲出森林里每个人的生平往事。可是你问我……我的生日，我的童年，我醒来之前的事——我什么都说不出来。"},
-        {"speaker": "soraya", "emotion": "intro", "text": "我只知道要站在这里，迎接每一个迷路的人。这……正常吗？"},
+        {"speaker": "narrator", "text": "她愣住了。声音很轻，轻得不像她。说完她自己也听见了那个不对，于是她又开口，接的是她最熟的那段。"},
+        {"speaker": "soraya", "emotion": "intro", "text": "「除普通人以外，所有人永生。因此森林里不会。因此森林里不会出现危。」"},
+        {"speaker": "soraya", "emotion": "intro", "text": "「法律由天。法律由。」她停下来。篮子的带子在她手里绞了一圈又一圈，绞到指节发白。"},
+        {"speaker": "soraya", "emotion": "intro", "text": "「往北第四栋那位女士住了六十一年她丈夫是普通人前年走的三楼往上第二栋最靠广场你要是找不到路问谁都行森林里的人都知道我住——」她住了口。"},
+        {"speaker": "narrator", "text": "蘑菇掉出来，一朵，落在她脚边。她没有捡。她抬起手，很慢地想去摸自己的脸——她从来不让人看见她卸下笑容的样子，所以她的手在半空停住了，停了一下就放下来，重新回到那根带子上。"},
+        {"speaker": "soraya", "emotion": "intro", "text": "「我不知道我在这儿多久了。」她说，「我不敢数。」这句话说完，她的笑还在脸上，只是不再跟着句子走了。"},
         {"speaker": "player", "emotion": "smile_01", "text": "……", "choices": [
           {"text": "索拉雅，你不必做一台迎接的机器。做你自己。", "reply": "做自己……谢谢你，艾莉森。我好像……想起了什么。一片很黑的地底，和一盏小小的灯。", "reply_emotion": "smile_03", "effects": {"set_flag": ["soraya_awakened"], "affection": {"soraya": 15}}},
           {"text": "至少从现在开始，为自己活着试试看？", "reply": "为自己……活。嗯，我记住了。", "reply_emotion": "smile_01", "effects": {"set_flag": ["soraya_awakened"], "affection": {"soraya": 10}}}
         ]},
-        {"speaker": "narrator", "text": "那一刻，索拉雅的眼神第一次不像一面打磨过的镜子，而像一潭被风吹皱的水。"}
+        {"speaker": "narrator", "text": "后来是索拉雅先开口的，声音跟平常一样轻快，只是慢了半拍，语气词全掉了。"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "「你刚才问我昨天掉了几朵。」「我不知道。我记得森林里每个人的每一年。我记得那位女士的丈夫是哪个月走的。可我背的那些话，我不记得是谁教我的。」"},
+        {"speaker": "narrator", "text": "她低头看了一眼脚边那朵蘑菇。那一刻，索拉雅的眼神第一次不像一面打磨过的镜子，而像一潭被风吹皱的水。"}
       ]
     },
     {

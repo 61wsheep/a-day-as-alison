@@ -19,15 +19,22 @@ const TIME_NAMES := {
 }
 const HOUSE_NAMES := {"oak": "橡树屋", "cedar": "杉树屋", "willow": "柳树屋"}
 
+## 线索/UI 文案外部数据（文案同学交付，owner 统一录入）——见 resources/data/clues.json、ui_text.json
+const CLUES_FILE := "res://resources/data/clues.json"
+const UI_TEXT_FILE := "res://resources/data/ui_text.json"
+
 var _dim: ColorRect
 var _panel: PanelContainer
 var _content: VBoxContainer
 var _open := false
 var _dlg_active := false
+var _clue_desc: Dictionary = {}
+var _ui_text: Dictionary = {}
 
 
 func _ready() -> void:
 	layer = 12
+	_load_text_data()
 	_build_ui()
 	var bus = get_node("/root/EventBus")
 	bus.dialogue_started.connect(func():
@@ -102,6 +109,34 @@ func _close() -> void:
 	_set_player_locked(false)
 
 
+## 载入线索描述与集中 UI 文案。文件缺失时两者为空，_refresh 各自回落硬编码串。
+func _load_text_data() -> void:
+	_clue_desc = _load_json_section(CLUES_FILE, "clues")
+	_ui_text = _load_json(UI_TEXT_FILE)
+
+
+func _load_json(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		return {}
+	var f := FileAccess.open(path, FileAccess.READ)
+	if f == null:
+		return {}
+	var parsed = JSON.parse_string(f.get_as_text())
+	f.close()
+	return parsed if parsed is Dictionary else {}
+
+
+func _load_json_section(path: String, section: String) -> Dictionary:
+	var d := _load_json(path)
+	var s = d.get(section, {})
+	return s if s is Dictionary else {}
+
+
+func _empty_text(key: String, fallback: String) -> String:
+	var empty: Dictionary = _ui_text.get("empty", {})
+	return str(empty.get(key, fallback))
+
+
 func _set_player_locked(locked: bool) -> void:
 	var p := get_tree().get_first_node_in_group("player")
 	if p and "_movement_locked" in p:
@@ -128,10 +163,13 @@ func _refresh() -> void:
 	var total_clues: int = gm.CLUE_NAMES.size()
 	_add_title("线索（%d/%d）" % [gm.clues_found.size(), total_clues], 16)
 	if gm.clues_found.is_empty():
-		_add_line("（尚未获得线索）")
+		_add_line(_empty_text("clues", "（尚未获得线索）"))
 	else:
 		for cid in gm.clues_found:
 			_add_line("· %s" % gm.CLUE_NAMES.get(cid, cid))
+			var d: String = str(_clue_desc.get(cid, {}).get("desc", ""))
+			if d != "":
+				_add_line("    %s" % d, 12, Color(0.72, 0.72, 0.78))
 
 	_add_sep()
 	_add_title("好感度", 16)

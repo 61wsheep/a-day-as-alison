@@ -14,9 +14,26 @@
           {"text": "谢谢您的祝福，主教大人。", "reply": "遵守规则，孩子。规则即慈悲。", "reply_emotion": "idle", "effects": {"affection": {"cactus_bishop": 3}}}
         ]},
         {"speaker": "narrator", "text": "就在他转身的一瞬，你看见他的衣领下有一圈淡淡的、陈旧的勒痕——像是自缢留下的痕迹。", "conditions": {"flag": ["cactus_scar_seen"]}},
-        {"speaker": "player", "emotion": "cry", "text": "（那……我呢？）当天夜里，你在树屋的镜子前褪下衣衫——你的背上，有一片烧伤的疤痕。", "conditions": {"flag": ["self_burn_scar"]}}
+        {"speaker": "narrator", "text": "（她看见的就是那半寸。一圈，淡的，不是新的，绕过喉结底下往两边斜上去，到耳后就没了。斜上去——不是被人从后面勒的，是自己吊上去的。她那个时代的绳子她太熟了。）", "conditions": {"flag": ["cactus_scar_seen"]}},
+        {"speaker": "player", "emotion": "cry", "text": "（那……我呢？）当天夜里，你在树屋的镜子前褪下衣衫——你的背上，有一片烧伤的疤痕。", "conditions": {"flag": ["self_burn_scar"]}},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他成功了。猎巫那件事他做成了，做成了以后他自己上去了。她排在最后一批，她死的时候他还在——所以那圈痕，是她死之后才有的东西。她还想过一件更没道理的事：他上去的时候，会不会也数了。她数过，她被绑上去的时候数到了十一，数不下去了。）", "conditions": {"flag": ["cactus_scar_seen"]}}
       ],
       "end_effects": {"set_flag": ["met_cactus"]}
+    },
+    {
+      "id": "scar_aftermath",
+      "priority": 70,
+      "conditions": {"flag": ["cactus_scar_seen"], "flag_not": ["cactus_aftermath_spoken"]},
+      "lines": [
+        {"speaker": "narrator", "text": "第二天她又去了塔楼，为了另一张要按手印的纸。她低着头，眼睛盯着自己的鞋，鞋尖上有前一天在药园蹭到的泥。桌上的纸推过来，推到中间停住，她伸手去拿，按住，收回。整个过程她一次都没往上看。"},
+        {"speaker": "cactus", "emotion": "idle", "text": "愿「天」护佑你。"},
+        {"speaker": "narrator", "text": "她转身要走的时候，他说了一句不在流程里的话。"},
+        {"speaker": "cactus", "emotion": "think", "text": "你昨天看的地方，不必再看。"},
+        {"speaker": "narrator", "text": "她站住了。她没有回头。"},
+        {"speaker": "cactus", "emotion": "sad", "text": "有些事，孩子——知道了不会让你活得久一点。"},
+        {"speaker": "narrator", "text": "她说她明白。她说完就出去了，出去以后在石阶上站了很久。她想起前世每回有人来问事她都躲在墙后头，隔着那扇只露眼睛的小窗听。她那时候以为她怕的是人。现在她知道她怕的是看清。而这里有个人，比她更怕。"}
+      ],
+      "end_effects": {"set_flag": ["cactus_aftermath_spoken"]}
     },
     {
       "id": "daily",

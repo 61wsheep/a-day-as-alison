@@ -7,7 +7,8 @@
       "base_price": 10,
       "stack_max": 20,
       "icon": { "atlas": "res://assets/tilesets/forest_plaza.png", "region": [1, 385, 30, 30] },
-      "desc": "藏在草丛里的普通蘑菇，镇上的常客。"
+      "desc": "伞面下的褶子排得很密，一根一根都是直的。她从前认草只认两样：能不能吃，和吃了会不会说话。这一朵两样都不像。",
+      "desc_variant": "裂了口子的这朵最沉。沉的都是接了雨的。"
     },
     {
       "id": "berry",
@@ -16,7 +17,7 @@
       "base_price": 6,
       "stack_max": 30,
       "icon": { "atlas": "res://assets/tilesets/forest_plaza.png", "region": [5, 421, 20, 23] },
-      "desc": "酸甜的小浆果，索拉雅偶尔会买来酿酒。"
+      "desc": "熟到顶了还挂在枝上没人捡，捏一下就破，汁是紫的，指甲缝里三天洗不掉。整片林子都这样——熟到了顶就停在那儿，不往下走。"
     },
     {
       "id": "herb_moonleaf",
@@ -35,7 +36,7 @@
       "base_price": 0,
       "stack_max": 5,
       "icon": { "atlas": "res://assets/tilesets/forest_plaza.png", "region": [70, 421, 20, 23] },
-      "desc": "封存着植物的性情——它的价值由酿它的那一刻决定。"
+      "desc": "瓶身温的，摇一摇有两层，上头那层要过一会儿才落回去。她配这一瓶的时候天在下雨，所以它是这个颜色；下一次下雨也配不出同一个。"
     }
   ]
 }
