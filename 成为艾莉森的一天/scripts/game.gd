@@ -459,7 +459,7 @@ func _on_dialogue_ended() -> void:
 # ---------------------------------------------------------------------------
 # 循环重置
 # ---------------------------------------------------------------------------
-func _on_loop_reset() -> void:
+func _on_loop_reset(from_ending: bool) -> void:
 	_midnight_panel.hide()
 	get_node("/root/TimeManager").reset_to_morning()
 	_auto_advance_timer.stop()
@@ -473,9 +473,11 @@ func _on_loop_reset() -> void:
 	else:
 		switch_area("plaza", "PlayerSpawn")
 	_switch_background("morning")
-	# 循环开场（第二轮起）：一行锚点旁白；播完就交还玩家，抽牌由魔法桌触发
+	# 循环开场（一行锚点旁白）只在结局「回到清晨」那条链路播 —— 那是"再一次在苔上
+	# 睁眼"，是循环设定的落点。午夜入睡是常规推进（玩家刚在自己床上醒来），再演
+	# 一遍既重复又打断节奏，所以只有 from_ending 为真才播。播完交还玩家。
 	var opening := get_node_or_null("OpeningUI")
-	if opening and opening.play_loop_condensed(get_node("/root/GameManager").current_day):
+	if from_ending and opening and opening.play_loop_condensed(gm.current_day):
 		_set_player_locked(true)
 		await opening.finished
 		_set_player_locked(false)

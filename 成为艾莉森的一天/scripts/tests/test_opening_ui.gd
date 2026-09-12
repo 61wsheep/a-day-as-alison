@@ -9,6 +9,7 @@ extends Node
 ##   3. 长文超出阅读框 → 可滚；末拍读到底才放行并露出「睁开眼」按钮
 ##   4. 翻完五拍 → 收屏、发 finished、解锁玩家
 ##   5. 开场播完后接上晨间塔罗
+##   6. 循环开场只在结局「回到清晨」那条链路播，午夜入睡不播
 
 var _failures := 0
 var _passes := 0
@@ -123,19 +124,52 @@ func _run() -> void:
 	_check("开场播完不再自动弹塔罗", tarot_panel != null and not tarot_panel.visible)
 	_check("结束后解锁玩家", player != null and not bool(player._movement_locked))
 
-	# ---- 阶段 2：循环开场（第二轮起只播一行锚点旁白，自动收） ----
+	# ---- 阶段 2：循环开场的两条链路（只有结局那条播） ----
+	# reset_loop(from_ending)：ending_ui._on_confirm() 传 true，
+	# game.gd._finish_sleep()（午夜入睡）走默认 false。
 	var gm: Node = get_node("/root/GameManager")
+
+	# 2a. 午夜入睡 → 不播。常规推进，玩家刚在自己床上醒来，不该再演一遍"在苔上睁眼"
 	gm.reset_loop()
 	await _wait(0.4)
-	_check("循环开场已开播", ui.is_playing())
+	_check("入睡重置不播循环开场", not ui.is_playing())
+	_check("入睡重置不锁玩家", player != null and not bool(player._movement_locked))
+
+	await _wait(0.6)   # 等 switch_area 的 0.5s 门冷却过期，免得下面那次重置被吞掉
+	gm.reset_loop(true)
+	await _wait(0.4)
+	_check("结局重置播循环开场", ui.is_playing())
 	_check("循环开场只有一行", ui.get("_queue").size() == 1)
 	_check("循环开场自动推进", bool(ui.get("_auto")))
 	_check("循环开场不显示拍名", ui._beat_label.text == "")
+	_check("循环开场不露「睁开眼」按钮", not ui._read_btn.visible)
 	_check("循环开场时锁住玩家", player != null and bool(player._movement_locked))
-	_check("循环开场的锚点是「苔」", ui._text_label.text.contains("苔"))
+
+	# 播的是循环池里的哪一句由 _pick_condensed(day) 按天轮换决定，所以不写死某句 ——
+	# 只验它取自循环池（而不是第一轮五拍的正文），轮换规则本身另行直测。
+	var loop_pool: Array = [str(ui.get("_loop_main"))]
+	loop_pool.append_array(ui.get("_loop_alternates"))
+	_check("循环开场取的是循环池里的一句", loop_pool.has(ui._text_label.text))
+	_check("第 2 天的锚点是「苔」", str(ui._pick_condensed(2)).contains("苔"))
+	_check("第 15 天起改用 late_round", ui._pick_condensed(15) == str(ui.get("_loop_late")))
 	await _wait(3.2)
 	_check("循环开场自动收屏", not ui.is_playing())
+	_check("循环开场后解锁玩家", player != null and not bool(player._movement_locked))
 	_check("循环开场后仍不自动弹塔罗", tarot_panel != null and not tarot_panel.visible)
+
+	# ---- 阶段 3：真的去点结局那颗「回到清晨」按钮 ----
+	# 这是整条链的最后一跳，也是最容易接错的一跳：ending_ui._on_confirm() 必须
+	# 把 from_ending 传成 true，传掉就退化成"结局后也不播"——正是这次要修的现象。
+	await _wait(0.6)
+	var ending_ui: Node = scene.get_node_or_null("EndingUI")
+	_check("main.tscn 里有 EndingUI", ending_ui != null)
+	if ending_ui:
+		ending_ui.show_ending("fool")
+		await get_tree().process_frame
+		ending_ui._on_confirm()
+		await _wait(0.4)
+		_check("点「回到清晨」后播循环开场", ui.is_playing())
+		_check("点「回到清晨」后只有一行", ui.get("_queue").size() == 1)
 
 	_finish()
 

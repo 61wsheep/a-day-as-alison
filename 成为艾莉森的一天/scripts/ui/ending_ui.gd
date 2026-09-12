@@ -107,4 +107,5 @@ func show_ending(ending_id: String) -> void:
 func _on_confirm() -> void:
 	_hide_all()
 	get_node("/root/EventBus").dialogue_ended.emit()
-	get_node("/root/GameManager").reset_loop()
+	# true = 结局触发的重置：这条链路要播循环开场那行旁白（见 game.gd._on_loop_reset）
+	get_node("/root/GameManager").reset_loop(true)

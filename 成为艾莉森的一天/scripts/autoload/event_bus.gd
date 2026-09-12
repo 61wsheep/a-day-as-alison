@@ -57,7 +57,9 @@ signal tarot_drawn(card: Dictionary)
 signal ending_reached(ending_id: String)
 
 # -- 循环 --
-signal loop_reset()
+## from_ending: 本次重置是否由结局「回到清晨」触发（false = 午夜入睡进入下一天）。
+## 只有结局那条链路会播循环开场那行旁白 —— 入睡是常规推进，不该再演一遍醒来。
+signal loop_reset(from_ending: bool)
 
 # -- 背包 / 售卖 --
 signal inventory_opened()

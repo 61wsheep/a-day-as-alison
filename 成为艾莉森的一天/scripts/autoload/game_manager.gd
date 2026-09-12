@@ -201,7 +201,13 @@ func conditions_met(cond: Dictionary) -> bool:
 	return true
 
 
-func reset_loop() -> void:
+## 重置循环，进入新的一天。
+##
+## from_ending: 是否由结局「回到清晨」触发。它只影响一件事 —— 循环开场那行旁白
+## （opening.json 的 loop_condensed）只在结局那条链路播；午夜入睡是常规推进，
+## 玩家刚从自己床上醒来，再演一遍「她在苔上睁眼」既重复又打断节奏。
+## 默认 false：入睡、测试、模拟一律走不播的分支。
+func reset_loop(from_ending: bool = false) -> void:
 	# 归档昨日顺从判定（供次日天命面具/化身面具注入"呼应昨天"）
 	heaven["last_compliance"] = str(heaven.get("daily_compliance", ""))
 	# 天的单日字段随循环重置（tomorrow_seed 跨天保留，供次日天命面具注入）
@@ -221,7 +227,7 @@ func reset_loop() -> void:
 	tarot_drawn_today = false
 	daily_tarot_card = ""
 	daily_luck = 0
-	get_node("/root/EventBus").loop_reset.emit()
+	get_node("/root/EventBus").loop_reset.emit(from_ending)
 	get_node("/root/EventBus").day_started.emit(current_day)
 
 
