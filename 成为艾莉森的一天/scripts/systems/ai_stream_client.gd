@@ -260,6 +260,7 @@ func _fail(t0: int, message: String, http_code := 0) -> Dictionary:
 		"http_code": http_code, "first_byte_ms": _first_byte_ms,
 		"total_ms": Time.get_ticks_msec() - t0, "done": _done, "deltas": _delta_count,
 		"cancelled": false, "error": message,
+		"err_body": _err_body.get_string_from_utf8(),
 	}
 
 

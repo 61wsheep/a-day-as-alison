@@ -27,6 +27,8 @@ const ORACLE_REQUIRED: Array = ["card_name", "prophecy", "tone", "internal_note"
 const JUDGMENT_REQUIRED: Array = ["day_summary", "tomorrow_seed", "should_end_loop", "internal_note"]
 
 var _host: Node = null
+## 失败提示是否已发过（每次运行只发一次，避免每天刷屏）
+var _failure_announced := false
 
 
 ## host 用于访问 autoload（RefCounted 无 get_tree）。测试可传入任意树内 Node。
@@ -49,8 +51,9 @@ func oracle() -> Dictionary:
 	var payload := _build_oracle_payload(gm, day)
 	print("[AIHeavenSession] 天命面具请求 AI（第 %d 天）…" % day)
 	var raw: String = await bridge.request_llm_with_guard(payload, REQUEST_TIMEOUT)
-	if raw.begins_with("[API_ERROR]") or raw.begins_with("[BUSY]") or raw.begins_with("[DISABLED]"):
+	if bridge.is_error_response(raw):
 		print("[AIHeavenSession] oracle 失败回落：%s" % raw.left(60))
+		_announce_failure(bridge, raw)
 		return _fallback_oracle(gm)
 	var r: Dictionary = AIJsonUtils.parse_response(raw, ORACLE_REQUIRED)
 	if not bool(r.get("success", false)):
@@ -188,8 +191,9 @@ func judgment() -> Dictionary:
 	var payload := _build_judgment_payload(gm, day, compliance)
 	print("[AIHeavenSession] 审判面具请求 AI（第 %d 天）…" % day)
 	var raw: String = await bridge.request_llm_with_guard(payload, REQUEST_TIMEOUT)
-	if raw.begins_with("[API_ERROR]") or raw.begins_with("[BUSY]") or raw.begins_with("[DISABLED]"):
+	if bridge.is_error_response(raw):
 		print("[AIHeavenSession] judgment 失败回落：%s" % raw.left(60))
+		_announce_failure(bridge, raw)
 		return _fallback_judgment(gm, compliance)
 	var r: Dictionary = AIJsonUtils.parse_response(raw, JUDGMENT_REQUIRED)
 	if not bool(r.get("success", false)):
@@ -300,6 +304,17 @@ func _autoload(autoload_name: String) -> Node:
 	if _host == null:
 		return null
 	return _host.get_node_or_null("/root/%s" % autoload_name)
+
+
+## 天命/审判失败时给玩家一条提示（每天只提示一次，避免刷屏）。
+## 尤其关键：密钥无效时必须说清楚——否则玩家在游戏里只会感到"AI 莫名其妙没了"。
+func _announce_failure(bridge: Node, raw: String) -> void:
+	if _failure_announced:
+		return
+	_failure_announced = true
+	var bus := _autoload("EventBus")
+	if bus != null and bus.has_signal("toast"):
+		bus.emit_signal("toast", bridge.error_toast(raw))
 
 
 func _load_cards() -> Array:

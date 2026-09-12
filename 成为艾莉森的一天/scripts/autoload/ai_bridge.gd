@@ -24,6 +24,22 @@ const RETRY_MAX_ELAPSED_MS := 10000
 const NET_LOG_PATH := "user://ai_net.log"
 const NET_LOG_MAX_BYTES := 262144   # >256KB 重置，只留最近一次运行
 
+## ---- API key 落盘位置（按优先级）----
+## user:// 是玩家自己填的（导出包可写，天然不进版本库）；
+## res:// 是打包时注入的出厂密钥（导出只读，玩家改不了，见 scripts/tools/inject_api_key.gd）。
+const USER_KEY_PATH := "user://ai_api_key.txt"
+const RES_KEY_PATH := "res://ai/api_key.txt"
+
+## ---- 错误哨兵词表（上层一律用 is_error_response / error_toast，勿各自硬编码前缀）----
+## 分语义是必要的：鉴权类和额度类是**永久错误**，重试与回落非流式都必然再失败一次，
+## 只会白白多等一轮并污染日志；而且玩家看到的提示也该各不相同。
+const ERR_API := "[API_ERROR]"        # 网络层 / 5xx / 其它瞬时故障
+const ERR_AUTH := "[AUTH_ERROR]"      # 401/403 —— 密钥无效或无权
+const ERR_QUOTA := "[QUOTA_ERROR]"    # 402/429 —— 余额不足或请求过频
+const ERR_BUSY := "[BUSY]"
+const ERR_DISABLED := "[DISABLED]"
+const ERROR_PREFIXES := [ERR_API, ERR_AUTH, ERR_QUOTA, ERR_BUSY, ERR_DISABLED]
+
 ## ---- 流式（SSE）----
 ## 一级回滚开关：--ai-stream-off / AI_STREAM=0 即整体退回非流式（行为与改造前一致）。
 ## 流式失败也会自动回落非流式，故即使上游不支持也不会比现状更差。
@@ -50,6 +66,8 @@ var _resp_result := 0
 var _resp_code := 0
 var _resp_body := PackedByteArray()
 var _cancel_requested := false   # cancel_current() 已请求放弃本次请求
+## _send_once 对最后一次失败的归类："" = 可重试（网络层/5xx）；"auth"/"quota"/"other" = 永久。
+var _last_fault := ""
 
 
 func _ready() -> void:
@@ -75,6 +93,48 @@ func is_available() -> bool:
 	if _mock_responder.is_valid():
 		return true   # mock 模式（测试）不需要 API key
 	return not _api_key.is_empty() and _http != null
+
+
+## 返回值是否属于「AI 没答上来」的哨兵串（不是 LLM 的真实输出）。
+func is_error_response(raw: String) -> bool:
+	for p in ERROR_PREFIXES:
+		if raw.begins_with(p):
+			return true
+	return raw.strip_edges().is_empty()
+
+
+## 把哨兵串翻译成给玩家看的话（分诊：密钥问题就说密钥，别一律赖网络）。
+func error_toast(raw: String) -> String:
+	if raw.begins_with(ERR_AUTH):
+		return "API 密钥无效，请在开始界面重新填写"
+	if raw.begins_with(ERR_QUOTA):
+		return "AI 请求过于频繁或额度不足，稍后再试"
+	if raw.begins_with(ERR_BUSY):
+		return "AI 还在回上一条，稍等一下"
+	if raw.begins_with(ERR_DISABLED):
+		return "未配置 API 密钥，AI 对话已关闭"
+	return "AI 暂时无法回复，已切回固定对话"
+
+
+## HTTP 码归类。返回 "" = 可重试（网络层错误 / 5xx 瞬时故障）；
+## "auth" / "quota" / "other" = 永久错误 —— 重试与回落非流式都没有意义。
+func _http_fault(code: int) -> String:
+	if code == 401 or code == 403:
+		return "auth"
+	if code == 402 or code == 429:
+		return "quota"
+	if code >= 400 and code < 500:
+		return "other"
+	return ""   # 5xx 及其它：可能是瞬时的，值得重试
+
+
+## 把 HTTP 错误码转成带语义的哨兵串（上层据此给玩家不同提示）。
+func _fault_sentinel(code: int, body: String) -> String:
+	var detail := body.strip_edges().substr(0, 200)
+	match _http_fault(code):
+		"auth": return "%s HTTP %d: %s" % [ERR_AUTH, code, detail]
+		"quota": return "%s HTTP %d: %s" % [ERR_QUOTA, code, detail]
+		_: return "%s HTTP %d: %s" % [ERR_API, code, detail]
 
 
 ## 流式是否启用（--ai-stream-off / AI_STREAM=0 关闭；仅供会话层决定走哪条路径）。
@@ -124,13 +184,27 @@ func set_api_key(key: String) -> bool:
 	if _http == null:
 		_http = _make_http()
 	# 持久化到 user://（res:// 导出只读；user:// 天然 gitignore）
-	var f := FileAccess.open("user://ai_api_key.txt", FileAccess.WRITE)
+	var f := FileAccess.open(USER_KEY_PATH, FileAccess.WRITE)
 	if f:
 		f.store_string(k)
 		f.close()
 	_log_net("[NET] 界面提交 key 并启用 key_len=%d" % k.length())
 	print("[AIBridge] API key 已保存并启用。")
 	return true
+
+
+## 忘记密钥：内存状态与 user:// 落盘一并清掉，回到"未配置"。
+##
+## 存在的理由不只是产品功能（开始界面「清除」按钮）——它同时是测试的**唯一**退路：
+## _ready() 在测试跑起来之前就把 key 读进内存了，此后无论怎么删文件，
+## is_available() 都还是 true。没有这个方法，「无 key 状态」在开发机上根本不可达。
+func clear_api_key() -> void:
+	_api_key = ""
+	_enabled = false
+	if FileAccess.file_exists(USER_KEY_PATH):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(USER_KEY_PATH))
+	_log_net("[NET] 已清除 API key（内存 + %s）" % USER_KEY_PATH)
+	print("[AIBridge] API key 已清除，AI 对话关闭。")
 
 
 func has_role_card(npc_id: String) -> bool:
@@ -180,9 +254,9 @@ func cancel_current() -> void:
 func request_llm(payload: Dictionary) -> String:
 	if _in_flight:
 		_log_net("[NET] BUSY：仍有请求在途被拒（若持续出现 → 上一条请求未按时结束，检查遥测）")
-		return "[BUSY]"
+		return ERR_BUSY
 	if not is_available():
-		return "[DISABLED]"
+		return ERR_DISABLED
 	if _mock_responder.is_valid():
 		_in_flight = true
 		var r: String = await _mock_responder.call(payload)
@@ -192,12 +266,17 @@ func request_llm(payload: Dictionary) -> String:
 	_in_flight = true
 	var t0 := Time.get_ticks_msec()
 	var raw := await _send_once(payload)
-	# 断联重试：仅当失败很快返回（连接层错误）时重试一次；慢超时/玩家取消/守护放弃不重试
-	if raw.begins_with("[API_ERROR]") and not _cancel_requested \
+	# 断联重试：三个条件同时满足才重试 —— ①失败很快返回（慢超时重试只会让玩家等更久）
+	# ②失败归类为可重试（网络层/5xx）③玩家没取消。
+	# 鉴权/额度类错误（401/403/402/429）重试必然再失败一次，白白多等一轮还污染日志。
+	if _last_fault == "" and is_error_response(raw) and not _cancel_requested \
 			and Time.get_ticks_msec() - t0 < RETRY_MAX_ELAPSED_MS:
 		_log_net("[NET] 快速失败触发自动重试 1 次：%s" % raw.left(60))
 		print("[AIBridge] 请求快速失败（%s），重试一次…" % raw.left(48))
 		raw = await _send_once(payload)
+	else:
+		if _last_fault != "":
+			_log_net("[NET] 永久错误（%s）不重试：%s" % [_last_fault, raw.left(60)])
 	_in_flight = false
 	return raw
 
@@ -206,6 +285,7 @@ func request_llm(payload: Dictionary) -> String:
 func _send_once(payload: Dictionary) -> String:
 	var t0 := Time.get_ticks_msec()
 	var stamp := Time.get_datetime_string_from_system()
+	_last_fault = ""
 	var body := _build_body(payload, false, true)
 	var headers := PackedStringArray([
 		"Content-Type: application/json",
@@ -215,7 +295,7 @@ func _send_once(payload: Dictionary) -> String:
 	var err := _http.request(BASE_URL, headers, HTTPClient.METHOD_POST, body)
 	if err != OK:
 		_log_net("%s | 发送失败 err=%s" % [stamp, error_string(err)])
-		return "[API_ERROR] " + error_string(err)
+		return ERR_API + " " + error_string(err)
 
 	# 等结果：轮询「完成标记 / 取消标记 / 绝对超时」，任一先到即醒。
 	# 不用裸 await _http.request_completed —— threaded 模式下 cancel_request() 可能吞掉该信号，
@@ -240,12 +320,14 @@ func _send_once(payload: Dictionary) -> String:
 	# 被取消（玩家 Esc / 守护硬超时）：不重试、丢弃半截结果，_in_flight 由上层复位
 	if _cancel_requested:
 		_log_net("%s | 已取消 | %dms | FAIL（玩家Esc/超时放弃）" % [stamp, ms])
-		return "[API_ERROR] cancelled"
+		_last_fault = "other"
+		return ERR_API + " cancelled"
 	# 绝对兜底：引擎既没回发结果也没超时信号 → 主动断开底层，按超时判失败
 	if not _req_done:
 		_http.cancel_request()
 		_log_net("%s | 等待兜底超时 | %dms | FAIL" % [stamp, ms])
-		return "[API_ERROR] result=%d http=%d" % [HTTPRequest.RESULT_TIMEOUT, code]
+		_last_fault = ""
+		return "%s result=%d http=%d" % [ERR_API, HTTPRequest.RESULT_TIMEOUT, code]
 
 	print("[AIBridge] HTTP 完成 result=%d code=%d 耗时=%.1fs" % [result, code, ms / 1000.0])
 	# 遥测一行：成功 result=0&http=200 记 OK；失败追加响应体前 160 字符（429/401/403/404 的直接证据）
@@ -256,14 +338,16 @@ func _send_once(payload: Dictionary) -> String:
 	_log_net("%s | result=%d http=%d | %dms | %s%s" % [stamp, result, code, ms, "OK" if ok else "FAIL", detail])
 
 	if result != HTTPRequest.RESULT_SUCCESS:
-		return "[API_ERROR] result=%d http=%d" % [result, code]
+		_last_fault = ""   # 网络层失败：可能是瞬时的，允许重试
+		return "%s result=%d http=%d" % [ERR_API, result, code]
 	if code != 200:
-		return "[API_ERROR] HTTP %d: %s" % [code, bytes.get_string_from_utf8()]
+		_last_fault = _http_fault(code)
+		return _fault_sentinel(code, bytes.get_string_from_utf8())
 	# OpenAI chat.completions 信封 → 解包 assistant content（LLM 的真实 JSON 在 content 里）
 	var content := _extract_content(bytes.get_string_from_utf8())
 	if content.is_empty():
 		_log_net("%s | result=%d http=%d | %dms | 200 但缺 assistant content（信封/编码异常）" % [stamp, result, code, ms])
-		return "[API_ERROR] 响应缺少 assistant content"
+		return ERR_API + " 响应缺少 assistant content"
 	return content
 
 
@@ -335,14 +419,14 @@ func request_llm_with_guard(payload: Dictionary, hard_timeout: float) -> String:
 # ---------------------------------------------------------------------------
 
 ## 流式请求。on_delta(visible_text) 每收到新内容回调一次（传入当前可显示台词）。
-## 返回契约与 request_llm 完全一致：成功=LLM 原始 JSON 文本；失败=[API_ERROR]/[BUSY]/[DISABLED]。
-## 流式不可用/失败时自动回落非流式（一次），调用方无需感知。
+## 返回契约与 request_llm 完全一致：成功=LLM 原始 JSON 文本；失败=带语义的哨兵串。
+## 瞬时失败自动回落非流式（一次）；永久错误（鉴权/额度/4xx）直接返回，不回落（省一轮必败请求）。
 func request_llm_stream(payload: Dictionary, on_delta: Callable) -> String:
 	if _in_flight:
 		_log_net("[NET] stream BUSY：仍有请求在途被拒")
-		return "[BUSY]"
+		return ERR_BUSY
 	if not is_available():
-		return "[DISABLED]"
+		return ERR_DISABLED
 
 	# mock：把整段结果一次吐给 on_delta（测试零网络，且覆盖"流式路径"的接线）
 	if _mock_responder.is_valid():
@@ -371,7 +455,7 @@ func request_llm_stream(payload: Dictionary, on_delta: Callable) -> String:
 	if res.get("cancelled", false):
 		_log_net("[NET] stream | 已取消 | %dms | FAIL" % total_ms)
 		_in_flight = false
-		return "[API_ERROR] cancelled"
+		return ERR_API + " cancelled"
 
 	if res.get("ok", false) and not raw.strip_edges().is_empty():
 		_log_net("[NET] stream | 首字%dms | 总%dms | delta=%d | %s | OK"
@@ -381,10 +465,21 @@ func request_llm_stream(payload: Dictionary, on_delta: Callable) -> String:
 		_in_flight = false
 		return raw
 
-	# 流式失败 → 回落非流式（玩家仍能拿到回复，只是没有边收边显示）
 	var err := str(res.get("error", "空内容"))
 	if res.get("ok", false):
 		err = "流式返回空内容"
+
+	# 永久错误（401/403/402/429/4xx）：回落非流式必然再失败一次，只是白白多等一轮、
+	# 还把真正的原因淹没在噪音里（真机"AI 断线"日志就是这么来的）。直接给准确原因。
+	var code := int(res.get("http_code", 0))
+	var fault := _http_fault(code)
+	if fault != "":
+		_log_net("[NET] stream | %dms | FAIL 永久错误(%s) 不回落：%s" % [total_ms, fault, err])
+		print("[AIBridge] 流式永久错误（%s），不回落非流式。" % err.left(60))
+		_in_flight = false
+		return _fault_sentinel(code, str(res.get("err_body", err)))
+
+	# 瞬时失败 → 回落非流式（玩家仍能拿到回复，只是没有边收边显示）
 	_log_net("[NET] stream | 首字%dms | %dms | FAIL 回落非流式：%s" % [first, total_ms, err])
 	print("[AIBridge] 流式失败（%s），回落非流式请求…" % err.left(60))
 	var fb := await _send_once(payload)
@@ -461,7 +556,7 @@ func _resolve_key() -> String:
 	var env_key := _clean_key(OS.get_environment("SILICONFLOW_API_KEY"))
 	if not env_key.is_empty():
 		return env_key
-	for path in ["user://ai_api_key.txt", "res://ai/api_key.txt"]:
+	for path in [USER_KEY_PATH, RES_KEY_PATH]:
 		if FileAccess.file_exists(path):
 			var f := FileAccess.open(path, FileAccess.READ)
 			if f:

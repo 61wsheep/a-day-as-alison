@@ -33,6 +33,7 @@ var _t_start := 0
 
 var _rows: Array = []
 var _failures := 0
+var _bridge: Node = null
 
 
 func _init() -> void:
@@ -64,6 +65,7 @@ func _arg(name: String, default: String) -> String:
 func _run() -> void:
 	await process_frame
 	var bridge = root.get_node_or_null("AIBridge")
+	_bridge = bridge
 	if bridge == null:
 		printerr("[PROBE] FAIL 无 AIBridge autoload")
 		quit(1)
@@ -88,7 +90,7 @@ func _run() -> void:
 			payload, _hard_timeout, Callable())
 		print("[PROBE] 预热 %d/%d：%dms（不计入统计）" % [
 			w + 1, _warmup, Time.get_ticks_msec() - t])
-		if warm.begins_with("[API_ERROR]"):
+		if _bridge.is_error_response(warm):
 			printerr("[PROBE] FAIL 预热失败：%s" % warm.left(140))
 			quit(1)
 			return
@@ -138,8 +140,7 @@ func _on_delta(_visible: String) -> void:
 
 func _record(mode: String, round_i: int, first_ms: int, total_ms: int,
 		deltas: int, raw: String) -> void:
-	var failed: bool = raw.begins_with("[API_ERROR]") or raw.begins_with("[BUSY]") \
-		or raw.begins_with("[DISABLED]") or raw.strip_edges().is_empty()
+	var failed: bool = _bridge.is_error_response(raw)
 	var parsed := AIJsonUtilsScript.parse_response(raw, ["response_text"], true)
 	var ok: bool = parsed.get("success", false)
 	var method := str(parsed.get("method", "-"))

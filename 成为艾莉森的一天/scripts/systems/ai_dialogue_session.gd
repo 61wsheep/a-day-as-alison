@@ -155,7 +155,9 @@ func _build_and_request(is_opening: bool, player_input: String = "") -> void:
 	if _ended:
 		return   # 会话已被玩家结束（Esc 退出），丢弃迟到的结果
 
-	if raw.begins_with("[API_ERROR]") or raw.begins_with("[BUSY]") or raw.begins_with("[DISABLED]"):
+	# 哨兵词表归 AIBridge 管（含 [AUTH_ERROR]/[QUOTA_ERROR] 等）；bridge 缺失时 raw 为空，
+	# 走 _handle_response → 解析失败 → 同样落到失败分支。
+	if bridge and bridge.is_error_response(raw):
 		_handle_failure(raw)
 		return
 	_handle_response(raw)
@@ -318,7 +320,10 @@ func _apply_turn(parsed: Dictionary) -> void:
 
 func _handle_failure(reason: String) -> void:
 	print("[AIDialogueSession] %s" % reason)
-	_toast("AI 暂时无法回复，已切回固定对话")
+	# 分诊提示：密钥无效就说密钥无效（真机"AI 断线"其实全是 401，却被"暂时无法回复"带偏了排查）
+	var bridge := _autoload("AIBridge")
+	_toast(bridge.error_toast(reason) if bridge and bridge.has_method("error_toast")
+			else "AI 暂时无法回复，已切回固定对话")
 	if _sideline:
 		sideline_done.emit()
 		_ended = true
