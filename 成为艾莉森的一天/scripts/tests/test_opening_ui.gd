@@ -6,8 +6,9 @@ extends Node
 ## 覆盖：
 ##   1. main.tscn 起来后 OpeningUI 自动开播第一轮五拍（绳→苔→树→看→撞）
 ##   2. 播放期间挡屏可见、玩家移动被锁
-##   3. 翻完五拍 → 收屏、发 finished、解锁玩家
-##   4. 开场播完后接上晨间塔罗
+##   3. 长文超出阅读框 → 可滚；末拍读到底才放行并露出「睁开眼」按钮
+##   4. 翻完五拍 → 收屏、发 finished、解锁玩家
+##   5. 开场播完后接上晨间塔罗
 
 var _failures := 0
 var _passes := 0
@@ -70,16 +71,47 @@ func _run() -> void:
 	var finished := {"fired": false}
 	ui.finished.connect(func(): finished["fired"] = true)
 
-	# 翻到倒数第二拍，检查末拍提示
+	# 翻到末拍（撞）。末拍另有门控：正文没读到底就不放行，得滚到底才收尾。
 	for i in queue.size() - 1:
 		ui._advance()
 		await get_tree().process_frame
-	_check("末拍提示改为「睁开眼」", ui._hint_label.text == "[E] 睁开眼")
+	await get_tree().process_frame
 	_check("末拍时仍在播", ui.is_playing())
 
+	# ---- 正文阅读框：长文超出框、可以滚（改造前直接被屏幕底边切掉） ----
+	var scroll: ScrollContainer = ui.get("_scroll")
+	_check("末拍正文超出阅读框", not bool(ui._compute_at_bottom()))
+	_check("末拍未读到底拦住继续", bool(ui._gated()))
+	_check("末拍未读到底提示改滚轮", ui._hint_label.text == "[滚轮] 读到最后")
+	_check("末拍未读到底不露按钮", not ui._read_btn.visible)
+
+	# ---- 读到底：放行 + 「睁开眼」按钮露面 ----
+	scroll.scroll_vertical = int(1e6)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check("滚到底后已到底", bool(ui._compute_at_bottom()))
+	_check("滚到底后放行继续", not bool(ui._gated()))
+	_check("滚到底后提示「睁开眼」", ui._hint_label.text == "[E] 睁开眼")
+	_check("滚到底后露出「睁开眼」按钮", ui._read_btn.visible)
+
+	# ---- 前四拍不受门控：正文同样超出框，但不拦人、也不露按钮 ----
+	ui.set("_index", 2)
+	ui._show_current()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check("非末拍正文也超出阅读框", not bool(ui._compute_at_bottom()))
+	_check("非末拍不设门控", not bool(ui._gated()))
+	_check("非末拍不露按钮", not ui._read_btn.visible)
+	_check("非末拍提示「继续」", ui._hint_label.text == "[E] 继续")
+
+	# 收回末拍再正常收尾
+	ui.set("_index", queue.size() - 1)
+	ui._show_current()
+	await get_tree().process_frame
 	ui._advance()
 	await get_tree().process_frame
 	_check("翻完五拍后收屏", not ui.is_playing())
+	_check("收屏后按钮一并收起", not ui._read_btn.visible)
 	_check("挡屏已隐藏", not ui.visible)
 	_check("发出 finished 信号", bool(finished["fired"]))
 
