@@ -85,14 +85,181 @@
       ]
     },
     {
-      "id": "daily",
+      "id": "daily_a1",
       "priority": 10,
-      "conditions": {"flag": ["met_soraya"]},
+      "conditions": {"flag": ["met_soraya"], "day_min": 1, "day_max": 2},
       "ai": true,
+      "rotate": true,
       "lines": [
         {"speaker": "soraya", "emotion": "smile_01", "text": "今天也顺利吗？蘑菇在广场上刷新得很快，攒够租金就去树屋区看看吧。"},
         {"speaker": "player", "emotion": "talk_01", "text": "你每天都站在这里吗？"},
         {"speaker": "soraya", "emotion": "smile_02", "text": "迎接新居民是我的……职责呀。"}
+      ]
+    },
+    {
+      "id": "daily_a2",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 1, "day_max": 2},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "soraya", "emotion": "laugh_talk_01", "text": "欸，坡下有人撞下来了——你等我一下哦。"},
+        {"speaker": "narrator", "text": "她跑下去，蹲下，开口：「哎呀——掉了七朵！」"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（一模一样的语调。上一次也是这样开头的。）"}
+      ]
+    },
+    {
+      "id": "daily_a3",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 1, "day_max": 2},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "soraya", "emotion": "smile_01", "text": "树屋挑好了吗？往北那几栋安静，离广场近的那几栋热闹——我住最靠广场那栋哦。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "你住那栋多久了？"},
+        {"speaker": "soraya", "emotion": "smile_03", "text": "……很久啦。欸，你闻到了吗？要下雨了。"}
+      ]
+    },
+    {
+      "id": "daily_a4",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 1, "day_max": 2},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "player", "emotion": "talk_01", "text": "刚才走过去那位是谁？"},
+        {"speaker": "soraya", "emotion": "smile_02", "text": "提藤篮的那位呀。往北第四栋，住了六十一年，她丈夫是普通人，前年走的。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（她报别人报得像在念年表。可我刚才问的是她自己。）"}
+      ]
+    },
+    {
+      "id": "daily_a5",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 1, "day_max": 2},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "narrator", "text": "她递过来一小把蘑菇，手很稳。递之前，她往左看了一眼，又往右看了一眼——很快，快得像不想让人发现。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（她在看什么？这条路两头，什么都没有。）"}
+      ]
+    },
+    {
+      "id": "daily_b1",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "soraya", "emotion": "smile_01", "text": "欸——你上次说你喜欢那种带酸味的浆果，我今天顺手多摘了一点。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "你还记得啊。"},
+        {"speaker": "soraya", "emotion": "smile_03", "text": "……我连这个都记着？——欸，拿着呀，拿着。"}
+      ]
+    },
+    {
+      "id": "daily_b2",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "soraya", "emotion": "smile_01", "text": "我记得你。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "你上次也是这么说的。对每个人都是。"},
+        {"speaker": "soraya", "emotion": "smile_02", "text": "欸，是吗？哎呀，我见的人太多啦——来来来，我带你去看药园。"}
+      ]
+    },
+    {
+      "id": "daily_b3",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "player", "emotion": "talk_01", "text": "你在这儿多久了？"},
+        {"speaker": "soraya", "emotion": "smile_02", "text": "往北第四栋那位女士，住了六十一年。她丈夫是普通人，前年走的。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（我问的是她。她答的是别人。这一次她连笑都慢了半拍。）"}
+      ]
+    },
+    {
+      "id": "daily_b4",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "soraya", "emotion": "smile_02", "text": "欸，问你件事——你来之前，是住什么样的地方呀？"},
+        {"speaker": "player", "emotion": "talk_01", "text": "……你第一次问我这种事。"},
+        {"speaker": "soraya", "emotion": "smile_03", "text": "是吗？大概是……今天有点闲。"}
+      ]
+    },
+    {
+      "id": "daily_b5",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "soraya", "emotion": "smile_01", "text": "小事哦——我小时候怕黑。真的，你别笑。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（她说的是「小时候」。这是我第一次听她讲一件关于她自己的事——虽然只有一件。）"}
+      ]
+    },
+    {
+      "id": "daily_c1",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "soraya", "emotion": "smile_02", "text": "欸，你这个人有点怪。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "哪里怪？"},
+        {"speaker": "soraya", "emotion": "smile_03", "text": "别人住进来以后，话会越来越少。你没有。你昨天说的话，比前天多。"}
+      ]
+    },
+    {
+      "id": "daily_c2",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "player", "emotion": "talk_01", "text": "索拉雅，你在这儿当迎新人多久了？"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "……我不敢数。"},
+        {"speaker": "soraya", "emotion": "smile_02", "text": "——欸，蘑菇要凉了。我先走啦！"}
+      ]
+    },
+    {
+      "id": "daily_c3",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "soraya", "emotion": "smile_02", "text": "你有没有过……躺在一个很黑的地方，但是不害怕？旁边有一盏很小的灯。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "那是什么地方？"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "不知道呀。刚刚突然想起来的。……大概是我累了。"}
+      ]
+    },
+    {
+      "id": "daily_c4",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "narrator", "text": "她没有笑。她只是站在原地，看着广场上走来走去的人，看了很久。"},
+        {"speaker": "soraya", "emotion": "intro", "text": "他们都过得很好。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（她说的是真话。可我听不出她是在替他们高兴。）"}
+      ]
+    },
+    {
+      "id": "daily_c5",
+      "priority": 10,
+      "conditions": {"flag": ["met_soraya"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "player", "emotion": "talk_01", "text": "你的手怎么了？"},
+        {"speaker": "soraya", "emotion": "smile_01", "text": "欸？没怎么呀。"},
+        {"speaker": "narrator", "text": "她低头看了一眼——篮子带子在她手里绞着，绞出一圈白痕。她把它松开，重新拎好，笑了一下。"}
       ]
     }
   ]

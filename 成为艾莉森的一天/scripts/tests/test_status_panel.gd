@@ -76,7 +76,7 @@ func _run() -> void:
 	# 内容快照包含线索与好感度
 	_texts = ""
 	_collect_text(panel)
-	_check("面板显示线索名", "帕德温没有前世的记忆" in _texts)
+	_check("面板显示线索名", "帕德温挡脸的那只手" in _texts)
 	_check("面板显示好感度数值", "70/100" in _texts)
 
 	_press_tab()

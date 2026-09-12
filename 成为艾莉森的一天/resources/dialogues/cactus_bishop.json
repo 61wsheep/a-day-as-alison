@@ -36,14 +36,186 @@
       "end_effects": {"set_flag": ["cactus_aftermath_spoken"]}
     },
     {
-      "id": "daily",
+      "id": "daily_a1",
       "priority": 10,
-      "conditions": {"flag": ["met_cactus"]},
+      "conditions": {"flag": ["met_cactus"], "day_min": 1, "day_max": 2},
       "ai": true,
+      "rotate": true,
       "lines": [
         {"speaker": "cactus", "emotion": "idle", "text": "今天也要谨言慎行。"},
         {"speaker": "cactus", "emotion": "think", "text": "猎巫的季节早已过去。如今的森林里，不需要火焰——「天」自会审判。"},
         {"speaker": "player", "emotion": "talk_02", "text": "（他说这话的时候，手指一直按着喉咙。）"}
+      ]
+    },
+    {
+      "id": "daily_a2",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 1, "day_max": 2},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "player", "emotion": "talk_01", "text": "主教大人，我想问一件事——"},
+        {"speaker": "cactus", "emotion": "idle", "text": "问。"},
+        {"speaker": "narrator", "text": "他答得很快，快得像早就在等这句。可她真的问出口之后，他沉默了比答案更长的时间，最后给的那句短得几乎没有用。"}
+      ]
+    },
+    {
+      "id": "daily_a3",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 1, "day_max": 2},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "player", "emotion": "talk_01", "text": "这座森林到底是什么？"},
+        {"speaker": "cactus", "emotion": "think", "text": "这个问题，大学里那些人问了很久了。"},
+        {"speaker": "cactus", "emotion": "idle", "text": "孩子，你问错人了。这座森林里，没有人答得上你。"}
+      ]
+    },
+    {
+      "id": "daily_a4",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 1, "day_max": 2},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "narrator", "text": "他在名录上写字。笔尖压得很重，一笔一笔，像在给每行名字钉钉子。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他写得不快。可他翻页的时候，从来没有回去改过任何一处。）"}
+      ]
+    },
+    {
+      "id": "daily_a5",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 1, "day_max": 2},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "player", "emotion": "talk_01", "text": "（我用的是我们那儿的话。他应该听不懂——除非他听过。）"},
+        {"speaker": "narrator", "text": "她故意用母语说了半句。他抬眼看了她一瞬，只有一瞬，然后低头继续写。"},
+        {"speaker": "cactus", "emotion": "idle", "text": "……说通用语。"}
+      ]
+    },
+    {
+      "id": "daily_b1",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "narrator", "text": "她进门就自己把纸摊平了，按手印的位置一次就找对。桌上的手停了一拍。"},
+        {"speaker": "cactus", "emotion": "think", "text": "你来过。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "……来过。"},
+        {"speaker": "cactus", "emotion": "idle", "text": "嗯。"}
+      ]
+    },
+    {
+      "id": "daily_b2",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "narrator", "text": "塔楼里不冷，可他的衣领一直立着，立得很整齐，扣到最上面一颗。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（这里没有风。）"}
+      ]
+    },
+    {
+      "id": "daily_b3",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "cactus", "emotion": "idle", "text": "你上回问过一样的话。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "您记得。"},
+        {"speaker": "cactus", "emotion": "think", "text": "……我记名字。别的记不住。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他刚才是想说别的。我听见那个「别的」被他自己咽回去了。）"}
+      ]
+    },
+    {
+      "id": "daily_b4",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "narrator", "text": "流程走完，她转身。她听见身后纸页翻动的声音——他本来可以等的，但今天他没有等。"},
+        {"speaker": "cactus", "emotion": "talk", "text": "路上有野狗。走大路。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（这是一句完全用不着的话。塔楼到广场，一路都是石板。）"}
+      ]
+    },
+    {
+      "id": "daily_b5",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 3, "day_max": 6},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "player", "emotion": "talk_01", "text": "别人都有点怕您。您不觉得吗？"},
+        {"speaker": "cactus", "emotion": "idle", "text": "他们怕的不是我。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "那是什么？"},
+        {"speaker": "narrator", "text": "他不答。他抬起手，把衣领往上按了按。那就是全部的答案。"}
+      ]
+    },
+    {
+      "id": "daily_c1",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "cactus", "emotion": "think", "text": "你记性太好了。"},
+        {"speaker": "player", "emotion": "talk_01", "text": "……什么？"},
+        {"speaker": "cactus", "emotion": "idle", "text": "住在这里的人，住久了会把昨天忘成一团。你没有。你昨天说的话，前天也说过一遍。"},
+        {"speaker": "cactus", "emotion": "think", "text": "……不必学他们。也不必问我为什么知道。"}
+      ]
+    },
+    {
+      "id": "daily_c2",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "player", "emotion": "talk_01", "text": "您为什么什么都不做？您明明——"},
+        {"speaker": "cactus", "emotion": "idle", "text": "……我做过。"},
+        {"speaker": "narrator", "text": "他说完就不说了，像那三个字是自己滑出来的，说完才被他听见。"},
+        {"speaker": "cactus", "emotion": "sad", "text": "……你不必懂。你不必懂，就已经比我强了。"}
+      ]
+    },
+    {
+      "id": "daily_c3",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "narrator", "text": "名录翻到最后一页。她看见那一页的最后一行是空的——不是没写完，是名字被人用很轻的力气划掉了，划痕浅得几乎认不出。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他刚才一直看着我的手。他知道我看见了。）"},
+        {"speaker": "cactus", "emotion": "idle", "text": "……回去吧。天色晚了。"}
+      ]
+    },
+    {
+      "id": "daily_c4",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "narrator", "text": "她还没说完，他就答了。答完他自己也怔了一下——他从来不抢话。"},
+        {"speaker": "cactus", "emotion": "think", "text": "……你说下去。"},
+        {"speaker": "player", "emotion": "talk_02", "text": "（他说了句自己没有准备说的话。这一次他没有把衣领往上按。）"}
+      ]
+    },
+    {
+      "id": "daily_c5",
+      "priority": 10,
+      "conditions": {"flag": ["met_cactus"], "day_min": 7},
+      "ai": true,
+      "rotate": true,
+      "lines": [
+        {"speaker": "player", "emotion": "talk_01", "text": "我那样冒犯您，您为什么不生气？"},
+        {"speaker": "cactus", "emotion": "idle", "text": "我该生气的事，不在你身上。"},
+        {"speaker": "narrator", "text": "他说这话的时候，眼睛看着她身后的窗户。窗外是森林，和平时一样，安静的、长满叶子的、什么都没发生过的森林。"}
       ]
     }
   ]

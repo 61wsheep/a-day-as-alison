@@ -66,7 +66,7 @@ func _run() -> void:
 
 	# 移除自动收购对话后：即使背包有采集品，选中的也是日常对话而非 sell
 	var selected: Dictionary = soraya._select_dialogue()
-	_check("不再自动触发收购对话（选中 daily）", str(selected.get("id", "")) == "daily")
+	_check("不再自动触发收购对话（回落到 daily 池）", str(selected.get("id", "")).begins_with("daily_"))
 
 	# 对话 UI 提供「卖点东西」入口
 	var dlg_ui: Node = scene.get_node("DialogueUI")

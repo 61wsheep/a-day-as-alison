@@ -95,7 +95,7 @@ func _run() -> void:
 
 	# -- 置 met_padwin → daily（ai:true）→ 走 S1 真 AI 会话 --
 	gm.set_flag("met_padwin")
-	_check("对话选中 daily(AI)", str(padwin._select_dialogue().get("id", "")) == "daily")
+	_check("对话选中 daily 池(AI)", str(padwin._select_dialogue().get("id", "")).begins_with("daily_"))
 	_check("角色卡存在（AI 可用前置）", bridge.has_role_card("padwin"))
 	padwin._start_dialogue()
 	await _wait(0.6)

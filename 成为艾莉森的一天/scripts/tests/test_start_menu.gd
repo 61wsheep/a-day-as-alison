@@ -1,7 +1,9 @@
 extends Node
 
 ## 开始界面预填测试：user:// 已有 key 时，LineEdit 应预填、状态显示已启用。
-## 前置：test_api_key.tscn 已把 sk-test-123 写入 user://ai_api_key.txt。
+## 前置由本测试自己写入（见 _run）——原先靠"先跑 test_api_key"留下的残留文件，
+## 但 test_transition_runner 会把同一个槽位改写成 sk-transition-test，
+## 于是本测试变成看执行顺序吃饭（先跑 menu 还是先跑 transition，结果相反）。
 ## 运行：godot --headless scenes/tests/test_start_menu.tscn
 
 var _failures := 0
@@ -33,6 +35,7 @@ func _check(name: String, cond: bool) -> void:
 func _run() -> void:
 	print("[MENUTEST] 开始")
 	var bridge = get_node("/root/AIBridge")
+	bridge.set_api_key("sk-test-123")   # 自带前置，不再依赖别的测试的副作用
 	_check("预置 key 存在", FileAccess.file_exists("user://ai_api_key.txt"))
 	_check("AIBridge 已加载 key", not bridge.get_stored_key().is_empty())
 

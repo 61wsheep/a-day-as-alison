@@ -181,7 +181,7 @@ func _run() -> void:
 		_press_e(padwin)
 		await _wait(0.1)
 	_check("resolved 回放后 spoken 置位", gm.has_flag("padwin_watch_spoken"))
-	_check("再对话回落 daily", str(padwin._select_dialogue().get("id", "")) == "daily")
+	_check("再对话回落 daily 池", str(padwin._select_dialogue().get("id", "")).begins_with("daily_"))
 
 	scene.queue_free()
 	await _wait(0.3)

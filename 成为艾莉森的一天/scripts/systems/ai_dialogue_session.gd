@@ -39,6 +39,10 @@ var _total_turns := 0
 var _history: Array = []         # [{player, npc, emotional_shift, internal_note, memory_update}]
 
 const _REQUIRED_FIELDS := ["response_text", "emotional_shift", "memory_update"]
+
+## 角色卡按好感度裁剪（门控挡刀的成本面）。用 preload 而非全局类名，
+## 避免依赖编辑器生成的全局类缓存。
+const AICardScript := preload("res://scripts/systems/ai_card.gd")
 const _SYSTEM_PROMPT_PATH := "res://ai/tian_system.txt"
 const _SCHEMA_PATH := "res://ai/dialogue_schema.json"
 
@@ -173,14 +177,17 @@ func _build_payload(is_opening: bool, player_input: String) -> Dictionary:
 
 	var system_text := _read_file(_SYSTEM_PROMPT_PATH)
 	var card_path := "res://ai/npc_%s.txt" % _npc_id
-	var card_text := _read_file(card_path)
+	# 按好感度裁掉还没到档的档位（见 ai_card.gd）：卡全量进来太贵，而且深档台词
+	# 在低好感时本就该够不着——靠模型自律不如在这里摘掉。
+	var card_text := AICardScript.load_gated(card_path, affection)
 	var schema_text := _read_file(_SCHEMA_PATH)
 
 	# ---- 门控挡刀：玩家已知线索注入（AI 只在这个信息范围内说话）----
+	# 带描述一起注入：只给名字的话 AI 不知道她**看见了什么**，回话会发虚、只会复述名字。
 	var clue_names: Array = []
 	if gm and gm.CLUE_NAMES is Dictionary:
 		for cid in known_clues:
-			clue_names.append("%s" % gm.CLUE_NAMES.get(cid, cid))
+			clue_names.append(gm.clue_brief(str(cid)))
 
 	# ---- 跨天记忆 ----
 	var cross_day := "（尚无跨天记忆 —— 今天是你们第一次见面）"
@@ -206,7 +213,13 @@ func _build_payload(is_opening: bool, player_input: String) -> Dictionary:
 		user += "【化身面具 —— 正在扮演 %s】\n\n" % _npc_id
 		user += "第 %d 天。%s。%s 对玩家的好感度: %d/100。\n\n" % [day, time_id, _npc_id, affection]
 		user += "今日塔罗: %s\n\n" % (today_reading if today_reading != "" else "（今日未抽牌）")
-		user += "玩家已知线索: %s\n\n" % (", ".join(clue_names) if not clue_names.is_empty() else "（尚未获得线索）")
+		if clue_names.is_empty():
+			user += "玩家已知线索:（尚未获得线索）\n\n"
+		else:
+			var clue_lines := PackedStringArray()
+			for c in clue_names:
+				clue_lines.append("- %s" % c)
+			user += "玩家已知线索（她亲眼看见的，你只能在这个信息范围内说话；没列在这里的就是她还不知道）:\n%s\n\n" % "\n".join(clue_lines)
 		user += "跨天记忆（之前几天的对话摘要 —— NPC 可能隐隐约约有印象，但不一定主动提起）:\n%s\n\n" % cross_day
 		user += _heaven_injection(gm, day)
 		user += "这是 %s 今天与艾莉森的第一次见面。请以他的身份开口问候，并以玩家艾莉森的第一人称口吻给出 3 条她可能接的话（topic_suggestions——是玩家视角的回复选项，不是你自己的话）。问候语 1-2 句即可，简短自然，别长篇自我介绍。\n\n" % _npc_id

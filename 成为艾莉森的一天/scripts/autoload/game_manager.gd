@@ -45,15 +45,23 @@ const HARD_DAY_CAP := 20
 var _affection_day_start: Dictionary = {}
 
 ## 线索显示名（用于提示）
+## ⚠️ 必须与 resources/data/clues.json 的 name 逐字一致：状态面板把这里的名字与
+## clues.json 的 desc 拼在一起显示，两套名字分叉就会出现"标题和描述不是一回事"。
+## 另外这份名字会注入 AI 的 system 上下文，所以要写成**观察**（"挡脸的那只手"），
+## 不要写成**结论**（"没有前世的记忆"）——给 AI 结论，它就会用结论的口吻说话。
 const CLUE_NAMES := {
-	"clue_padwin_no_memory": "帕德温没有前世的记忆",
+	"clue_padwin_no_memory": "帕德温挡脸的那只手",
 	"clue_cactus_scar": "主教颈上的勒痕",
-	"clue_burn_scar": "自己背上的烧伤疤痕",
-	"clue_soraya_repeat": "索拉雅机械重复的迎接",
+	"clue_burn_scar": "她背上的疤",
+	"clue_soraya_repeat": "索拉雅递地图的折痕",
 	"clue_forest_fake": "塔楼中的森林起源之书",
-	"clue_id_card": "树屋里与自己完全相符的身份证",
+	"clue_id_card": "居留凭据",
 	"clue_tower_roster": "塔楼阶下的名录",
 }
+
+## 线索描述层（文案同学交付）。状态面板与 AI 对话都从这里取 desc。
+const CLUES_FILE := "res://resources/data/clues.json"
+var _clue_desc_cache: Dictionary = {}
 
 
 func add_gold(amount: int) -> void:
@@ -82,6 +90,33 @@ func discover_clue(clue_id: String) -> void:
 		var display: String = CLUE_NAMES.get(clue_id, clue_id)
 		get_node("/root/EventBus").toast.emit("获得线索：%s" % display)
 		record_heaven_event("clue", "玩家发现线索：%s" % display, [clue_id, current_area])
+
+
+## 线索描述（clues.json 的 desc）。首次调用时懒加载并缓存。
+## 文案同学还没交付的描述写成"（待补…）"占位，那样的返回空串——宁可什么都不给，
+## 也不要把"待补"两个字塞进 AI 的上下文。
+func clue_description(clue_id: String) -> String:
+	if _clue_desc_cache.is_empty():
+		var f := FileAccess.open(CLUES_FILE, FileAccess.READ)
+		if f:
+			var parsed: Variant = JSON.parse_string(f.get_as_text())
+			if parsed is Dictionary and parsed.get("clues") is Dictionary:
+				_clue_desc_cache = parsed["clues"]
+			f.close()
+	var entry: Variant = _clue_desc_cache.get(clue_id, {})
+	var desc: String = str(entry.get("desc", "")) if entry is Dictionary else ""
+	if desc.begins_with("（待补"):
+		return ""
+	return desc
+
+
+## 供 AI 对话注入用的一行式线索摘要：名字 —— 描述。
+## 已获得的线索必须带描述进 prompt，否则 AI 只知道"她发现了什么名字"，
+## 不知道她**看见了什么**，回话就会发虚、只会复述名字。
+func clue_brief(clue_id: String) -> String:
+	var nm: String = CLUE_NAMES.get(clue_id, clue_id)
+	var desc := clue_description(clue_id)
+	return nm if desc == "" else "%s —— %s" % [nm, desc]
 
 
 ## 天记忆事件打点（记忆系统第一步地基）。

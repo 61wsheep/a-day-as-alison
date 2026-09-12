@@ -105,12 +105,12 @@ func _run() -> void:
 		get_tree().quit(1)
 		return
 
-	# -- 与帕德温走 daily 台词：met_padwin 置位 → 无委托时选中 daily --
+	# -- 与帕德温走 L2 回落台词：met_padwin 置位 → 无委托时从 daily_a/b/c 池里轮选 --
 	gm.set_flag("met_padwin")
-	_check("对话选中 daily", str(padwin._select_dialogue().get("id", "")) == "daily")
+	_check("对话选中 daily 池", str(padwin._select_dialogue().get("id", "")).begins_with("daily_"))
 	padwin._start_dialogue()
 	await _wait(0.2)
-	for i in 6:   # daily 3 行；对话一旦自然收尾即停，多出的 E 会重开对话（勿喂）
+	for i in 6:   # 池中每条 2~3 行；对话一旦自然收尾即停，多出的 E 会重开对话（勿喂）
 		if not bool(padwin._dialogue_active):
 			break
 		_press_e(padwin)
@@ -118,8 +118,10 @@ func _run() -> void:
 	_check("daily 对话已结束", not bool(padwin._dialogue_active))
 
 	# -- 实录写入校验 --
+	# 断言下限跟着 L2 池走：池里大多是 2 行条目（padwin 14/15 条为 2 行），
+	# 原来的 >=3 是按旧的三行 daily 写的，池落地当天就成了随机红。
 	var entries: Array = log.for_npc("padwin")
-	_check("padwin 实录非空", entries.size() >= 3)
+	_check("padwin 实录非空", entries.size() >= 2)
 	var has_npc_line := false
 	var has_player_line := false
 	var has_day := true
@@ -178,9 +180,9 @@ func _run() -> void:
 	# 存档接入点仍可用：serialize 导出当前轮实录，deserialize 随档还原（未来随档读写）。
 	var dumped: Dictionary = log.serialize()
 	var in_dump: int = (dumped.get("padwin", []) as Array).size()
-	_check("存档接口 serialize 可导出实录", in_dump >= 3)
+	_check("存档接口 serialize 可导出实录", in_dump >= 2)
 	fresh_log.deserialize(dumped)
-	_check("存档接口 deserialize 可还原实录", fresh_log.for_npc("padwin").size() >= 3)
+	_check("存档接口 deserialize 可还原实录", fresh_log.for_npc("padwin").size() >= 2)
 	fresh_log.free()
 	log.clear_all()   # 收尾：清空本轮内存，模拟关闭游戏 → 下文空态提示
 
