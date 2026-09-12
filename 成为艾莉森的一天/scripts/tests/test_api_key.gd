@@ -12,11 +12,11 @@ extends Node
 ##    AIBridge._ready() 早于本测试执行，key 那时已经进了内存，删磁盘上的文件删不掉它。
 
 const KEY_PATH := "user://ai_api_key.txt"
+const HelpersScript := preload("res://scripts/tests/test_helpers.gd")
 
 var _failures := 0
 var _passes := 0
-var _backup := ""
-var _had_backup := false
+var _key_backup := ""
 
 
 func _ready() -> void:
@@ -34,7 +34,7 @@ func _check(name: String, cond: bool) -> void:
 
 func _run() -> void:
 	var bridge = get_node("/root/AIBridge")
-	_backup_key()
+	_key_backup = HelpersScript.backup_api_key()
 
 	# 1. 无 key 状态（内存 + 磁盘都清干净；否则在已配好 key 的开发机上永远测不到这一支）
 	bridge.clear_api_key()
@@ -62,31 +62,7 @@ func _run() -> void:
 	_check("clear 后不可用", not bridge.is_available())
 	_check("clear 后文件已删除", not FileAccess.file_exists(KEY_PATH))
 
-	_restore_key(bridge)
+	HelpersScript.restore_api_key(bridge, _key_backup)
+	print("[KEYTEST] 密钥已还原（长度 %d）" % bridge.get_stored_key().length())
 	print("[KEYTEST] 完成: %d 通过, %d 失败" % [_passes, _failures])
 	get_tree().quit(1 if _failures > 0 else 0)
-
-
-## 备份真人密钥（也可能本机就没有）。**必须在任何 clear/删除之前调用。**
-func _backup_key() -> void:
-	_had_backup = FileAccess.file_exists(KEY_PATH)
-	if _had_backup:
-		_backup = FileAccess.get_file_as_string(KEY_PATH)
-
-
-## 原样还回去：文件内容 + 内存状态都复原，跑完测试不影响本机继续用 AI。
-func _restore_key(bridge: Node) -> void:
-	if not _had_backup:
-		bridge.clear_api_key()
-		print("[KEYTEST] 本机原本就没有密钥，已保持清空。")
-		return
-	# 先无条件把文件写回：这一步绝不能挂在 set_api_key 的成功上——
-	# 它可能因 --ai-off / 空内容而返回 false，那样备份就白备了。
-	var f := FileAccess.open(KEY_PATH, FileAccess.WRITE)
-	if f:
-		f.store_string(_backup)
-		f.close()
-	if bridge.set_api_key(_backup):
-		print("[KEYTEST] 已恢复原密钥（长度 %d）" % bridge.get_stored_key().length())
-	else:
-		print("[KEYTEST] 密钥文件已还原，但 AI 当前不可用（--ai-off？）。")

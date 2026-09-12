@@ -6,8 +6,11 @@ extends Node
 ## 于是本测试变成看执行顺序吃饭（先跑 menu 还是先跑 transition，结果相反）。
 ## 运行：godot --headless scenes/tests/test_start_menu.tscn
 
+const HelpersScript := preload("res://scripts/tests/test_helpers.gd")
+
 var _failures := 0
 var _passes := 0
+var _key_backup := ""
 
 
 func _ready() -> void:
@@ -35,6 +38,7 @@ func _check(name: String, cond: bool) -> void:
 func _run() -> void:
 	print("[MENUTEST] 开始")
 	var bridge = get_node("/root/AIBridge")
+	_key_backup = HelpersScript.backup_api_key()   # 下面这行会覆盖本机真密钥，收尾还原
 	bridge.set_api_key("sk-test-123")   # 自带前置，不再依赖别的测试的副作用
 	_check("预置 key 存在", FileAccess.file_exists("user://ai_api_key.txt"))
 	_check("AIBridge 已加载 key", not bridge.get_stored_key().is_empty())
@@ -63,6 +67,7 @@ func _run() -> void:
 	if status_label:
 		_check("状态显示已启用", status_label.text == "AI 已启用（已保存密钥）")
 
+	HelpersScript.restore_api_key(bridge, _key_backup)
 	print("[MENUTEST] 完成: %d 通过, %d 失败" % [_passes, _failures])
 	get_tree().quit(1 if _failures > 0 else 0)
 

@@ -3,8 +3,11 @@ extends Node
 ## 过渡测试 Runner —— 挂在 root，change_scene_to_file 后仍存活。
 ## 由 test_start_transition.gd 引导创建。
 
+const HelpersScript := preload("res://scripts/tests/test_helpers.gd")
+
 var _failures := 0
 var _passes := 0
+var _key_backup := ""
 
 
 func _ready() -> void:
@@ -30,6 +33,9 @@ func _check(name: String, cond: bool) -> void:
 
 
 func _run() -> void:
+	# 本测试要把 sk-transition-test 填进开始界面并让它落盘（LineEdit → start_menu →
+	# set_api_key 持久化），会覆盖本机真能用的密钥；开头备份、收尾还回去。
+	_key_backup = HelpersScript.backup_api_key()
 	await _wait(0.2)
 
 	var scene: CanvasLayer = (load("res://scenes/ui/start_menu.tscn") as PackedScene).instantiate()
@@ -61,6 +67,7 @@ func _run() -> void:
 	var bridge = get_node("/root/AIBridge")
 	_check("key 已保存并启用", bridge.is_available() and bridge.get_stored_key() == "sk-transition-test")
 
+	HelpersScript.restore_api_key(bridge, _key_backup)
 	print("[TRANS] 完成: %d 通过, %d 失败" % [_passes, _failures])
 	get_tree().quit(1 if _failures > 0 else 0)
 
