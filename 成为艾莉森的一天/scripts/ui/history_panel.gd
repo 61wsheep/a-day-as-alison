@@ -99,7 +99,13 @@ func open(npc_id: String) -> void:
 					color = "#a8d8a8"
 				"narrator":
 					color = "#9a9aa0"
-			_body.append_text("[color=%s]%s：[/color]%s\n" % [color, name, text])
+			var line := "[color=%s]%s：[/color]%s" % [color, name, text]
+			# 该行引发的好感度变化（涨绿跌红），跟在正文后用括号标注，便于回看
+			var aff := int(e.get("affection", 0))
+			if aff != 0:
+				line += " [color=%s]（好感 %s%d）[/color]" % [
+					"#7fd88f" if aff > 0 else "#e08a80", "+" if aff > 0 else "", aff]
+			_body.append_text(line + "\n")
 		_body.scroll_to_line(_body.get_line_count() - 1)
 	_open = true
 	_dim.show()

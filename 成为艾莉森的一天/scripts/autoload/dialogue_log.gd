@@ -13,8 +13,25 @@ extends Node
 
 const MAX_PER_NPC := 400   # 每 NPC 上限，超出丢最旧
 
-## npc_id → Array[{day:int, speaker:String, display:String, text:String}]（旧→新）
+## npc_id → Array[{day:int, speaker:String, display:String, text:String, affection:int}]（旧→新）
+## affection：这行引发的好感度变化（无变化为 0），历史面板在行尾以「（好感 +3）」展示。
 var logs: Dictionary = {}
+
+## 已发生但还没归属到某一行台词的好感度变化（npc_id → 累计值）。
+## 结算总是先于该轮台词入实录（AI 在 _apply_turn 里改、之后才 line_ready；剧本选项
+## 也是先 apply_effects 再播 reply），所以 append 时把待归属值挂到这一行即正确配对。
+var _pending_affection: Dictionary = {}
+
+
+func _ready() -> void:
+	var bus := get_node_or_null("/root/EventBus")
+	if bus == null:
+		return
+	bus.affection_changed.connect(_on_affection_changed)
+	# 对话开始/结束时清空待归属值：对话外的变化（委托奖励等）不该被误挂到
+	# 下一段对话的第一句上；对话结束时残留的（如 end_effects）也无行可挂。
+	bus.dialogue_started.connect(_clear_pending)
+	bus.dialogue_ended.connect(_clear_pending)
 
 
 func append(npc_id: String, speaker: String, display: String, text: String, day: int) -> void:
@@ -26,10 +43,22 @@ func append(npc_id: String, speaker: String, display: String, text: String, day:
 		"speaker": speaker,
 		"display": display if display != "" else _display_fallback(speaker),
 		"text": text,
+		"affection": int(_pending_affection.get(npc_id, 0)),
 	})
+	_pending_affection.erase(npc_id)   # 变化只标注一次，不重复贴到后续行
 	while list.size() > MAX_PER_NPC:
 		list.pop_front()
 	logs[npc_id] = list
+
+
+func _on_affection_changed(npc_id: String, delta: int, _old_value: int, _new_value: int) -> void:
+	if npc_id == "" or delta == 0:
+		return
+	_pending_affection[npc_id] = int(_pending_affection.get(npc_id, 0)) + delta
+
+
+func _clear_pending() -> void:
+	_pending_affection.clear()
 
 
 ## 该 NPC 的实录副本（旧→新；最新在后）。
@@ -65,6 +94,7 @@ func deserialize(data: Dictionary) -> void:
 				"speaker": str(e.get("speaker", "")),
 				"display": str(e.get("display", "")),
 				"text": str(e.get("text", "")),
+				"affection": int(e.get("affection", 0)),
 			})
 		while list.size() > MAX_PER_NPC:
 			list.pop_front()

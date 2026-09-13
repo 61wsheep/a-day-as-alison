@@ -74,11 +74,29 @@ func _press_e(npc: Node) -> void:
 	npc._input(_make_e())
 
 
+## 该条台词所挂的好感度变化量（找不到该行 / 该行无标注 → 0）。
+func _aff_of(log: Node, npc_id: String, text: String) -> int:
+	for e in log.for_npc(npc_id):
+		if str(e.get("text", "")).contains(text):
+			return int(e.get("affection", 0))
+	return 0
+
+
+## 该 NPC 实录里带好感标注的行数（验证标注只贴一次）。
+func _aff_count(log: Node, npc_id: String) -> int:
+	var n := 0
+	for e in log.for_npc(npc_id):
+		if int(e.get("affection", 0)) != 0:
+			n += 1
+	return n
+
+
 func _run() -> void:
 	var bridge := get_node_or_null("/root/AIBridge")
 	if bridge:
 		bridge.set_enabled(false)
 	var gm: Node = get_node("/root/GameManager")
+	var bus: Node = get_node("/root/EventBus")
 	var log: Node = get_node("/root/DialogueLog")
 	log.clear_all()   # 本轮纯内存实录，无盘可清，只清内存即可
 	# 快照 user:// 默认实录文件（可能是旧版"自动落盘"在真机留下的）：新版实录纯内存，
@@ -140,6 +158,33 @@ func _run() -> void:
 	# 分 NPC：从未对话的索拉雅应为空
 	_check("索拉雅实录为空（分 NPC 隔离）", log.for_npc("soraya").is_empty())
 
+	# -- 脚本固定对话的好感度标注：选项 effects.affection 必须落在它引出的那句回复上 --
+	# _on_choice_made 的顺序是 apply_effects → _emit_line，所以标注跟在 NPC 回复行，
+	# 不是玩家选的选项行（选项行先于结算记录，本就该无标注）。
+	# 索拉雅 intro 第 3 个选项 effects.affection=+5（她初始 55）。
+	var soraya: Node = scene.get_node_or_null("Areas/Plaza/Soraya")
+	_check("找到索拉雅", soraya != null)
+	if soraya != null:
+		_check("索拉雅对话选中 intro", str(soraya._select_dialogue().get("id", "")) == "intro")
+		soraya._start_dialogue()
+		await _wait(0.2)
+		_press_e(soraya)   # 第 2 行：旁白
+		await _wait(0.1)
+		_press_e(soraya)   # 第 3 行：玩家行 + 三选项 → 弹选项
+		await _wait(0.1)
+		_check("选项行已就绪待选", bool(soraya._waiting_for_choice))
+		bus.dialogue_choice_made.emit(2)
+		await _wait(0.2)
+		_check("脚本选项的好感变化挂在其回复行上",
+			_aff_of(log, "soraya", "每一个来到这里的人") == 5)
+		_check("玩家选项行本身不带好感标注",
+			_aff_of(log, "soraya", "我叫艾莉森") == 0)
+		# 收场 end_effects(+5) 已无下文台词可挂：应随 dialogue_ended 清空，不得残留到后续行
+		soraya._end_dialogue()
+		await _wait(0.2)
+		_check("脚本对话的好感标注行数=1（不重复贴）",
+			_aff_count(log, "soraya") == 1)
+
 	# -- 靠近按 H → HistoryPanel 打开（走 event_bus history_requested 真实路径）--
 	hp._close()
 	_check("打开前面板关闭", not bool(hp.is_open()))
@@ -183,6 +228,10 @@ func _run() -> void:
 	_check("存档接口 serialize 可导出实录", in_dump >= 2)
 	fresh_log.deserialize(dumped)
 	_check("存档接口 deserialize 可还原实录", fresh_log.for_npc("padwin").size() >= 2)
+	# 好感度标注是行的一部分，随档往返不能丢（否则读档后历史里看不到涨跌）
+	_check("存档往返保留好感度标注字段",
+		fresh_log.for_npc("padwin")[0].has("affection")
+			and int(fresh_log.for_npc("padwin")[0]["affection"]) == int(log.for_npc("padwin")[0]["affection"]))
 	fresh_log.free()
 	log.clear_all()   # 收尾：清空本轮内存，模拟关闭游戏 → 下文空态提示
 

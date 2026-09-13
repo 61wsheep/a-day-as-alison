@@ -122,13 +122,19 @@ func _run() -> void:
 	_check("AI 最后一句未被子系统告别行覆盖", _ui_last_contains("风从东边的林子来"))
 	_check("收场无系统告别正文行", not _ui_text_has("不想再聊"))
 
-	# -- 面板能回看到两种玩家发言 --
+	# -- 好感度变化标注：mock 每轮 emotional_shift=+1，应挂在对应 NPC 回复行上 --
+	# 玩家行不是引发结算的那句（结算发生在 AI 回复到达时），不该被标注。
+	_check("NPC 回复行带好感度标注 +1", _affection_of(log, "padwin", "风从东边的林子来") == 1)
+	_check("玩家行不带好感度标注", _affection_of(log, "padwin", typed) == 0)
+
+	# -- 面板能回看到两种玩家发言 + 好感度标注 --
 	hp._close()
 	hp.open("padwin")
 	await _wait(0.3)
 	var body := str(hp._body.get_parsed_text())
 	_check("面板含自由输入玩家话", body.contains(typed))
 	_check("面板含点击话题玩家话", body.contains(topic))
+	_check("面板标注好感度变化", body.contains("（好感 +1）"))
 	hp._close()
 
 	# -- 收尾：结束对话，复位 mock --
@@ -183,6 +189,19 @@ func _ui_last_contains(text: String) -> bool:
 	if _ui_lines.is_empty():
 		return false
 	return str(_ui_lines[-1][1]).contains(text)
+
+
+## 该条台词所挂的好感度变化量（找不到行按 0 处理）。
+## 同一句文本可能出现在多行（每轮回复都是"风从东边的林子来"），取首个带标注的。
+func _affection_of(log: Node, npc_id: String, text: String) -> int:
+	var first := 0
+	for e in log.for_npc(npc_id):
+		if str(e.get("text", "")).contains(text):
+			var a := int(e.get("affection", 0))
+			if a != 0:
+				return a
+			first = 0
+	return first
 
 
 ## UI 全程是否出现过包含 text 的行（用于断言没有系统告别正文行）。
