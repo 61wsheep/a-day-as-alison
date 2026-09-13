@@ -1,0 +1,81 @@
+# ============================================================
+# 《成为艾莉森的一天》—— Git 属性配置
+# ============================================================
+# 本文件解决三件事：
+#   1. 把二进制素材标记为 binary，禁止 Git 对其做文本 diff / 自动合并
+#      （二进制没有"部分采纳"这回事，自动合并只会产出损坏文件）
+#   2. 让 Git 正确识别文本文件，入库统一转 LF，避免跨机器整文件假冲突
+#   3. 明确哪些文件禁止三方合并，冲突时必须人工二选一
+#
+# 维护者：主程    美工同学不需要修改本文件
+# ============================================================
+
+
+# ---------- 默认：Git 自动识别文本，文本文件入库统一转 LF ----------
+* text=auto
+
+
+# ---------- 美术素材：一律二进制 ----------
+# 立绘 / 图块 / 精灵表 —— 改了就是改了，没有"合并"的可能
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.webp      binary
+*.gif       binary
+*.tga       binary
+*.bmp       binary
+*.psd       binary
+*.aseprite  binary
+*.kra       binary
+
+# SVG 是 XML 文本，保留文本属性以便查看差异
+*.svg       text
+
+
+# ---------- 字体 / 音频：一律二进制 ----------
+*.ttf       binary
+*.otf       binary
+*.woff      binary
+*.woff2     binary
+*.ogg       binary
+*.wav       binary
+*.mp3       binary
+
+
+# ---------- 打包产物 / 二进制程序：一律二进制 ----------
+*.zip       binary
+*.pck       binary
+*.wasm      binary
+*.exe       binary
+*.dll       binary
+*.so        binary
+*.dylib     binary
+*.icns      binary
+*.ico       binary
+
+
+# ---------- 换行符：Windows 专用脚本保持 CRLF ----------
+# 这两个在 Windows 上必须以 CRLF 结尾才能正确执行
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
+
+
+# ---------- Godot 场景 / 资源：文本，但禁止自动合并 ----------
+# .tscn / .tres 是文本格式，可以 diff；
+# 但 Godot 保存时会重排整个文件，自动合并出来的结果几乎必然损坏。
+# 标记为 -merge 后，冲突时 Git 会保留双方版本交由人工处理。
+*.tscn      text -merge
+*.tres      text -merge
+*.godot     text -merge
+*.import    text -merge
+
+
+# ---------- 文档 ----------
+*.md        text
+*.txt       text
+
+
+# ---------- Git 自身配置文件：恒为 LF ----------
+.gitattributes  text eol=lf
+.gitignore      text eol=lf
