@@ -1,0 +1,398 @@
+# 美工 Git 协作规约 v0.2
+
+> **项目：**《成为艾莉森的一天》| **引擎：** Godot **4.7.x** · 2D 俯视角 RPG
+> **远程仓库：** `https://github.com/61wsheep/a-day-as-alison`
+> **适用对象：** 美工同学（主程侧流程见第七节）
+>
+> 画图格式规范（尺寸 / 命名 / 验收）见《美工音乐工作格式要求》。本文档只讲**怎么用 Git 交东西**。
+>
+> **v0.1 → v0.2 改了什么：** v0.1 写的是「美工禁止修改 `scenes/`」「不装 Godot」。这两条**现在作废**——地图重构工作交给了你，所以你要装 Godot、要交场景文件。请以本文档为准，v0.1 已废弃。
+
+---
+
+## 零、一句话总则
+
+> **你管两样东西：`assets/` 里的图，和 `scenes/levels/*_terrain.tscn` 地形场景。**
+> **除此之外的文件一律不碰。**
+
+两样东西各有一套做法，第二节讲交图，第三节讲摆地形。
+
+---
+
+## 一、角色边界（最重要的一节）
+
+仓库里有两类人，各自负责不同的文件。**这条线不能越。**
+
+| 路径 | 谁可以改 | 说明 |
+|------|---------|------|
+| `assets/` 下的 PNG | ✅ **只有美工** | 立绘 / 图块 / UI / 精灵表 |
+| `assets/tilesets/*.tres` | ✅ 美工可改（只增不改，见 3.5） | 图块集定义 |
+| `scenes/levels/*_terrain.tscn` | ✅ **只有美工** | 地形子场景（当前 5 个，见附表） |
+| `scenes/levels/plaza.tscn` 等**关卡场景** | ❌ **美工绝对禁止打开** | 里面混着主程的逻辑节点 |
+| `scenes/` 下的其他任何东西 | ❌ 美工禁止修改 | |
+| `scripts/` | ❌ 美工禁止修改 | 代码 |
+| `resources/` | ❌ 美工禁止修改 | 数据 |
+| `project.godot` | ❌ 美工禁止修改 | 项目设置 |
+| `addons/` | ❌ 美工禁止修改 | 插件 |
+| 任何 `.import` 文件 | ✅ **美工必须提交**（新增图片时） | 见 3.6 |
+
+**附：归你管的 5 个地形子场景**
+
+| 文件 | 内容 |
+|------|------|
+| `scenes/levels/plaza_terrain.tscn` | 森林广场 · 地面 |
+| `scenes/levels/treehouse_district_terrain.tscn` | 树屋街区 · 地面 |
+| `scenes/levels/stone_nest_tower_terrain.tscn` | 石巢塔 · 地面 |
+| `scenes/levels/alison_room_terrain.tscn` | 艾莉森的房间 · 地板 |
+| `scenes/levels/alison_room_walls.tscn` | 艾莉森的房间 · 墙 |
+
+**为什么关卡的 `plaza.tscn` 你不能打开？**
+
+那是**另一份文件**，它不是你的地形，而是"装着你的地形 + 主程的门 / 出生点 / 采集池 / NPC"的容器。你在里面改地形，Godot 会把改动记成**实例覆盖**塞进 `plaza.tscn` 自己身上——那样主程就没法整体接收你的地形了，我们专门拆成两份文件的意义也就没了。
+
+**所以：只双击 `*_terrain.tscn` 打开。看到 `plaza.tscn` / `treehouse_district.tscn` / `stone_nest_tower.tscn` / `alison_room.tscn` 一律跳过。**
+
+> ⚠️ **最容易踩的坑：** 如果你不小心打开了关卡场景，Godot 会弹窗问「是否允许编辑子节点 / Editable Children？」——**点「否」**。点了「是」，你随手拖一下地板，改动就会写进关卡场景，主程只能退回你的提交。
+
+---
+
+## 二、交图流程（PNG，跟 v0.1 一样）
+
+**总原则：改图就改内容，文件名一个字都不要变。**
+
+```
+✅ 正确：chr_alison_smile_01.png  → 画完直接导出，覆盖这个文件
+❌ 错误：chr_alison_smile_01.png  → 另存为 chr_alison_smile_01_v2.png
+❌ 错误：chr_alison_smile_01.png  → 另存为 艾莉森微笑新版.png
+```
+
+**为什么必须原地覆盖？** 场景文件靠文件名找到你的图。你一改名字，场景就找不到它了，主程得重新在编辑器里指认一遍。原地覆盖则完全不需要主程做任何事，零风险。
+
+**导出前务必对照《美工音乐工作格式要求》自检：** PNG 格式、Alpha 通道、sRGB、尺寸是 32 的整数倍。
+
+---
+
+## 三、摆地形流程（v0.2 新增）
+
+### 3.1 打开哪个文件
+
+在 Godot 的文件系统面板里，**双击 `scenes/levels/plaza_terrain.tscn`**（换成你要改的区）。
+
+打开后你会看到**只有一个节点**，名字叫 `Ground`，右边 2D 视口里是这个区的地面。
+
+### 3.2 怎么画
+
+1. 点左上场景树里的 **`Ground`** 节点
+2. 编辑器**底部**会冒出 **TileMap** 面板（如果没看到，点底部标签栏的「TileMap」）
+3. 在面板里选图块 → 在 2D 视口里刷
+
+就跟你平时画像素图一样，只是画布变成了一个格子网格。
+
+### 3.3 三条不能破的规矩 ⭐
+
+这三条一破，游戏里立刻出问题，而且主程要花很久排查。
+
+**① 根节点不许改名、不许换类型、不许在外面套一层。**
+
+```
+✅ 对：根节点名 = Ground        类型 = TileMapLayer
+❌ 错：改成 Terrain / 地板        ← 全部代码按名字 "Ground" 找它
+❌ 错：改类型 / 在外面套一个 Node2D  ← 代码按类型和路径找它
+```
+
+（唯一的例外：`alison_room_walls.tscn` 的根叫 `Walls`，那是它本来就该叫的名字。**别自作主张统一。**）
+
+**② 不许改 `z_index`。**
+
+`Ground` 是 −3、`Walls` 是 −2，这是"钻到角色和道具后面"的意思。数字变了，地板就会盖住主角。
+
+**③ 不许往里面加节点、挂脚本。**
+
+门、出生点、采集池、NPC、脚本挂载——**全部归主程**。你的场景里永远只有一个节点。你要是需要"在这放个门"，跟主程说，他在关卡场景里加。
+
+### 3.4 保存
+
+**直接 `Ctrl + S` 覆盖保存。** 不要用「另存为」，不要改文件名。
+
+保存后 Godot 可能提示"重新加载 / Reload"，选**否**。
+
+### 3.5 图块集 `.tres` 能不能改？
+
+能，但**只增不改**：
+
+| 可以做 | 不可以做 |
+|--------|---------|
+| 新增图集源（加一张新 PNG 进去） | 删掉已有的图集源 |
+| 给已有的图集加图块 | 改**地形编号 terrain 0 / 1 的用途**（代码认编号） |
+| 改地形的**显示名字**（如「草地点缀」） | 改已有图块的坐标位置 |
+
+改之前**必须先 Pull**——这是你和主程共用、而且可能跨区共用的文件。**注意 `forest_plaza.tres` 是广场和树屋街区两个区共用的**，改它等于同时改了两个区：
+
+| 地形场景 | 用哪份图块集 |
+|---------|------------|
+| `plaza_terrain.tscn` | `forest_plaza.tres` ← **两区共用** |
+| `treehouse_district_terrain.tscn` | `forest_plaza.tres` ← **两区共用** |
+| `stone_nest_tower_terrain.tscn` | `tower_tileset/tower_groud.tres` |
+| `alison_room_terrain.tscn` | `tile_forest/wooden_floor.tres` |
+| `alison_room_walls.tscn` | `tile_forest/tile_wooden_wall.tres` |
+
+### 3.6 `.import` 必须一起提交 ⭐
+
+**这是 v0.1 说反了的一条，请特别注意。**
+
+你往 `assets/` 里放一张**新** PNG，Godot 会在旁边自动生成一个同名 `.import` 文件：
+
+```
+assets/tilesets/forest_plaza.png          ← 你画的
+assets/tilesets/forest_plaza.png.import   ← Godot 自动生成
+```
+
+**这两个要一起提交，缺一不可。** `.import` 里存了一个内部编号（uid），所有场景靠这个编号找你的图。只交 PNG 不交 `.import`，主程那边素材就是**显示不出来**。
+
+> 原地覆盖已有 PNG 时，`.import` 一般不会变，那就不用管它。
+
+### 3.7 别手改 `.tscn` / `.tres` 的文本
+
+它们确实是纯文本，看着能改，但**一个字符错了整个文件就废**。改东西一律在 Godot 里点。
+
+---
+
+## 四、美工上手指南（一次性，约 40 分钟）
+
+### 第 1 步：注册 GitHub 账号
+
+访问 `https://github.com/signup`，注册一个账号（免费）。
+
+注册完把 **用户名** 发给主程，主程会把你加成仓库协作者。
+
+> 账号名建议用英文，别用中文或特殊符号。
+
+### 第 2 步：安装 GitHub Desktop
+
+访问 `https://desktop.github.com/`，下载并安装 **GitHub Desktop**。
+
+它把 Git 的所有命令变成了按钮，**不需要学命令行**。安装完用第 1 步的账号登录。
+
+> 不要装 Git 命令行，不要装 TortoiseGit，不要装 SourceTree。就用 GitHub Desktop。
+
+### 第 3 步：安装 Godot 4.7 ⭐
+
+去 `https://godotengine.org/download/windows/` 下载 **Godot 4.7.x Standard（标准版）**，解压即用，不用安装。
+
+> ⚠️ **版本必须 4.7.x。**
+> - 用 **4.6** 打开会把场景格式静默降级，主程一合并就报错
+> - 不要下 **.NET / C# 版**，本项目用不到
+> - 不要下 3.x
+
+### 第 4 步：接受邀请
+
+主程加你为协作者后，你的注册邮箱会收到一封来自 GitHub 的邀请邮件。
+
+点邮件里的 **"View invitation" → "Accept invitation"**。
+
+> 如果没收到，去 `https://github.com/notifications` 看看。
+
+### 第 5 步：克隆仓库到本地
+
+1. 打开 GitHub Desktop
+2. 菜单 **File → Clone repository**
+3. 选 **GitHub.com** 标签页，找到 `61wsheep/a-day-as-alison`
+4. **Local path** 选一个磁盘空间充足的目录，例如 `D:\AIGameBuild-Art`
+5. 点 **Clone**
+
+> **路径要求：**
+> - **纯英文路径**，不要放在桌面或"我的文档"下（这些路径含中文/空格，容易出问题）
+> - **至少预留 3GB 空间**（仓库本身约 100MB，但后续会增长）
+> - **不要**放在你自己已有的工程目录里
+
+### 第 6 步：首次打开工程
+
+在 Godot 的 Project Manager 里点 **Import** → 选到 `D:\AIGameBuild-Art\成为艾莉森的一天\project.godot` → **Import & Edit**。
+
+> **第一次打开会花 5~10 分钟导入素材，屏幕可能像卡住，属正常，等它。**
+> 它会在工程目录里生成一个 `.godot` 文件夹——那个不用管，**不要提交它**（主程已经在 `.gitignore` 里排除了）。
+
+**到这里一次性配置就结束了。**
+
+---
+
+## 五、日常流程（每次开工都走这套）
+
+### 第 1 步：先拉取（Pull）
+
+打开 GitHub Desktop，点右上角的 **Fetch origin**。
+
+如果主程期间更新过仓库，按钮会变成 **Pull origin**，**点它**。
+
+> ⚠️ **每次开工前必须先做这一步。** 跳过这步是冲突的头号原因。
+
+### 第 2 步：确认自己拿到的是最新版
+
+Pull 完成后，**再打开 Godot 或画图软件**，从本地仓库目录里打开要改的文件。
+
+不要在旧版本上画完才发现别人已经改过——那样你的改动会覆盖掉对方的。
+
+### 第 3 步：改东西
+
+- 改图 → 见第二节（原地覆盖同名 PNG）
+- 改地形 → 见第三节（只开 `*_terrain.tscn`）
+
+### 第 4 步：回到 GitHub Desktop，检查改动列表 ⭐
+
+这一步**不能跳过**。点左侧的 **Changes** 标签，你会看到所有改动文件。
+
+**逐条核对，允许出现的只有这几种：**
+
+| 允许 | 说明 |
+|------|------|
+| `.png` | 你画的图 |
+| `.png.import` | Godot 给新图生成的导入记录 |
+| `*_terrain.tscn` / `*_walls.tscn` | 你摆的地形 |
+| `assets/tilesets/*.tres` | 你改过的图块集定义 |
+
+**如果出现了下面任何一种，立刻右键那个文件 → Discard changes（放弃改动）：**
+
+- `plaza.tscn` / `treehouse_district.tscn` / `stone_nest_tower.tscn` / `alison_room.tscn` ← **关卡场景，你误开了实例编辑**
+- `.gd`（代码）、`project.godot`（项目设置）、`main.tscn`
+- 任何 `door_*.tscn`、`.godot/` 目录下的东西
+
+> 出现关卡场景是最常见的失误：你之前打开过 `plaza.tscn`，或者点了「Editable Children」的「是」。放弃掉就行，**不影响你已经摆好的地形**（那在 `plaza_terrain.tscn` 里，是另一份文件）。
+
+### 第 5 步：写提交信息
+
+在左下角的 **Summary** 框里写清楚这次交了什么，例如：
+
+```
+art: 艾莉森 生气/大笑 表情共 4 张重新绘制
+art: 森林广场地面重铺，补上东北角水塘
+art: 石巢塔地面 v2，加宽入口石板路
+```
+
+格式：`art: ` 开头 + 中文说明。一句话够了，不用写很长。**Description 框可以留空。**
+
+### 第 6 步：提交并上传
+
+1. 点左下角蓝色的 **Commit to main** 按钮
+2. 点顶部出现的 **Push origin** 按钮
+
+看到 Push 完成，这次就结束了。**去告诉主程一声"我推上去了"。**
+
+---
+
+## 六、八条铁律
+
+贴在显示器旁边。
+
+1. **开工前先 Fetch / Pull**，永远先拉再改
+2. **只开 `*_terrain.tscn`**，关卡场景（`plaza.tscn` 等）一律不打开
+3. **弹窗问「Editable Children」一律点否**
+4. **只能改 `assets/` 里的图 + 你的地形场景**，其他文件不碰
+5. **原地覆盖同名文件**，绝不另存新名字
+6. **地形场景的根节点不许改名、改类型、改 `z_index`、加子节点**
+7. **新增图片时 `.import` 要一起提交**
+8. **草稿不进仓库**，只有定稿才 Commit
+
+> 第 8 条解释一下：Git 会永久保存每一次提交，删掉也还在。立绘一张 700KB，如果每画一版就提交一次，半年后仓库会膨胀到几个 GB，主程拉取会变得非常慢。**所以在自己电脑上改到满意，再往仓库里放。**
+> 地形同理——**每次保存前先 Pull，别攒着一堆改动一次性推**，那样冲突了很难拆。
+
+---
+
+## 七、主程侧流程（收到美工 Push 之后）
+
+美工推上来之后，主程必须做这几件事，**顺序不能变**：
+
+1. **先看 Changes 范围** —— `git show --stat` 确认只动了 `*_terrain.tscn` / `assets/` 下的东西。
+   **混进关卡场景（`plaza.tscn` 等）就退回**，说明美工误开了实例编辑。
+
+2. **跑场景体检器** —— 确认地形子场景的契约没破（根是 `TileMapLayer`、`tile_set` 能解析、格子数不为 0）：
+   ```bash
+   ./godot.windows.editor.x86_64.exe --headless --path . --script res://scripts/tools/check_scene_refs.gd
+   ```
+
+3. **跑行为回归** —— 最关键的是 `test_forage_spawn`，它直接访问 `Areas/Plaza/Ground`，地形契约一破它第一个报错：
+   ```bash
+   ./godot.windows.editor.x86_64.exe --headless --path . scenes/tests/test_forage_spawn.tscn
+   ```
+
+4. **开 Godot 让素材重新导入，提交 `.import`** —— 只有美工**新增**图片时才需要。**这一步最容易漏**，漏了的后果是其他机器克隆下来素材显示不出来。
+
+**其他注意事项：**
+
+- 主程改 `scripts/` / 关卡场景 / 逻辑节点，正常提交即可，但**不要动 `*_terrain.tscn`** —— 那是美工的地盘
+- 仓库根目录的 `.gitattributes` 已配置好，**不要删改**，它负责保护 PNG 不被 Git 当文本处理
+- 每次 `git add` 用**显式路径**，不要用 `git add -A`
+
+---
+
+## 八、出错了怎么办
+
+### 情况 A：提交列表里混进了 `plaza.tscn` 之类的关卡场景
+
+**最常见，也最好处理。** 右键那个文件 → **Discard changes**。
+
+你的地形好好的，在 `plaza_terrain.tscn` 里，是另一个文件。放弃掉关卡场景的改动**不会丢地形**。
+
+### 情况 B：忘了 Pull 就先改了
+
+GitHub Desktop 会在 Push 时提示 "This branch is behind"。
+
+点 **Pull origin**。如果提示冲突：
+- 冲突的是**图** → 说明你和主程改了同一张图，截图发主程
+- 冲突的是**场景/代码** → **停下来截图发主程，不要自己点**
+
+### 情况 C：不小心改了不该改的文件
+
+在 GitHub Desktop 的 **Changes** 列表里，右键那个文件 → **Discard changes**。
+
+- 已 Commit 但还没 Push → 点 **Undo** 撤销提交
+- 已经 Push 了 → **立刻告诉主程**，由主程处理
+
+### 情况 D：Godot 打不开工程 / 报一堆红字
+
+先确认你装的是 **4.7.x 标准版**（不是 4.6、不是 .NET 版）。
+
+如果版本对，**关掉 Godot，截图发主程**，不要自己在里面乱点。
+
+### 情况 E：完全不知道怎么办
+
+**关掉 GitHub Desktop 和 Godot，什么都不要点，截图发给主程。**
+
+Git 的操作绝大多数是可撤销的，但"乱试"会把它变成不可撤销。停手是最安全的选择。
+
+---
+
+## 九、交付前自检清单
+
+每次 Push 之前逐条打勾：
+
+- [ ] 开工前已 **Fetch / Pull**
+- [ ] 改动文件**只有**：`.png` / `.png.import` / `*_terrain.tscn` / `assets/tilesets/*.tres`
+- [ ] **没有**关卡场景（`plaza.tscn` / `treehouse_district.tscn` / `stone_nest_tower.tscn` / `alison_room.tscn`）
+- [ ] **没有** `.gd` / `project.godot` / `.godot/`
+- [ ] 图片都是**原地覆盖**，没有新增 `_v2` / `_final` / 中文名文件
+- [ ] 新增的图片，旁边的 `.png.import` **一起提交了**
+- [ ] 地形场景里根节点**还是 `Ground`**（`alison_room_walls.tscn` 是 `Walls`），**还是 `TileMapLayer`**，**没有多加节点**
+- [ ] 图片符合《美工音乐工作格式要求》：PNG / Alpha 通道 / sRGB / 尺寸为 32 的整数倍
+- [ ] 文件名**全小写英文 + 下划线**，与既有命名一致
+- [ ] 提交信息以 `art: ` 开头，说明了改了什么
+- [ ] 已点 **Push origin**，且顶部没有待推送的提示
+
+---
+
+## 十、首次大批量交付：仍走交付包
+
+如果你手上是**一次性几百个文件**的首次大批量交付（比如一整套图块集 + 全部立绘），**不要用 Git 一个个传**。
+
+这种情况仍按《美工音乐工作格式要求》第 9.6 节的**交付包**格式打包发主程，由主程统一归档提交。
+
+**分工线：**
+
+| 场景 | 走哪条路 |
+|------|---------|
+| 首次大批量交付（一次 > 30 个文件） | 交付包，主程归档 |
+| 后续日常迭代 / 修改 | Git，美工直接提交 |
+| **摆地形（无论多少）** | **一律走 Git**，地形场景没法打包交付 |
+
+---
+
+> **一句话给美工：** 开工先 Pull；只开 `*_terrain.tscn`，不碰关卡场景；改图原地覆盖不改名；新图连 `.import` 一起交；提交前看清楚列表里没有 `plaza.tscn`。
