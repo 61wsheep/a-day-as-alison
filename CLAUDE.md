@@ -46,7 +46,9 @@ feat/xxx      → 功能分支（从 main 切出，合并回 main）
 
 ## Godot 项目信息
 
-- 引擎：Godot 4.6 · 2D · GL Compatibility
+- 引擎：Godot **4.7** · 2D · GL Compatibility（以 `project.godot` 的 `features` 为准）
+  - ⚠️ 磁盘上的 `godot.windows.editor.x86_64.exe` 是 **4.6.2 自定义构建**，**仅供 headless 跑测试与导出**，不是编辑器本体
+  - 美工同学须装 **4.7.x 标准版**；用 4.6 打开会静默降级场景格式（见《美工 Git 协作规约 v0.2》）
 - 项目路径：`d:\AIGameBuild\成为艾莉森的一天\`
 - 入口场景：`scenes/main.tscn`
 - Autoload：EventBus, GameManager, TimeManager
