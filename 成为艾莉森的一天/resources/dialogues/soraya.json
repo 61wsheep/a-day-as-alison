@@ -76,13 +76,14 @@
     {
       "id": "awakened",
       "priority": 80,
-      "conditions": {"flag": ["soraya_awakened"]},
+      "conditions": {"flag": ["soraya_awakened"], "flag_not": ["soraya_awakened_spoken"]},
       "lines": [
         {"speaker": "soraya", "emotion": "laugh_talk_02", "text": "艾莉森！今天我试着没去接新居民——你猜怎么着？天没有塌下来。"},
         {"speaker": "player", "emotion": "smile_02", "text": "看吧，做自己也没那么难。"},
         {"speaker": "soraya", "emotion": "smile_03", "text": "对了……如果你想知道「天」的秘密，午夜去石巢塔楼。那里有人等着你——等着你问出那个问题。"},
         {"speaker": "soraya", "emotion": "laugh_talk_01", "text": "但别在广场上暴露身份哦，除非你已经准备好了。"}
-      ]
+      ],
+      "end_effects": {"set_flag": ["soraya_awakened_spoken"]}
     },
     {
       "id": "daily_a1",
