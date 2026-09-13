@@ -5,6 +5,10 @@ extends SceneTree
 ## 用途：美术同学交付的 .tscn 在别的环境里画好，脚本与 uid 常常丢失或对不上。
 ## 本工具在「落盘后、合并前」跑一次，把断链和契约破损全部列出来。
 ##
+## 两种场景各按各的契约校验：
+##   关卡场景（根为 Node2D，顶层有 Ground）—— 契约节点 / 出生点 / 门导出值
+##   地形子场景（根即 TileMapLayer，如 plaza_terrain.tscn）—— 美工的交付物，校验 tile_set 与格数
+##
 ## 用法（无头）：
 ##   Godot_v4.7.1-stable_win64_console.exe --headless --path . \
 ##       --script res://scripts/tools/check_scene_refs.gd -- [选项] [场景路径...]
@@ -25,6 +29,10 @@ var n_warn := 0
 var _queue: Array = []            # 待校验队列（含自动发现实例化的子场景）
 var _checked: Dictionary = {}     # 已校验，防环
 var _baseline_map: Dictionary = {}  # 场景 -> 它的基线文件（只对显式传入的生效）
+var _inst_root_cache: Dictionary = {}  # 子场景路径 -> 其根节点的 type/props/ext
+
+## TileMapLayer 序列化下每格固定 12 字节：坐标 4 + 源 2 + 图集坐标 4 + 备选 2
+const TILEMAP_CELL_BYTES := 12
 
 
 # ────────────────────────────── 入口 ──────────────────────────────
@@ -152,7 +160,10 @@ func _check_scene(path: String, baseline_file: String) -> void:
 	_check_ext_resources(ext)
 	_check_dangling_refs(lines, ext)
 	_check_scripts(nodes, ext)
-	if _looks_like_level(nodes):
+	# 地形子场景必须先判：它的根自己也叫 Ground，否则会被当成关卡场景。
+	if _looks_like_terrain(nodes):
+		_check_terrain(nodes, ext, path)
+	elif _looks_like_level(nodes):
 		_check_contract(nodes, ext, path)
 	if baseline_file != "":
 		_check_baseline(path, baseline_file, nodes)
@@ -272,15 +283,26 @@ func _check_contract(nodes: Array, ext: Dictionary, path: String) -> void:
 		_err("[契约] 缺 Ground 节点")
 	else:
 		var g: Dictionary = by_name["Ground"]
-		if g["type"] != "TileMapLayer":
-			_warn("[契约] Ground 类型是 %s，契约要求 TileMapLayer" % g["type"])
-		var ts: String = g["props"].get("tile_set", "")
+		# 拆分后 Ground 是实例化子场景节点：主场景里只剩一行 instance=，
+		# type 与 tile_set 都在子场景的根节点上，得跟过去取。
+		var g_type: String = g["type"]
+		var g_props: Dictionary = g["props"]
+		var g_ext: Dictionary = ext
+		if g_type.is_empty() and g.get("inst", "") != "":
+			var ir := _inst_root(g, ext)
+			g_type = ir.get("type", "")
+			g_props = ir.get("props", {})
+			if ir.has("ext"):
+				g_ext = ir["ext"]
+		if g_type != "TileMapLayer":
+			_warn("[契约] Ground 类型是 %s，契约要求 TileMapLayer" % g_type)
+		var ts: String = g_props.get("tile_set", "")
 		if ts == "":
 			_warn("[契约] Ground 没有 tile_set")
 		else:
 			var sid := _ext_id(ts)
-			if sid != "" and ext.has(sid) and not FileAccess.file_exists(ext[sid]["path"]):
-				_err("[契约] Ground.tile_set -> %s 不存在" % ext[sid]["path"])
+			if sid != "" and g_ext.has(sid) and not FileAccess.file_exists(g_ext[sid]["path"]):
+				_err("[契约] Ground.tile_set -> %s 不存在" % g_ext[sid]["path"])
 
 	if not by_name.has("Props"):
 		_warn("[契约] 缺 Props 节点")
@@ -304,6 +326,51 @@ func _check_contract(nodes: Array, ext: Dictionary, path: String) -> void:
 			_err("[契约] %s 缺 target_area / target_spawn 导出值" % d["name"])
 	if unnamed.size() > 0:
 		_warn("[契约] 无名默认图层：%s（契约⑦要求具名，如 Overlay）" % ", ".join(unnamed))
+
+
+## 模式 B-5：地形子场景契约——拆分后美工的交付物就是这一种文件，
+## 它是唯一一个「美工整份替换、主程零合并」的产物，所以单独校验。
+func _check_terrain(nodes: Array, ext: Dictionary, path: String) -> void:
+	var root: Dictionary = {}
+	for n in nodes:
+		if n["parent"] == "":
+			root = n
+			break
+	if root.is_empty():
+		_err("[地形] 找不到根节点")
+		return
+
+	# 不能套 Node2D 壳：父场景的实例节点靠自己的名字寻址 <区>/Ground，
+	# 根节点一旦不是 TileMapLayer，运行期 get_node("<区>/Ground") 拿到的类型就不对。
+	if root["type"] != "TileMapLayer":
+		_warn("[地形] 根节点类型是 %s，契约要求 TileMapLayer（不能套 Node2D 壳）" % root["type"])
+
+	var ts: String = root["props"].get("tile_set", "")
+	if ts == "":
+		_err("[地形] 没有 tile_set，地形渲染不出来")
+	else:
+		var tp := _ext_path(ext, ts)
+		if tp != "" and not FileAccess.file_exists(tp):
+			_err("[地形] tile_set -> %s 不存在" % tp)
+
+	# 空地形不会报错，但 scene_layout.paint_area_grounds 会把它程序化重铺：
+	# 美工以为交了图，进游戏看到的却是程序生成的地面。
+	var cells := _count_cells(root["props"].get("tile_map_data", ""))
+	if cells == 0:
+		_warn("[地形] 一格未铺——进游戏会被 scene_layout.paint_area_grounds 程序化重铺")
+	else:
+		print("  地形 %d 格 · %s" % [cells, _ext_path(ext, ts)])
+
+
+## tile_map_data 存的是 base64 后的 PackedByteArray，每格固定 12 字节
+## （坐标 4 + 源 2 + 图集坐标 4 + 备选 2），据此反推格数。
+func _count_cells(prop: String) -> int:
+	var re := RegEx.new()
+	re.compile('PackedByteArray\\("([^"]*)"\\)')
+	var m := re.search(prop)
+	if m == null:
+		return 0
+	return Marshalls.base64_to_raw(m.get_string(1)).size() / TILEMAP_CELL_BYTES
 
 
 ## 模式 A：与基线对比，列出「丢了什么」
@@ -422,6 +489,31 @@ func _ext_path(ext: Dictionary, ref: String) -> String:
 	return ext[id]["path"] if ext.has(id) else ""
 
 
+## 实例化子场景节点的真实 type / props 都在子场景的根节点上，
+## 且其内部 ExtResource("id") 用的是子场景自己的 id 表——所以要连 ext 一起带回来，
+## 否则拿着子场景的 id 去查父场景的表，永远查不到，检查会静默跳过。
+func _inst_root(node: Dictionary, ext: Dictionary) -> Dictionary:
+	var id: String = node.get("inst", "")
+	if id == "" or not ext.has(id):
+		return {}
+	var p: String = ext[id]["path"]
+	if p == "" or not FileAccess.file_exists(p):
+		return {}
+	if _inst_root_cache.has(p):
+		return _inst_root_cache[p]
+
+	var sub_ext := {}
+	var sub_nodes := []
+	_parse(_read_text(p).split("\n"), sub_ext, sub_nodes)
+	var result := {}
+	for n in sub_nodes:
+		if n["parent"] == "":
+			result = {"type": n["type"], "props": n["props"], "ext": sub_ext, "path": p}
+			break
+	_inst_root_cache[p] = result
+	return result
+
+
 func _key(n: Dictionary) -> String:
 	var p: String = n["parent"]
 	return (p + "/" + n["name"]) if p != "" else n["name"]
@@ -434,9 +526,21 @@ func _is_default_layer_name(nm: String) -> bool:
 	return re.search(nm) != null
 
 
+## 地形子场景：根节点直接就是 TileMapLayer（拆分产物，父场景用 instance= 引用它）。
+## 判据取根节点类型而非文件名或根名——改名不影响，且关卡场景的根按契约是 Node2D，不会撞。
+func _looks_like_terrain(nodes: Array) -> bool:
+	for n in nodes:
+		if n["parent"] == "":
+			return n["type"] == "TileMapLayer"
+	return false
+
+
 ## 顶层有 Ground 就当作「关卡场景」，跑契约校验。
 ## 不能用路径判断：交付件可能落在 scenes/ 而非 scenes/levels/（就地校验正是本工具用途）。
+## 地形子场景的根自己也叫 Ground，必须先排掉，否则会被误判成关卡。
 func _looks_like_level(nodes: Array) -> bool:
+	if _looks_like_terrain(nodes):
+		return false
 	for n in nodes:
 		if n["parent"] == "" and n["name"] == "Ground":
 			return true
