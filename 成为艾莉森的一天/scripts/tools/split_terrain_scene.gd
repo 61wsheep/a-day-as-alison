@@ -13,24 +13,30 @@ extends SceneTree
 ##
 ## 用法：
 ##   godot --headless --path . --script res://scripts/tools/split_terrain_scene.gd \
-##         -- <区名> <层级名>
+##         -- <区名> <层级名> [输出名]
 ## 例：
 ##   ... --script res://scripts/tools/split_terrain_scene.gd -- plaza Ground
+##   ... --script res://scripts/tools/split_terrain_scene.gd -- alison_room Walls alison_room_walls
+##
+## 输出名默认是 <区名>_terrain。同一区要拆第二层时（如 alison_room 的 Walls）
+## 必须显式给出，否则会覆盖第一层的产物。
 
 
 func _init() -> void:
 	var args := OS.get_cmdline_user_args()
 	if args.size() < 2:
-		push_error("用法：-- <区名> <层级名>，例如：-- plaza Ground")
+		push_error("用法：-- <区名> <层级名> [输出名]，例如：-- plaza Ground")
 		quit()
 		return
-	_run(args[0], args[1])
+	_run(args[0], args[1], args[2] if args.size() > 2 else "")
 	quit()
 
 
-func _run(zone: String, layer_name: String) -> void:
+func _run(zone: String, layer_name: String, out_name: String) -> void:
 	var src := "res://scenes/levels/%s.tscn" % zone
-	var out := "res://scenes/levels/%s_terrain.tscn" % zone
+	if out_name.is_empty():
+		out_name = "%s_terrain" % zone
+	var out := "res://scenes/levels/%s.tscn" % out_name
 
 	var ps: PackedScene = load(src)
 	if ps == null:
