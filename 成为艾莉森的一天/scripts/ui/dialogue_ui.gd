@@ -54,13 +54,20 @@ const PANEL_TEXTURE := "res://assets/ui/ui_dialogue_box.png"
 const PORTRAIT_W := 480.0   # 立绘宽（1.36:1 → 高约 353）
 const PORTRAIT_H := 353.0
 
+## 好感度档位显示名（与 status_panel 同口径）
+const TIER_NAMES := {
+	"hostile": "敌视", "cold": "冷淡", "neutral": "平淡",
+	"friendly": "友善", "intimate": "亲密",
+}
+const AFFECTION_UP_COLOR := Color(0.45, 0.9, 0.55)     # 涨
+const AFFECTION_DOWN_COLOR := Color(0.95, 0.55, 0.5)   # 降
+
 var _panel: PanelContainer
 var _npc_portrait: TextureRect
 var _player_portrait: TextureRect
 var _name_label: Label
 var _text_label: Label
 var _hint_label: Label
-var _ai_badge: Label
 var _choice_panel: PanelContainer
 var _choice_box: VBoxContainer
 var _interact_hint: Label
@@ -68,6 +75,8 @@ var _collect_hint: Label
 var _sell_btn: Button
 var _toast_label: Label
 var _toast_timer: Timer
+var _affection_label: Label
+var _affection_timer: Timer
 var _portrait_cache: Dictionary = {}
 var _thinking_label: Label
 var _free_input: LineEdit
@@ -106,6 +115,7 @@ func _ready() -> void:
 	bus.dialogue_choices.connect(_on_choices)
 	bus.dialogue_ended.connect(_on_dialogue_ended)
 	bus.toast.connect(_show_toast)
+	bus.affection_changed.connect(_on_affection_changed)
 	bus.dialogue_ai_meta.connect(_on_dialogue_ai_meta)
 	bus.ai_thinking.connect(_on_ai_thinking)
 	bus.dialogue_started.connect(func(): _dlg_active = true)   # 兜底路径用：跟踪对话是否激活
@@ -176,14 +186,6 @@ func _build_ui() -> void:
 	_name_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.55))
 	name_row.add_child(_name_label)
 
-	# AI 对话标记（绿字小标，有 AI 能力时显示）
-	_ai_badge = Label.new()
-	_ai_badge.text = "AI 对话中"
-	_ai_badge.add_theme_font_size_override("font_size", 13)
-	_ai_badge.add_theme_color_override("font_color", Color(0.45, 0.9, 0.55))
-	_ai_badge.hide()
-	name_row.add_child(_ai_badge)
-
 	_text_label = Label.new()
 	_text_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -229,6 +231,24 @@ func _build_ui() -> void:
 	_toast_timer.one_shot = true
 	_toast_timer.timeout.connect(func(): _toast_label.hide())
 	add_child(_toast_timer)
+
+	# -- 好感度浮字（顶部中央，提示气泡下方；独立计时器，不与 toast 抢同一行）--
+	# 对话中每次好感度实际变化显示一次「XX 好感 +3」：涨绿降红，跨档时附档位名。
+	_affection_label = Label.new()
+	_affection_label.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_affection_label.offset_left = -300
+	_affection_label.offset_right = 300
+	_affection_label.offset_top = 50
+	_affection_label.offset_bottom = 82
+	_affection_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_affection_label.add_theme_font_size_override("font_size", 19)
+	_affection_label.hide()
+	add_child(_affection_label)
+
+	_affection_timer = Timer.new()
+	_affection_timer.one_shot = true
+	_affection_timer.timeout.connect(func(): _affection_label.hide())
+	add_child(_affection_timer)
 
 	# -- AI 思考加载态（对话框中央） --
 	_thinking_label = Label.new()
@@ -423,7 +443,6 @@ func _on_dialogue_ended() -> void:
 	_thinking_label.hide()
 	_npc_portrait.hide()
 	_player_portrait.hide()
-	_ai_badge.hide()
 
 
 func _show_toast(message: String) -> void:
@@ -433,6 +452,25 @@ func _show_toast(message: String) -> void:
 	_toast_timer.start()
 
 
+## 好感度变化浮字（对话中才显示——对话外的变化由委托奖励等各自 UI 呈现）。
+## 涨绿降红；若因此跨了档位，末尾附上新档位名，让"+12（友善）"这类变化看得懂。
+func _on_affection_changed(npc_id: String, delta: int, old_value: int, new_value: int) -> void:
+	if not _dlg_active or delta == 0:
+		return
+	var text := "%s 好感 %s%d" % [_display_name_or_id(npc_id), "+" if delta > 0 else "", delta]
+	var gm = get_node_or_null("/root/GameManager")
+	if gm:
+		var new_tier := str(gm.affection_tier_of(new_value))
+		if new_tier != str(gm.affection_tier_of(old_value)):
+			text += "（%s）" % TIER_NAMES.get(new_tier, new_tier)
+	_affection_label.text = text
+	_affection_label.add_theme_color_override("font_color",
+		AFFECTION_UP_COLOR if delta > 0 else AFFECTION_DOWN_COLOR)
+	_affection_label.show()
+	_affection_timer.wait_time = 2.4
+	_affection_timer.start()
+
+
 # ---------------------------------------------------------------------------
 # AI 对话相关
 # ---------------------------------------------------------------------------
@@ -440,10 +478,6 @@ func _on_dialogue_ai_meta(npc_id: String, ai_mode: bool, free_input_enabled: boo
 	_ai_mode = ai_mode
 	_ai_free_input_enabled = free_input_enabled
 	_thinking_npc = npc_id
-	if ai_mode or free_input_enabled:
-		_ai_badge.show()
-	else:
-		_ai_badge.hide()
 
 
 func _on_ai_thinking(active: bool) -> void:

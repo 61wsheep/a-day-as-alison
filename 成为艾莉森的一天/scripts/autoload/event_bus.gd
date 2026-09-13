@@ -10,6 +10,9 @@ signal midnight_reached()
 
 # -- 玩家状态相关 --
 signal gold_changed(new_amount: int)
+## 好感度实际发生变化（delta 为生效值：已 clamp、触顶/触底或无变化时不发）。
+## 对话中由 dialogue_ui 显示「XX 好感 +3」浮字。
+signal affection_changed(npc_id: String, delta: int, old_value: int, new_value: int)
 
 # -- 对话相关 --
 signal interaction_hint_show()

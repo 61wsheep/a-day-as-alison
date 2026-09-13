@@ -134,18 +134,23 @@ func has_flag(flag_id: String) -> bool:
 	return flags.get(flag_id, false)
 
 
+## 好感度变更（唯一入口，AI 结算/剧本 effects/委托奖励都走这里）。
+## 实际有变化才广播 affection_changed —— delta=0 或已触顶/触底时不提示，
+## 免得 AI 每轮给 0 时对话里一直闪「+0」。
 func change_affection(npc_id: String, delta: int) -> void:
-	if npc_affection.has(npc_id):
-		npc_affection[npc_id] = clamp(npc_affection[npc_id] + delta, 0, 100)
+	if not npc_affection.has(npc_id):
+		return
+	var old_value: int = int(npc_affection[npc_id])
+	var new_value: int = clampi(old_value + delta, 0, 100)
+	if new_value == old_value:
+		return
+	npc_affection[npc_id] = new_value
+	get_node("/root/EventBus").affection_changed.emit(
+		npc_id, new_value - old_value, old_value, new_value)
 
 
 func get_affection_tier(npc_id: String) -> String:
-	var val = npc_affection.get(npc_id, 0)
-	if val < 20: return "hostile"
-	elif val < 40: return "cold"
-	elif val < 60: return "neutral"
-	elif val < 80: return "friendly"
-	else: return "intimate"
+	return affection_tier_of(int(npc_affection.get(npc_id, 0)))
 
 
 ## 统一处理剧情 effects（对话 JSON 中的效果块）
@@ -339,8 +344,8 @@ func apply_heaven_rules() -> void:
 		var start_val := int(_affection_day_start.get(npc_id, npc_affection[npc_id]))
 		var now_val := int(npc_affection[npc_id])
 		total_delta += now_val - start_val
-		var tier_before := _tier_of(start_val)
-		var tier_after := _tier_of(now_val)
+		var tier_before := affection_tier_of(start_val)
+		var tier_after := affection_tier_of(now_val)
 		if tier_before != tier_after:
 			var evt_type := "affection_tier_up" if now_val > start_val else "affection_tier_down"
 			record_heaven_event(evt_type, "玩家与 %s 的关系从 %s 变为 %s" % [npc_id, tier_before, tier_after], [npc_id], npc_id)
@@ -361,8 +366,8 @@ func _shift(field: String, delta: float) -> void:
 	heaven[field] = clampf(float(heaven.get(field, 0.0)) + delta, lo, 1.0)
 
 
-## 好感度档位（与 get_affection_tier 同阈值，但接受任意数值参数）。
-func _tier_of(val: int) -> String:
+## 好感度档位（按数值判定；get_affection_tier 也走这里，阈值只此一处）。
+func affection_tier_of(val: int) -> String:
 	if val < 20: return "hostile"
 	elif val < 40: return "cold"
 	elif val < 60: return "neutral"
