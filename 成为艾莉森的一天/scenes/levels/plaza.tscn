@@ -1,12 +1,7 @@
 [gd_scene format=4 uid="uid://br7ggv0of1kmr"]
 
 [ext_resource type="Texture2D" uid="uid://b085vicaso83n" path="res://assets/tilesets/forest_plaza.png" id="1_u0s1r"]
-[ext_resource type="Texture2D" uid="uid://cu5fa6g2qnsv0" path="res://assets/tilesets/tile_forest/tile_wooded_path.png" id="2_d8w13"]
-[ext_resource type="Texture2D" uid="uid://cpy6x0r7nlivw" path="res://assets/tilesets/tower_tileset/tower_groud_tileset.png" id="3_6duu6"]
-[ext_resource type="Texture2D" uid="uid://bnwj2gxoc4wqo" path="res://assets/tilesets/tower_tileset/tower_step_tileset.png" id="4_72vqr"]
-[ext_resource type="Texture2D" uid="uid://b47v6xvrqswjw" path="res://assets/tilesets/tower_tileset/tower_wall_tileset.png" id="5_ry7hw"]
 [ext_resource type="Texture2D" uid="uid://8l88rppgrxx3" path="res://assets/tilesets/cainos/props.png" id="6_8na2w"]
-[ext_resource type="Texture2D" uid="uid://bc0s7gni8fgv1" path="res://assets/tilesets/forest_plaza_sheet.png" id="6_56d73"]
 [ext_resource type="Script" uid="uid://cnh8sw8p00fdk" path="res://scripts/systems/door.gd" id="7_6lx30"]
 [ext_resource type="Script" uid="uid://b07le8jfojm0" path="res://scripts/collectible.gd" id="8_drffl"]
 [ext_resource type="Shape2D" uid="uid://c3sk36happfle" path="res://resources/mushroom_collision.tres" id="9_g1rmw"]
@@ -14,7 +9,6 @@
 [ext_resource type="PackedScene" uid="uid://dfnbgvvysrkoe" path="res://scenes/npc_soraya.tscn" id="11_hlk8r"]
 [ext_resource type="Script" uid="uid://ct822surpgaix" path="res://scripts/notice_board.gd" id="12_2djl4"]
 [ext_resource type="PackedScene" uid="uid://wmj50ln26ta5" path="res://scenes/levels/plaza_terrain.tscn" id="13_terrain"]
-
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_og1vs"]
 atlas = ExtResource("1_u0s1r")
