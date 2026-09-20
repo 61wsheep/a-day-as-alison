@@ -271,23 +271,7 @@ func _input(event: InputEvent) -> void:
 		if player and player._movement_locked:
 			return
 		_advance_time()
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F12:
-		_capture_debug_shot()
-
-
-## F12 调试截图：把当前画面存到 res://debug_shots/，Claude 读回 PNG 即可"看见"实际构图，逐轮帮你调布局。
-func _capture_debug_shot() -> void:
-	var dir := "res://debug_shots/"
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
-	await RenderingServer.frame_post_draw  # 等本帧画完再抓，像素才完整
-	var img := get_viewport().get_texture().get_image()
-	if img == null:
-		return
-	var gm := get_node("/root/GameManager")
-	var t := Time.get_datetime_string_from_system().replace(":", "").replace(" ", "_")
-	var path := dir + "shot_%s_%s.png" % [gm.current_area, t]
-	img.save_png(path)
-	print("[debug] 截图已存 -> ", path, "  （把 res://debug_shots/ 下文件名发给 Claude）")
+	# F12 调试截图已挪到 autoload：ScreenshotTool（单跑场景也能用），此处不再处理
 
 
 func _advance_time() -> void:

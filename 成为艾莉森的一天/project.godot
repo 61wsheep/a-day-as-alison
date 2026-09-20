@@ -24,6 +24,7 @@ TimeManager="res://scripts/autoload/time_manager.gd"
 AIBridge="res://scripts/autoload/ai_bridge.gd"
 QuestManager="res://scripts/autoload/quest_manager.gd"
 DialogueLog="res://scripts/autoload/dialogue_log.gd"
+ScreenshotTool="res://scripts/autoload/screenshot_tool.gd"
 
 [display]
 
