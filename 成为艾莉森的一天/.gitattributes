@@ -1,2 +1,45 @@
 # Normalize EOL for all files that Git considers text files.
 * text=auto eol=lf
+
+
+# ============================================================
+# 素材：必须在这里再声明一次二进制，不能只靠根目录那份
+# ------------------------------------------------------------
+# 属性解析是「深层覆盖浅层」。本文件在子目录，下面这行
+#     * text=auto eol=lf
+# 会把根目录 .gitattributes 里 *.png binary 之类规则中的 text 部分顶掉，
+# 而全部素材恰好都在这个子目录下。结果是二进制与否只能靠 Git 嗅探文件内容
+# 来决定（前 8000 字节里有没有 0x00），对 PNG 这类高压缩格式几乎总能猜对，
+# 但对 BMP / TGA 这类未压缩格式并不可靠——猜错就会按文本做换行符转换，
+# 静默写坏图片。
+#
+# 所以：凡是二进制素材类型，在这里重新声明一遍。
+# （根目录那份仍负责 *.psd / *.zip / *.exe 等，且 -merge / -diff 未被顶掉。）
+# ============================================================
+
+# 图片
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.webp      binary
+*.gif       binary
+*.bmp       binary
+*.tga       binary
+*.dds       binary
+*.exr       binary
+*.hdr       binary
+*.ktx       binary
+
+# SVG 是 XML 文本，保留文本属性以便查看差异
+*.svg       text
+
+# 字体
+*.ttf       binary
+*.otf       binary
+*.woff      binary
+*.woff2     binary
+
+# 音频
+*.ogg       binary
+*.wav       binary
+*.mp3       binary
